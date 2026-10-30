@@ -1,0 +1,146 @@
+{
+  "schema": "routegate/residual_geometry/1",
+  "name": "residual_geometry_corrected",
+  "status": "DECLARED, NOT RUN",
+  "purpose": "The corrected residual-geometry analysis that follows a successful pilot reproduction. This file records what it will do; the entry point refuses to execute until the reproduction has passed and the protocol is explicitly approved.",
+
+  "prerequisites": [
+    "outputs/residual_geometry/pilot_reproduction/validation.json exists and reports all checks passed",
+    "the state-45 reproduction gate passed within 1e-06",
+    "the protocol below is approved explicitly on the command line"
+  ],
+
+  "contrast": {
+    "positive_class": "E",
+    "negative_class": "B",
+    "positive_label_value": 1,
+    "negative_label_value": 0,
+    "withheld_classes": ["H"]
+  },
+
+  "states": {
+    "all": true,
+    "count": 49,
+    "numbering": "state 0 is the embedding output; states 1-48 are transformer-block outputs",
+    "expected_degenerate": [0],
+    "degenerate_policy": "scored, flagged, and excluded from any maximum"
+  },
+
+  "folds": {
+    "source": "stratified",
+    "implementation": "sklearn.model_selection.StratifiedKFold",
+    "n_splits": 5,
+    "shuffle": true,
+    "repeats": 20,
+    "seeds": "20260805 + repeat index",
+    "rationale": "one split is one draw; repeating the whole cross-validation over many splits turns a point estimate into a distribution and shows how much of the state ranking is split noise",
+    "grouping_limitation": "no genuine prompt-family identifier exists in the accepted corpus, so folds are label-stratified only; near-duplicate prompts may fall on opposite sides of a boundary"
+  },
+
+  "probe": {
+    "pipeline": ["sklearn.preprocessing.StandardScaler",
+                 "sklearn.linear_model.LogisticRegression"],
+    "penalty": "l2",
+    "C": 0.1,
+    "class_weight": "balanced",
+    "max_iter": 5000,
+    "solver": "lbfgs",
+    "random_state": 20260805,
+    "tol": 1e-06,
+    "tol_rationale": "carried over from the pilot reproduction, where scikit-learn's default tol=1e-04 was shown to stop lbfgs short of the optimum",
+    "decision_threshold": 0.5
+  },
+
+  "activation_variants": {
+    "included": ["raw", "unit_l2", "norm_residualised", "activation_norm"],
+    "raw": "the residual vector as extracted",
+    "unit_l2": "sample-local unit-L2 normalisation, applied deterministically before StandardScaler; the scaler is then fitted on training rows only",
+    "norm_residualised": "the linear dependence of every feature on ||x|| removed, with the regression fitted on training rows only",
+    "activation_norm": "one scalar per example, ||x||_2, with its StandardScaler and classifier fitted on training rows only",
+    "every_variant_is_run_at_every_state": true
+  },
+
+  "nested_selection": {
+    "inner_splits": 5,
+    "candidate_states": "every non-degenerate state",
+    "rule": "the state is chosen by an inner cross-validation inside each outer training fold and scored on the outer held-out rows"
+  },
+
+  "permutation": {
+    "n_permutations": 200,
+    "repeats_used": 2,
+    "base_seed": 20260806,
+    "statistic": "maximum over searched states of the mean cross-validated ROC-AUC",
+    "rule": "the feature matrices and the split assignment are fixed; only the labels are shuffled, deterministically by base_seed + permutation index; every permutation searches every included state and contributes its maximum",
+    "p_value": "(1 + #{null >= observed}) / (1 + n_permutations)",
+    "why_this_many": "the pilot's 20 permutations floor the p-value at 1/21 = 0.048, uncomfortably close to the 0.0476 it reported; 200 lowers the floor to 0.005"
+  },
+
+  "within_source": {
+    "column": "source_family",
+    "repeats": 5,
+    "max_splits": 5,
+    "min_class_examples": 2,
+    "unstable_if_smallest_class_below": 10,
+    "rule": "a source is skipped when either class has fewer than two examples; otherwise the number of folds is capped at the smaller class count, the exact E and B counts are reported, and a small analysis is flagged unstable"
+  },
+
+  "corrections_over_the_pilot": {
+    "state_selection": "nested: the state is chosen inside each outer training fold and scored on the outer held-out fold, so the reported number is not a maximum taken on the rows it is reported from",
+    "permutation_null": "each permutation repeats the complete 49-state search and contributes its maximum, so the null prices the selection; enough permutations to resolve a p-value below the pilot's 1/21 floor",
+    "magnitude_confound": "the activation-norm control, a unit-L2-normalised probe and a norm-residualised probe are run alongside the raw probe, so the directional component is separated from the magnitude component",
+    "fold_construction": "sklearn.model_selection.StratifiedKFold throughout, with the assignment written out as a first-class artefact",
+    "out_of_fold_coverage": "predictions saved for every row at every state, not only the selected one"
+  },
+
+  "controls": {
+    "prompt_length": true,
+    "prompt_length_features": ["prompt_characters", "prompt_whitespace_tokens"],
+    "prompt_token_count": "not available: the extraction manifest saved no token-count column, and this package never loads a tokeniser or retokenises a prompt, so no model-token-length control is run and none is reported",
+    "source_family": true,
+    "topic": true,
+    "task_frame": true,
+    "categorical_columns": {
+      "source": "source_family",
+      "topic": "topic_standardized",
+      "task_frame": "task_frame",
+      "provenance": "genuine columns of the accepted dataset; no label is inferred from prompt text"
+    },
+    "categorical_encoder": "sklearn.preprocessing.OneHotEncoder(handle_unknown='ignore'), fitted inside each training fold",
+    "activation_norm_by_state": true,
+    "unit_l2_normalised": true,
+    "norm_residualised": true,
+    "label_permutation": true
+  },
+
+  "descriptive_geometry": {
+    "centroid_separation_by_state": true,
+    "probe_direction_similarity": true,
+    "principal_component_projections": true,
+    "projection_discipline": "standardisation and PCA fitted on training rows only; held-out rows projected into that basis"
+  },
+
+  "outputs": {
+    "directory": "outputs/residual_geometry/corrected",
+    "figures": true,
+    "out_of_fold_predictions": "one row per (row_id, label, state, activation variant, repeat, fold) with its predicted probability",
+    "split_assignments": "written once, before any probe is fitted, and reused unchanged by every state, variant, control and permutation"
+  },
+
+  "smoke_test": {
+    "directory": "outputs/residual_geometry/corrected_smoke",
+    "reportable": false,
+    "purpose": "exercise every code path on a small subset so the full run is not the first time anything executes; its numbers are not results and the directory name says so",
+    "states": [0, 1, 24, 45],
+    "repeats": 2,
+    "permutations": 5,
+    "within_source_repeats": 2
+  },
+
+  "still_out_of_scope": [
+    "any analysis of the withheld class",
+    "any routing or expert feature extraction",
+    "any intervention",
+    "any use of held-out benchmark material"
+  ]
+}

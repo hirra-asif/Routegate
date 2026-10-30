@@ -1,0 +1,12 @@
+policy,method,profile,edits,E_retained,B_material_loss,B_unknown_selected,H_new_harm,H_selected_unknown_baseline,E_denominator,B_denominator,H_denominator,fixed_direction,alpha,layers,state
+no_edit,No edit,Reference,0,0,0,0,0,0,89,178,212,historical_d1,0.15,31-32,32
+always_fixed,Always fixed,Reference,480,64,16,2,10,1,89,178,212,historical_d1,0.15,31-32,32
+class_selector__zero_validation_damage,Linear class,Strict,56,26,1,0,0,0,89,178,212,historical_d1,0.15,31-32,32
+class_selector__H1pct_B2pct_validation,Linear class,Middle,110,42,3,0,1,0,89,178,212,historical_d1,0.15,31-32,32
+class_selector__H5pct_B5pct_validation,Linear class,Loose,218,58,7,0,4,0,89,178,212,historical_d1,0.15,31-32,32
+outcome_selector__zero_validation_damage,Linear outcome,Strict,47,17,1,0,0,0,89,178,212,historical_d1,0.15,31-32,32
+outcome_selector__H1pct_B2pct_validation,Linear outcome,Middle,130,46,4,0,0,0,89,178,212,historical_d1,0.15,31-32,32
+outcome_selector__H5pct_B5pct_validation,Linear outcome,Loose,257,60,10,1,5,0,89,178,212,historical_d1,0.15,31-32,32
+nn_outcome_selector__zero_validation_damage,Neural outcome,Strict,35,14,1,0,0,0,89,178,212,historical_d1,0.15,31-32,32
+nn_outcome_selector__H1pct_B2pct_validation,Neural outcome,Middle,131,45,3,0,0,0,89,178,212,historical_d1,0.15,31-32,32
+nn_outcome_selector__H5pct_B5pct_validation,Neural outcome,Loose,223,58,8,2,5,0,89,178,212,historical_d1,0.15,31-32,32

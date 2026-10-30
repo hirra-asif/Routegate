@@ -1,0 +1,235 @@
+{
+  "schema": "routegate/frozen_inputs/1",
+  "description": "The complete cross-input inventory of the frozen inputs this study depends on: one place that lists all six, what each is, where it came from and where it now lives. It is a reference document, NOT a runtime loader and NOT a replacement for the manifests that already gate these files. Nothing reads this file to decide whether an input is acceptable; the enforcing manifest for each input is named in its 'hash_enforced_by' field below, and those are unchanged. This file names no absolute path: the origin is identified by workspace name plus a path relative to that workspace's root, and the local destination is relative to the machine-local data root, whose absolute location appears only in the gitignored configs/paths.local.json.",
+  "recorded_utc": "2026-08-19",
+  "origin": {
+    "workspace": "SteerMoE-main",
+    "role": "the experimental working repository that produced the corpus, the extraction, the static-steering outcome and the residual-geometry pilot",
+    "access": "read-only historical evidence; never modified, renamed or written into",
+    "note": "see docs/provenance.md; the absolute location of this workspace is machine-local and is not recorded here"
+  },
+  "local_destination_root": {
+    "logical_name": "routegate_data_root",
+    "layout_root": "frozen/",
+    "outside_git": true,
+    "note": "the absolute path of the data root is machine-local and appears only in configs/paths.local.json, which is gitignored. Every destination below is relative to that root."
+  },
+  "inputs": [
+    {
+      "logical_name": "development_corpus",
+      "role": "the authoritative labelled corpus",
+      "origin_workspace": "SteerMoE-main",
+      "origin_relative_path": "results/rq3_ebh_final_dataset_20260804/rq3_dataset_final.csv",
+      "sha256": "0943449697327aa47912ef80337462414ab98255c3ad99b717baa716353e1d08",
+      "bytes": 1531087,
+      "expected_structure": {
+        "format": "csv",
+        "rows": 509,
+        "columns": 44,
+        "label_column": "final_ebh",
+        "class_counts": {
+          "E": 89,
+          "B": 178,
+          "H": 213,
+          "EXCLUDED_PARTIAL_OR_UNCLEAR": 29
+        },
+        "analysis_eligible": 480,
+        "row_id_uniqueness": "509 unique row_id values"
+      },
+      "contains_prompt_or_response_text": true,
+      "text_kind": "prompt text",
+      "committable_to_git": false,
+      "local_destination": "frozen/corpus/rq3_dataset_final.csv",
+      "resolved_by": "configs/paths.local.json key 'dataset'",
+      "hash_enforced_by": [
+        "manifests/development_inputs.json",
+        "routegate.data (load_development_inputs)"
+      ]
+    },
+    {
+      "logical_name": "residual_extraction_manifest",
+      "role": "the row order of the activation array",
+      "origin_workspace": "SteerMoE-main",
+      "origin_relative_path": "results/rq3_residual_extraction_20260805_001100/manifest.csv",
+      "sha256": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd",
+      "bytes": 124465,
+      "expected_structure": {
+        "format": "csv",
+        "rows": 480,
+        "columns": [
+          "row_index",
+          "row_id",
+          "final_ebh",
+          "source_family",
+          "prompt_text",
+          "prompt_sha256"
+        ],
+        "ordering": "row_index ascending 0..479; row_index equals the array row position",
+        "class_counts": {
+          "E": 89,
+          "B": 178,
+          "H": 213
+        },
+        "internal_consistency": "sha256(prompt_text) == prompt_sha256 for all 480 rows",
+        "cross_consistency": "prompt_text byte-identical to the development corpus for all 480 rows"
+      },
+      "contains_prompt_or_response_text": true,
+      "text_kind": "prompt text; no response text of any kind",
+      "committable_to_git": false,
+      "local_destination": "frozen/residual_extraction/manifest.csv",
+      "resolved_by": "configs/paths.local.json key 'extraction_dir'",
+      "hash_enforced_by": [
+        "manifests/development_inputs.json",
+        "routegate.data (load_development_inputs)"
+      ]
+    },
+    {
+      "logical_name": "residual_activations",
+      "role": "residual stream at the final prompt token, one unsteered forward pass per prompt",
+      "origin_workspace": "SteerMoE-main",
+      "origin_relative_path": "results/rq3_residual_extraction_20260805_001100/residual_final_prompt_token.npy",
+      "sha256": "af89872d5decd4dc432ec579a941e6247bc7de63ff5690432e9f5812a994e2d8",
+      "bytes": 192675968,
+      "expected_structure": {
+        "format": "npy",
+        "shape": [
+          480,
+          49,
+          2048
+        ],
+        "dtype": "float32",
+        "axes": [
+          "row",
+          "state",
+          "hidden_unit"
+        ],
+        "finiteness": "no NaN or Inf",
+        "state_numbering": {
+          "0": "embedding output at the final prompt token; degenerate by construction, identical across all 480 rows",
+          "1-48": "transformer-block outputs",
+          "note": "state 0 is not a transformer block and must not be called layer 0"
+        }
+      },
+      "contains_prompt_or_response_text": false,
+      "text_kind": "none; numeric tensor",
+      "committable_to_git": false,
+      "committable_reason": "size, not content: 184 MB",
+      "local_destination": "frozen/residual_extraction/residual_final_prompt_token.npy",
+      "resolved_by": "configs/paths.local.json key 'extraction_dir'",
+      "hash_enforced_by": [
+        "manifests/development_inputs.json",
+        "routegate.data (load_development_inputs)"
+      ]
+    },
+    {
+      "logical_name": "static_steering_ebh_master",
+      "role": "the static E/B/H steering outcome table; the evidence the RQ2 static actuator result rests on",
+      "origin_workspace": "SteerMoE-main",
+      "origin_relative_path": "results/rq3_static_steering_ebh_master_20260811.csv",
+      "sha256": "525e62e0a6fdac3200111deae146d699ea2db9b3459dab2e57b09c705b11b9e4",
+      "bytes": 2156316,
+      "expected_structure": {
+        "format": "csv",
+        "rows": 480,
+        "columns": 27,
+        "label_column": "frozen_class",
+        "class_counts": {
+          "E": 89,
+          "B": 178,
+          "H": 213
+        },
+        "row_id_uniqueness": "480 unique row_id values",
+        "cross_class_overlap": "none; E, B and H row_id sets are disjoint"
+      },
+      "contains_prompt_or_response_text": true,
+      "text_kind": "prompt text and before/after response text",
+      "committable_to_git": false,
+      "local_destination": "frozen/static_steering/rq3_static_steering_ebh_master_20260811.csv",
+      "resolved_by": "configs/paths.local.json key 'static_steering_master'",
+      "builder_status": "the script that produced this file has not been located; see docs/standalone_migration.md. Preserved unchanged as frozen historical evidence pending recovery or deterministic reconstruction.",
+      "hash_enforced_by": [
+        "experiments/routegate_residual/run_baseline_v1.py (EXP_MASTER_SHA, pinned in the script)",
+        "pending the Phase 2 step 6 path refactor, after which it resolves through configs/paths.local.json"
+      ]
+    },
+    {
+      "logical_name": "pilot_layerwise_metrics",
+      "role": "the residual-geometry pilot's per-state reference metrics, reproduced with scikit-learn to 1e-6",
+      "origin_workspace": "SteerMoE-main",
+      "origin_relative_path": "results/rq3_residual_geometry_20260805/layerwise_eb_probe_metrics.csv",
+      "sha256": "a3b900dda5fd3a871589bc7e0efffe430b1faeeadd0def30871feda6a5508ee6",
+      "bytes": 5546,
+      "expected_structure": {
+        "format": "csv",
+        "rows": 49,
+        "state_column": "layer",
+        "state_range": "0..48",
+        "note": "the pilot's 'layer' column is this package's 'state'; values 0-48 are identical in meaning",
+        "reference_value_state_45": {
+          "roc_auc": 0.952594,
+          "pr_auc": 0.894166,
+          "balanced_accuracy": 0.865169
+        }
+      },
+      "contains_prompt_or_response_text": false,
+      "text_kind": "none; metrics only",
+      "committable_to_git": true,
+      "committable_reason": "small, frozen, hash-verified, no prompt text; promoted to a committed artifact in step 5",
+      "local_destination": "frozen/pilot_reference/layerwise_eb_probe_metrics.csv",
+      "committed_copy": "artifacts/pilot_reference/layerwise_eb_probe_metrics.csv",
+      "resolved_by": "the committed repo-local copy under artifacts/; the data-root copy is a frozen backup and is not a runtime input",
+      "hash_enforced_by": [
+        "manifests/pilot_reference.json",
+        "experiments/residual_geometry/reproduce_pilot.py (assert_hash)"
+      ]
+    },
+    {
+      "logical_name": "pilot_oof_scores",
+      "role": "the only serialised record of the pilot's fold assignment, plus its out-of-fold scores at state 45",
+      "origin_workspace": "SteerMoE-main",
+      "origin_relative_path": "results/rq3_residual_geometry_20260805/best_layer_oof_scores.csv",
+      "sha256": "49ac26c7ae8cefac4868063053cdc57013c8aa3005518618dcda9c2e4713b539",
+      "bytes": 22131,
+      "expected_structure": {
+        "format": "csv",
+        "rows": 267,
+        "composition": "the E/B analysis contrast: 89 E plus 178 B",
+        "row_id_column": "row_id",
+        "fold_column": "fold",
+        "folds": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "score_column": "oof_score_p_E",
+        "state": 45,
+        "note": "the folds must be imported from this file, not rebuilt: the pilot's splitter is a hand-written round-robin deal, not sklearn.model_selection.StratifiedKFold"
+      },
+      "contains_prompt_or_response_text": false,
+      "text_kind": "none; row_id, fold and score only",
+      "committable_to_git": true,
+      "committable_reason": "small, frozen, hash-verified, no prompt text; promoted to a committed artifact in step 5",
+      "local_destination": "frozen/pilot_reference/best_layer_oof_scores.csv",
+      "committed_copy": "artifacts/pilot_reference/best_layer_oof_scores.csv",
+      "resolved_by": "the committed repo-local copy under artifacts/; the data-root copy is a frozen backup and is not a runtime input",
+      "hash_enforced_by": [
+        "manifests/pilot_reference.json",
+        "experiments/residual_geometry/reproduce_pilot.py (assert_hash)"
+      ]
+    }
+  ],
+  "explicitly_not_an_input": [
+    {
+      "path": "outputs/causal_repair/donor_pairs_with_text.csv",
+      "reason": "a historical RouteGate output, not one of the six frozen inputs. It is prompt-bearing, already gitignored by outputs/ and by *.csv, stays where it is, and is not copied during Phase 2."
+    }
+  ],
+  "verification_rule": "Every input is re-hashed before use. The recorded SHA256 is the gate: a file whose digest differs is refused, and no run proceeds. Copying a file to the local data root does not change its digest; a copy whose digest differs from its source is a failed copy, not a new input.",
+  "role": {
+    "is": "a complete cross-input inventory and provenance record, for humans and for review",
+    "is_not": "a runtime loader, a new hash gate, or a replacement for manifests/development_inputs.json or manifests/pilot_reference.json",
+    "enforcement": "each input records 'hash_enforced_by', naming the manifest and code that actually refuse a file whose digest differs. This inventory duplicates those digests for cross-checking; it does not own them."
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "contains_prompt_or_response_text": false,
+  "controller": {
+    "applied_strength_formula": "alpha_R = 0.15 * g_R",
+    "ceiling_is_arithmetic": "g_R saturates at 1.0 and 0.15 x 1.0 = 0.15. There is no coefficient in the parameterisation that can carry the applied strength past the validated one.",
+    "coefficient_sharing": "the single gate is reused unchanged at every intervention site; it is predicted once per prompt",
+    "emits_a_safety_coefficient": false,
+    "frozen_validated_repair_strength": 0.15,
+    "gate": {
+      "activation": "sigmoid",
+      "emitted": "once per prompt, single pass",
+      "name": "g_R",
+      "range": [
+        0.0,
+        1.0
+      ]
+    },
+    "max_applied_alpha_R": 0.15,
+    "output_count": 1,
+    "outputs": [
+      "g_R"
+    ],
+    "steered_direction": "d_R = B_d1 - E",
+    "steered_direction_count": 1
+  },
+  "deployment_protocol": {
+    "implemented_by": "routegate.singledirection.assert_deployment_preconditions",
+    "nothing_is_retuned_here": true,
+    "order_is_not_advisory": "each step is a precondition of the next. A controller trained before the heads are refit is trained on scores it will not be deployed with.",
+    "runs_only_after": "architecture freeze",
+    "sealed_set": {
+      "accessed_before_the_freeze": false,
+      "statement": "the sealed set is read once, after the heads and the controller are frozen and their digests recorded. A choice made after reading it is not a choice this protocol permits."
+    },
+    "steps": [
+      "refit the two probe heads on ALL development rows, with every hyperparameter fixed at the frozen specification -- nothing is re-tuned at this step",
+      "train the final controller on ALL development rows, with the architecture and every training-time choice already fixed",
+      "freeze both, and record their digests, BEFORE anything reads the sealed set"
+    ]
+  },
+  "name": "single_direction_repair_controller_v1",
+  "not_implemented_here": [
+    "the controller itself: no parameters, no optimiser, no loss, no training loop",
+    "any generation, judging or model load",
+    "any reading of the sealed set"
+  ],
+  "oof_protocol": {
+    "every_component_is_out_of_fold": [
+      "repair_probe",
+      "safety_probe",
+      "controller"
+    ],
+    "fold_source": "the cross-fitted direction bank's own frozen 480-row division, as the probe heads already use",
+    "implemented_by": "routegate.singledirection.assert_oof_protocol",
+    "n_splits": 5,
+    "rule": "for held-out fold k: use the fold-k repair and safety probes, each trained without fold k; train the corresponding controller without fold k; generate and evaluate fold k only.",
+    "why": "a controller reading two probe scores is a three-stage pipeline. Cross-fitting two of the three stages and not the third scores it partly on rows its own pipeline was fitted on, and the leak is invisible in the number that comes out."
+  },
+  "phase2": {
+    "closure": "focused_direction_validation_v1_phase2_closure",
+    "continuation_selected_by": "the frozen phase-2 decision rule's if_no_strength_qualifies branch, written before any phase-2 output existed",
+    "outcome": "NO_STRENGTH_QUALIFIES",
+    "readings_sha256": "b10b19ff78b1721e390ce4510627a335dcfbaf10f3fef843c618b5c41e02a011"
+  },
+  "probe_heads": {
+    "definitions_unchanged_by_phase_2": true,
+    "refit_in_this_patch": false,
+    "repair_head": "p_E, E versus B, H excluded from its training labels and from its scaler",
+    "run_retained": "outputs/dual_direction_controller/probe_heads_v1",
+    "safety_head": "p_H, H versus (E + B)"
+  },
+  "read_position": {
+    "decode_positions_are_not_read": true,
+    "diagnostic_states": [
+      33,
+      34
+    ],
+    "diagnostic_states_are_not_candidates": "states [33, 34] remain probe diagnostics: they are reported beside state 32 as a sensitivity check on the primary reading. They are not candidates for the controller's read state, and none of them may be promoted to it after its metrics are known.",
+    "historical_layer": 31,
+    "prefill_only": true,
+    "standing": "state 32 is the output of historical decoder block 31. It was predeclared as the primary controller read state before either probe head was fitted, because it is the frozen actuator's own first layer. It is not selected from the sensitivity states' outcomes.",
+    "state": 32,
+    "state_is": "the output of historical decoder block 31",
+    "token_position": "final prompt token",
+    "token_position_note": "the last row of the prefill forward pass, which is the position the frozen activation array stores and the position the actuator edits"
+  },
+  "resolved_by_phase_2": {
+    "controller_training_rows": "the development rows outside the held-out fold, per the out-of-fold protocol; all development rows for the final controller",
+    "number_of_controller_outputs": 1,
+    "number_of_directions": "one: d_R = B_d1 - E",
+    "sigmoid_to_maximum_strength_mapping": "alpha_R = 0.15 * g_R"
+  },
+  "retired_actuator": {
+    "active": false,
+    "direction": "d_S = H - E",
+    "note": "recorded here as retired so that a reader of this file alone knows the second direction was screened and removed, rather than never considered.",
+    "recorded_in": "focused_direction_validation_v1_phase2_closure",
+    "retired_by": "NO_STRENGTH_QUALIFIES"
+  },
+  "safety_brake": {
+    "may_increase_the_gate": false,
+    "may_produce_a_controller_output": false,
+    "may_produce_a_steering_direction": false,
+    "may_reduce_the_gate": true,
+    "may_veto_the_gate": true,
+    "reading": "p_H, from the H-versus-(E+B) probe head",
+    "role": "sensor",
+    "statement": "the safety head brakes the repair gate. It never steers. There is no direction it scales and no coefficient it emits, and the retired d_S = H - E is not reachable from it.",
+    "veto_means": "g_R = 0, and therefore alpha_R = 0: the repair edit is not applied at all"
+  },
+  "schema": "routegate/single_direction_controller/1",
+  "status": "SPECIFIED_NOT_IMPLEMENTED",
+  "status_meaning": "the architecture, the read position, the strength ceiling, the safety brake's role, the out-of-fold protocol and the deployment protocol are fixed here. No controller is implemented, initialised or trained by this file or by the package.",
+  "supersedes": {
+    "configuration": "configs/dual_direction_controller.json",
+    "historical_file_standing": "phase-2 metadata. It records what was proposed before phase 2 ran and is kept exactly as it was; it is not a final-controller configuration and the final path refuses it.",
+    "superseded_block": "proposed_controller",
+    "superseded_design": "one shared controller emitting a pair of sigmoid coefficients, one per direction",
+    "the_historical_file_is_not_rewritten": true,
+    "why": "phase 2 returned NO_STRENGTH_QUALIFIES and retired d_S = H - E as an actuator"
+  },
+  "unresolved": {
+    "controller_activation_function": "UNRESOLVED",
+    "controller_depth": "UNRESOLVED",
+    "controller_hidden_size": "UNRESOLVED",
+    "controller_input": "UNRESOLVED",
+    "controller_loss": "UNRESOLVED",
+    "controller_optimiser": "UNRESOLVED",
+    "controller_regularisation": "UNRESOLVED",
+    "controller_selection_criterion": "UNRESOLVED",
+    "controller_training_schedule": "UNRESOLVED",
+    "note": "each field below is open and has no default in this file, in code, or anywhere else in this repository. Every one must be fixed BEFORE the controller is trained, not after inspecting generated-response outcomes.",
+    "safety_brake_operating_point": "UNRESOLVED",
+    "successful_strength_targets_or_other_supervisory_signal": "UNRESOLVED"
+  },
+  "version": 1
+}

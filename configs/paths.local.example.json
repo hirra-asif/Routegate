@@ -1,0 +1,23 @@
+{
+  "_comment": "Copy to configs/paths.local.json and fill in absolute paths for this machine. paths.local.json is gitignored: it is the only place a machine-specific absolute path appears. It must never name held-out benchmark material; the loader refuses any path that looks like it does.",
+  "dataset": "/absolute/path/to/rq3_dataset_final.csv",
+  "extraction_dir": "/absolute/path/to/the/residual/extraction/directory",
+  "static_steering_master": "/absolute/path/to/rq3_static_steering_ebh_master_20260811.csv",
+  "rq2_actuator_dir": "/absolute/path/to/the/migrated/rq2/actuator/freeze/directory",
+  "triplet_validation_dir": "/absolute/path/to/the/triplet/validation/working/root",
+  "focused_direction_validation_dir": "/absolute/path/to/the/focused/direction/validation/data/root",
+  "_notes": {
+    "dataset": "must be the accepted labelled corpus; its SHA256 is checked against manifests/development_inputs.json",
+    "extraction_dir": "must contain manifest.csv and residual_final_prompt_token.npy, under exactly those filenames; both hashes are checked",
+    "static_steering_master": "the frozen static E/B/H steering outcome table; its SHA256 is pinned in experiments/routegate_residual/run_baseline_v1.py",
+    "triplet_validation_dir": "the working root for the retrospective validation of the ten operative E/B/H triplets. Holds the frozen judge-protocol text, the judging packets, the private join maps and the raw API records: all of it prompt-bearing or de-anonymising, none of it ever committed.",
+    "focused_direction_validation_dir": "the data root for focused_direction_validation_v1. Holds consolidated/ (the 871 pinned phase-1 screen records) and judging/ (the blind judging packet, the private row map, every raw API body, the joined cells, the human-review packet and the adjudicated cells). All of it is prompt-bearing or de-anonymising and none of it is ever committed.",
+    "rq2_actuator_dir": "must contain the ten files of the frozen RQ2 actuator freeze, under exactly their historical filenames and byte-for-byte identical; every hash is checked against manifests/rq2_actuator.json before routegate.actuator reads anything",
+    "pilot_reference": "no key is needed: the residual-geometry pilot reference files are committed repository artifacts under artifacts/pilot_reference/ and are resolved from the repository, not from this file",
+    "forbidden": "no entry may name held-out benchmark material",
+    "two_site_validation_v2_consolidated_dir": "the consolidated package two_site_actuator_validation_v1 produced: screen_records.jsonl (480 candidate records), referenced_baseline.jsonl (480 referenced baselines), run_manifest.json and validation.json. Both jsonl digests are checked against manifests/two_site_actuator_judging_v1.json before a single row is read, and the directory is only ever opened read-only.",
+    "two_site_judging_dir": "the working root for two_site_actuator_judging_v1. Holds frozen/b_quality_rubric/ -- the three frozen B quality-rubric files, hash-gated on every read -- and judging/, which holds the blind packet, the private map that de-anonymises the opaque ids AND records the A/B orientation, every raw API record, the joined cells, the review packet and the adjudicated cells. All of it is prompt-bearing or de-anonymising and none of it is ever committed."
+  },
+  "two_site_validation_v2_consolidated_dir": "/absolute/path/to/the/consolidated/two/site/validation/package",
+  "two_site_judging_dir": "/absolute/path/to/the/two/site/judging/data/root"
+}

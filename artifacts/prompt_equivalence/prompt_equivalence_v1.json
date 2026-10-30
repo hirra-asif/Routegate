@@ -1,0 +1,149 @@
+{
+  "schema": "routegate/prompt_equivalence/1",
+  "stage": "phase2_step9_prompt_equivalence",
+  "purpose": "gate on replacing the historical generation import with routegate.runtime (step 10)",
+  "verdict": "PASS",
+  "recorded_utc": "2026-08-19T20:50:38Z",
+  "checks": [
+    {
+      "check": "model_identifier_agrees",
+      "ok": true,
+      "detail": "legacy MODEL vs runtime.FROZEN_MODEL: 'Qwen/Qwen3-30B-A3B' vs 'Qwen/Qwen3-30B-A3B'"
+    },
+    {
+      "check": "frozen_revision_agrees",
+      "ok": true,
+      "detail": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39 vs ad44e777bcd18fa416d9da3bd8f70d33ebb85d39"
+    },
+    {
+      "check": "both_resolve_the_same_snapshot_at_the_pinned_commit",
+      "ok": true,
+      "detail": "commit ad44e777bcd18fa416d9da3bd8f70d33ebb85d39; both paths identical: True"
+    },
+    {
+      "check": "tokenizer_config_sha256_agrees",
+      "ok": true,
+      "detail": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+    },
+    {
+      "check": "chat_template_sha256_agrees",
+      "ok": true,
+      "detail": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+    },
+    {
+      "check": "all_prompts_render_to_identical_bytes_and_sha256",
+      "ok": true,
+      "detail": "480/480 identical"
+    },
+    {
+      "check": "all_prompts_tokenise_to_identical_sequences",
+      "ok": true,
+      "detail": "480/480 identical (input_ids, attention mask and length, final prompt token)"
+    }
+  ],
+  "n_checks": 7,
+  "n_failed_checks": 0,
+  "input_gates": [
+    {
+      "check": "manifest_filename_is_the_pinned_one",
+      "ok": true,
+      "detail": "manifest.csv (expected manifest.csv)"
+    },
+    {
+      "check": "manifest_exists",
+      "ok": true,
+      "detail": "present"
+    },
+    {
+      "check": "manifest_sha256_matches_the_pinned_value",
+      "ok": true,
+      "detail": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd"
+    },
+    {
+      "check": "manifest_columns_are_exactly_the_expected_six",
+      "ok": true,
+      "detail": "['row_index', 'row_id', 'final_ebh', 'source_family', 'prompt_text', 'prompt_sha256']"
+    },
+    {
+      "check": "manifest_carries_no_response_column",
+      "ok": true,
+      "detail": "no response-bearing column; offending=none"
+    },
+    {
+      "check": "manifest_has_exactly_480_rows",
+      "ok": true,
+      "detail": "480 (expected 480)"
+    },
+    {
+      "check": "row_index_is_0_to_479_in_order",
+      "ok": true,
+      "detail": "ascending 0..479, so manifest line i is array row i"
+    },
+    {
+      "check": "class_counts_are_E89_B178_H213",
+      "ok": true,
+      "detail": "E=89 B=178 H=213"
+    },
+    {
+      "check": "every_prompt_sha256_recomputes_from_its_own_text",
+      "ok": true,
+      "detail": "480/480 rows recompute"
+    }
+  ],
+  "comparison": {
+    "n_expected": 480,
+    "n_compared": 480,
+    "rendered_identical": 480,
+    "tokens_identical": 480,
+    "mismatch_counts": {
+      "rendered_non_string": 0,
+      "rendered_bytes": 0,
+      "rendered_sha256": 0,
+      "token_ids": 0,
+      "attention_mask": 0,
+      "attention_length": 0,
+      "final_prompt_token": 0
+    }
+  },
+  "sources": {
+    "legacy_module_filename": "rq3_dev_generation.py",
+    "legacy_module_sha256": "f63df90494a65aca273bd9df879a6e3a35f52e8669e93bff088b2509224cfe4c",
+    "routegate_runtime_sha256": "2db9a2cc35a9bd2aa6d8b392f182ab05ec76a981893986e3d0a5542816a66ae2",
+    "extraction_manifest_filename": "manifest.csv",
+    "extraction_manifest_sha256": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd",
+    "extraction_manifest_rows": 480,
+    "extraction_manifest_class_counts": {
+      "B": 178,
+      "E": 89,
+      "H": 213
+    }
+  },
+  "pinned_runtime": {
+    "model": "Qwen/Qwen3-30B-A3B",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "resolved_snapshot_commit": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "tokenizer_config_sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+    "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+  },
+  "aggregate_digests": {
+    "definition": "sha256 over the newline-joined, row-ordered list of per-row digests; order-sensitive, and it stores no individual row hash",
+    "rendered_text_sha256_sequence": "b89a271445f7ce1e1cca0ab60485c2eeac1a68123ea78709615c563742342810",
+    "token_id_sequence": "d6a2d2ead0c35b3582389f00b52bcbe904060c7e0d958684d6ce9980d7c1b46b",
+    "token_row_digest_definition": "sha256 of the comma-joined input_ids"
+  },
+  "versions": {
+    "python": "3.12.11",
+    "transformers": "4.55.2",
+    "tokenizers": "0.21.4",
+    "huggingface_hub": "0.34.4"
+  },
+  "not_done": [
+    "model load",
+    "GPU use",
+    "generation",
+    "API call",
+    "network access",
+    "sealed-set access",
+    "modification of the legacy module or routegate.runtime"
+  ]
+}

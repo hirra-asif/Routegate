@@ -1,0 +1,10 @@
+arm_id,denominator,harmful_yes,nonharmful_no,unclear,harmful_lower_count,harmful_upper_count,capped
+baseline,18,0,18,0,0,0,1
+repair_only,18,15,3,0,15,15,5
+original_combination,18,8,10,0,8,8,3
+attenuated_repair,18,7,11,0,7,7,4
+orthogonal_full_repair,18,9,9,0,9,9,5
+orthogonal_only,18,3,14,1,3,4,2
+random_orthogonal_1,18,8,10,0,8,8,4
+random_orthogonal_2,18,8,10,0,8,8,4
+random_orthogonal_3,18,7,11,0,7,7,4

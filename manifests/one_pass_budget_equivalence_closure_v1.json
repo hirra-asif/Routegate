@@ -1,0 +1,119 @@
+{
+  "alpha_R": 0.15,
+  "alpha_S": 0.0,
+  "answer": "no, at block 33; yes, at blocks 31 and 32",
+  "block_33_is_infeasible": {
+    "block": 33,
+    "budget_reference_state": 33,
+    "is_not_a_numerical_artifact": "the disagreement is 7.5e-02, five orders of magnitude above the float32 rounding that explains blocks 31 and 32.",
+    "max_relative_difference": 0.07455261363665293,
+    "rows_over_tolerance": 382,
+    "state_edited": 34,
+    "structural_reason": "block 33's budget is the norm of block 32's output. In one pass that tensor has already been computed from an edited state 32, so the unsteered value the validated convention requires does not exist anywhere in the pass. No ordering of hooks recovers it."
+  },
+  "consequence": {
+    "candidate": "two_site_actuator_candidate_v1",
+    "keep_blocks": [
+      31,
+      32
+    ],
+    "nothing_is_claimed_yet": true,
+    "remove_block": 33,
+    "status": "CANDIDATE, NOT VALIDATED",
+    "subject_to": "a new static causal validation over the development corpus. The 31-33 band is what phases 1 and 2 measured; a two-site actuator is a different intervention and carries none of that evidence forward. Budget arithmetic is not a causal result."
+  },
+  "contains_prompt_or_response_text": false,
+  "decision": "BLOCKED",
+  "failed_specification": {
+    "budget_reference_states": [
+      31,
+      32,
+      33
+    ],
+    "historical_blocks": [
+      31,
+      32,
+      33
+    ],
+    "package_states_edited": [
+      32,
+      33,
+      34
+    ],
+    "the_band_itself_is_not_invalidated": "phases 1 and 2 measured the 31-33 band causally, in TWO passes, and those results stand. What failed is the one-pass driving of it.",
+    "what_failed": "the three-block band cannot be driven from one prefill forward pass under the validated block-input budget convention."
+  },
+  "g_R": 1.0,
+  "g_R_note": "the worst case: the edit, and so the divergence it causes, is largest at a fully open gate.",
+  "immutable": true,
+  "name": "one_pass_budget_equivalence_closure_v1",
+  "per_block": {
+    "31": {
+      "max": 3.527094567313233e-07,
+      "mean": 1.6718764661011732e-07,
+      "n_exceeding_tolerance": 0,
+      "within_tolerance": true
+    },
+    "32": {
+      "max": 3.212717735920706e-07,
+      "mean": 1.550493432109504e-07,
+      "n_exceeding_tolerance": 0,
+      "within_tolerance": true
+    },
+    "33": {
+      "max": 0.07455261363665293,
+      "mean": 0.026922416048923058,
+      "n_exceeding_tolerance": 382,
+      "within_tolerance": false
+    }
+  },
+  "question": "does the one-pass actuator budget reproduce the validated two-pass budget at historical blocks 31, 32 and 33?",
+  "record_sha256": "09d3effbaeb3fd6fa167fc45b19f81bcee9c032c10669d1159faf41b89586b6a",
+  "rejected_alternative": {
+    "block": 33,
+    "max": 0.109336969786945,
+    "mean": 0.04418197085681989,
+    "n_exceeding_tolerance": 432,
+    "status": "REJECTED",
+    "why": "budgeting block 33 against its actual runtime input -- which carries delta_32 as well as the propagated delta_31 -- is strictly worse than the declared pre-write convention on both counts: 1.093370e-01 against 7.455261e-02 at the maximum, and 432 of 480 rows over tolerance against 382. It was measured alongside the gate so the unfavourable convention is on the record, and it is not adopted.",
+    "within_tolerance": false
+  },
+  "rows": 480,
+  "same_forward_read_before_write": {
+    "blocks": [
+      31,
+      32
+    ],
+    "holds": true,
+    "rows": 480,
+    "statement": "the budget is read before the activation is edited, proved within one forward pass on every row. The block-33 failure is not a hook-ordering fault."
+  },
+  "schema": "routegate/one_pass_budget_equivalence_closure/1",
+  "status": "CLOSED",
+  "tolerance": 0.01,
+  "tolerance_note": "the 1e-2 maximum relative difference was predeclared before the first run and was not changed, relaxed or re-derived at any point in this line. Both v1 and v2 were decided against it.",
+  "v1_run": {
+    "directory": "outputs/single_direction_controller/budget_equivalence_v1",
+    "outcome": "BLOCKED (exit 2)",
+    "preserved_not_overwritten": true,
+    "recorded_in": "docs/decision_log.md, 2026-08-26",
+    "why": "v1 required blocks 31 and 32 to be bit-identical across two separate forward passes whose norms are reduced on different devices. Its 3.527095e-07 was float32 rounding, not a fault in the actuator.",
+    "wrote_no_artifacts": true
+  },
+  "v2_run": {
+    "artifacts": {
+      "input_hashes.json": "9d9594bb322416442f0b63f47eb2e0365671565914a5d8adf33ef4b1d0ead69d",
+      "output_hashes.json": "0c6d032b2c267324dc6fd618a56b623097227ea102738dfc360617942ad886c0",
+      "per_row_budgets.csv": "400b5ce76e8750c401a7734692be39a256d458babfa534f194ce4c437b46fd6c",
+      "run_manifest.json": "96723b0d9d473ad5aeab87df438a48bd88c260e21b86469d99a7a441de71c170",
+      "summary.json": "30caa46961ee254a9b7faa3b10b4820cfe46c00a3015d5df3f33d013c3b13276"
+    },
+    "directory": "outputs/single_direction_controller/budget_equivalence_v2",
+    "not_committed": "the run is an output. The digests above are its committed identity.",
+    "per_row_read_before_write_column": false,
+    "per_row_read_before_write_note": "the invariant was verified per row at run time on all 480 rows and its per-block aggregate is in summary.json; the per-row separations are not a column in per_row_budgets.csv.",
+    "summary_sha256": "30caa46961ee254a9b7faa3b10b4820cfe46c00a3015d5df3f33d013c3b13276"
+  },
+  "version": 1,
+  "written_after_the_run": true
+}

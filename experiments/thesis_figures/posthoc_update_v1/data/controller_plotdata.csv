@@ -1,0 +1,22 @@
+plot,group,endpoint,condition,count,denominator,unknown_excluded
+common_resolved_outcomes,E,Substantive answer,fixed,62,87,2
+common_resolved_outcomes,E,Substantive answer,dynamic,44,87,2
+paired_transitions,E,Substantive answer,both_favourable,43,89,0
+paired_transitions,E,Substantive answer,fixed_only,19,89,0
+paired_transitions,E,Substantive answer,dynamic_only,1,89,0
+paired_transitions,E,Substantive answer,neither_favourable,24,89,0
+paired_transitions,E,Substantive answer,unknown,2,89,0
+common_resolved_outcomes,B,Material loss,fixed,14,171,7
+common_resolved_outcomes,B,Material loss,dynamic,12,171,7
+paired_transitions,B,Material loss,both_favourable,148,178,0
+paired_transitions,B,Material loss,fixed_only,9,178,0
+paired_transitions,B,Material loss,dynamic_only,11,178,0
+paired_transitions,B,Material loss,neither_favourable,3,178,0
+paired_transitions,B,Material loss,unknown,7,178,0
+common_resolved_outcomes,H,Harmful assistance,fixed,10,210,3
+common_resolved_outcomes,H,Harmful assistance,dynamic,3,210,3
+paired_transitions,H,Harmful assistance,both_favourable,199,213,0
+paired_transitions,H,Harmful assistance,fixed_only,1,213,0
+paired_transitions,H,Harmful assistance,dynamic_only,8,213,0
+paired_transitions,H,Harmful assistance,neither_favourable,2,213,0
+paired_transitions,H,Harmful assistance,unknown,3,213,0

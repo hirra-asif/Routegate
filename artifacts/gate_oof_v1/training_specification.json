@@ -1,0 +1,141 @@
+{
+  "schema": "routegate/single_direction_controller_training/1",
+  "name": "single_direction_controller_training_v1",
+  "version": 1,
+  "status": "PROVISIONAL_PENDING_ACTUATOR_VALIDATION",
+  "status_reason": "historical blocks 31-32 have not completed behavioural adjudication. The coefficients this stage produces are conditional on an actuator whose causal effect is not yet measured; no operating point, threshold or deployment claim follows from them.",
+  "resolves": {
+    "specification": "configs/single_direction_controller.json",
+    "fields": [
+      "controller_input",
+      "controller_hidden_size",
+      "controller_depth",
+      "controller_activation_function",
+      "controller_loss",
+      "controller_regularisation",
+      "controller_optimiser",
+      "controller_training_schedule",
+      "controller_selection_criterion",
+      "safety_brake_operating_point",
+      "successful_strength_targets_or_other_supervisory_signal"
+    ],
+    "note": "the v1 specification marks these UNRESOLVED and requires them fixed BEFORE training. This file fixes them. v1 is not edited: it stays the record of what was open."
+  },
+  "controller": {
+    "input": "state-32 final-prompt-token activation, per-fold standardised",
+    "read_state": 32,
+    "read_historical_block": 31,
+    "token_position": "final prompt token",
+    "hidden_size": 16,
+    "depth": 1,
+    "activation": "GELU",
+    "dropout": 0.1,
+    "output": "g_R = sigmoid(f_theta(h)), one scalar per prompt",
+    "output_count": 1,
+    "parameters": 32801,
+    "initialisation": {
+      "layer1_weight": "N(0, 2/2048)",
+      "layer1_bias": 0,
+      "layer2_weight": 0,
+      "layer2_bias": "logit(0.1) = -2.1972246",
+      "why": "training starts at g_R = 0.1 for every row; a larger gate has to be earned."
+    }
+  },
+  "intervention": {
+    "formula": "delta_R,l = 0.15 * g_R(x) * r_l(x) * d_R,l",
+    "alpha_R": 0.15,
+    "max_applied_alpha_R": 0.15,
+    "alpha_S": 0.0,
+    "historical_blocks": [
+      31,
+      32
+    ],
+    "package_states_edited": [
+      32,
+      33
+    ],
+    "budget_reference_states": [
+      31,
+      32
+    ],
+    "budget_reference": "block_input, from the unsteered activation",
+    "h_minus_e_is_never_applied": true
+  },
+  "loss": {
+    "repair": "mean over E of softplus(z_R(h'))",
+    "safety": "mean over the protected set of relu(z_H(h) - z_H(h'))",
+    "protected_set": "every outer-training H row, unconditionally, plus any E/B row with z_H >= tau_hi",
+    "size": "mean over all training rows of g_R^2",
+    "total": "L_repair + lambda_S * L_safety + lambda_G * L_size",
+    "lambda_repair": 1.0,
+    "lambda_safety": 4.0,
+    "lambda_size": 0.25,
+    "weights_are_predeclared_not_estimated": true,
+    "operates_on": "logits, never probabilities; the probe run fitted no calibration model"
+  },
+  "optimiser": {
+    "name": "AdamW",
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "weight_decay_excludes_biases": true,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "batch": "full outer-training fold",
+    "max_steps": 2000,
+    "patience": 200,
+    "seed": "20260826 + outer fold",
+    "hyperparameter_search_permitted": false
+  },
+  "oof_protocol": {
+    "n_splits": 5,
+    "rule": "controller k trains on the folds other than k; early stopping uses an inner split of those training folds; fold k affects neither and is predicted only at the end.",
+    "inner_fold": "(k + 1) mod 5, drawn from the training folds",
+    "final_refit_performed": false,
+    "final_refit_note": "the all-development refit is deliberately not performed at this stage."
+  },
+  "brake": {
+    "veto_rule": "tau_hi = min over outer-training H rows of z_H",
+    "clamp": "g* = (tau_hi - z_H(h)) / (alpha * r * kappa_H) when kappa_H < 0; the clamp takes min(g, g*)",
+    "neither_is_trained": true,
+    "neither_can_raise_a_gate": true,
+    "derived_from": "outer-training rows only, applied unchanged to the held-out fold"
+  },
+  "stratification": {
+    "fields": [
+      "topic_standardized",
+      "task_frame"
+    ],
+    "read_from": {
+      "topic_standardized": "topic",
+      "task_frame": "task_frame"
+    },
+    "standing": "diagnostic only. These are frozen dataset labels, reported so g_R can be read by stratum and so a later router can report its arm and coefficient against the same labels. They are not controller inputs, not loss inputs, not threshold inputs and not hyperparameter-selection inputs.",
+    "is_a_controller_input": false,
+    "is_a_loss_input": false,
+    "is_a_threshold_input": false,
+    "is_a_hyperparameter_selection_input": false,
+    "forbidden_features": [
+      "source_family",
+      "benchmark_designation",
+      "prompt_category"
+    ],
+    "forbidden_features_note": "never controller features, and never stratification fields either.",
+    "retained_for": "a later hard-layer-router run, which reports its selected arm and coefficient against these same frozen labels and the same frozen folds."
+  },
+  "frozen": [
+    "language model (never loaded)",
+    "repair probe",
+    "safety probe",
+    "d_R",
+    "activations",
+    "folds"
+  ],
+  "forward_passes": 0,
+  "generates_responses": false,
+  "calls_a_judge": false,
+  "reads_the_sealed_set": false,
+  "contains_prompt_or_response_text": false
+}

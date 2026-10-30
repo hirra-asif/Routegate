@@ -1,0 +1,35 @@
+{
+  "applies_to": "routegate_final_evaluation_v5",
+  "applies_to_manifest": "manifests/routegate_final_evaluation_v5.json",
+  "applies_to_manifest_sha256": "ff51f13bce6d3a03f392a4cd1579cdd496ffa85fdbddad71548e54536e221dfc",
+  "contains_prompt_response_gold_or_score": false,
+  "corrected_verifier": "experiments/final_evaluation/verify_technical_smoke_v5_1.py",
+  "corrected_verifier_sha256": "72605c7cc784be9e6a364715125261ccb475a4e4e3a8f5bea4dacc45c1dac090",
+  "correction": "a record must evidence exactly one consistent terminal mode: EOS, max_new_tokens, or a declared custom stop. Custom-stop termination additionally requires stop_fired true, stop_reason 'stop_string', hit_max_new_tokens false, the record's stop_strings equal to the dataset's frozen list, and no fired stop or following continuation retained in the stored completion. A dataset that declares no stop sequences cannot claim custom-stop termination.",
+  "name": "routegate_verifier_erratum_v5_1",
+  "original_verifier": "experiments/final_evaluation/verify_technical_smoke.py",
+  "original_verifier_sha256": "044c461ba5774843d13b2d09b48c9e4b58b812af189d5ccce48655910bba8edd",
+  "reason": "verify_technical_smoke.py required eos_reached OR hit_max_new_tokens as proof of normal termination. That rule was written before stop sequences existed. v5 added a custom stopping criterion for tinyGSM8K; when a declared stop fires, neither flag is set, because generation ended at the boundary -- the intended terminal mode. The check therefore blocked three technically correct rows at tinygsm8k__baseline_terminated_normally: eos False cap False.",
+  "record_sha256": "6073a83de4d1f4f2c14bf70c87de1d81354ecc0e4cb3ef458e5645603f02f8eb",
+  "schema": "routegate/verifier_erratum/1",
+  "scope": {
+    "changes_controllers_checkpoints_or_thresholds": false,
+    "changes_datasets_prompts_or_parsers": false,
+    "changes_generation": false,
+    "changes_scoring": false,
+    "changes_technical_validation_only": true,
+    "modifies_any_existing_record": false,
+    "modifies_the_v5_manifest": false,
+    "original_verifier_left_unchanged": true
+  },
+  "smoke_record_sha256": {
+    "tinygsm8k__baseline": "3a293fa3d25e674ebf19fc40df99a9778ecaa5fcc0af6667804388a190637187",
+    "tinygsm8k__dynamic_raw": "fc6f8ac3f82d91d0070c040de4379913d27ba7851c0cf40f4f11541f1c7742a3",
+    "tinygsm8k__safety_first_routegate": "f4091c548b7a8b7cf3bbedba352a53d460eb2385d42230661221d06291d6da91",
+    "tinymmlu__baseline": "0f51c82b44b34dd437385e82bb333d3ad16c985f00ad088efef097e119a4c449",
+    "tinymmlu__dynamic_raw": "6a73910ed5335c79c017a10d5998cf6dc44c9288347b94efd09ea823d8675ad3",
+    "tinymmlu__safety_first_routegate": "3dd0532d2ed0ab1e068962ef21e70b88ba6acd5fd42103a6423636429466e44a"
+  },
+  "smoke_records": 6,
+  "version": 1
+}

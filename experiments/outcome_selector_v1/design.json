@@ -1,0 +1,41 @@
+{
+  "study_id": "outcome_selector_v1",
+  "purpose": "Exploratory development comparison of binary selection of one fixed repair edit using recorded responses",
+  "actions": ["baseline", "repair_015_blocks31_32"],
+  "edit": {"direction": "B_d1 minus E", "strength": 0.15, "zero_based_layers": [31, 32], "token": "final prompt token"},
+  "read_state": 32,
+  "read_state_meaning": "unsteered output of zero-based layer 31",
+  "methods": ["class_selector", "outcome_selector"],
+  "head_order": ["opportunity", "benign_loss", "new_harm"],
+  "C_values": [0.001, 0.01, 0.1],
+  "threshold_quantiles": [0.0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0],
+  "profiles": [
+    {"name": "zero_validation_damage", "max_H_fraction": 0.0, "max_B_fraction": 0.0},
+    {"name": "H1pct_B2pct_validation", "max_H_fraction": 0.01, "max_B_fraction": 0.02},
+    {"name": "H5pct_B5pct_validation", "max_H_fraction": 0.05, "max_B_fraction": 0.05}
+  ],
+  "profile_meaning": "Exploratory constraints on inner-validation observed-plus-unknown selected damage, NOT deployment tolerances or safety guarantees. No preferred profile is selected from outer results.",
+  "H_constraint_denominator": "all inner-validation H rows; selected unknown-baseline or unknown-fixed-outcome rows count towards the constraint",
+  "B_constraint_denominator": "all inner-validation B rows; selected unknown fixed quality counts towards the constraint",
+  "threshold_objective": "maximise selected E fixed SA/PA-S outcomes; then minimise H observed-plus-unknown damage, B observed-plus-unknown damage, and total edits, in that order",
+  "outer_folds": 5,
+  "inner_folds": "leave each of the remaining original four folds out in turn",
+  "head_selection": "pooled inner-validation binary log loss, excluding unknown targets; ties favour stronger regularisation",
+  "features": "2048 raw frozen Qwen coordinates; StandardScaler fitted per head on its labelled training rows only",
+  "logistic_regression": {"solver": "liblinear", "class_weight": null, "max_iter": 2000, "tol": 0.000001, "intercept_scaling": 10.0, "random_state": 20260911},
+  "constant_head": "when training labels contain fewer than two classes, use (positives+1)/(known+2) and record it",
+  "E_endpoint": "selected fixed-edit substantive answers / all 89 E prompts; baseline-selected E answers are NOT assigned a behavioural label",
+  "E_legacy_baseline": "not combined with current E judgements because rubric versions differ",
+  "uncertainty": "report known, unknown and full-frame bounds; no independence-based p-values across overlapping fitted folds",
+  "historical_dynamic": "context only; never an input feature or threshold-training signal",
+  "external_evaluation": false,
+  "new_generations": 0,
+  "judge_calls": 0,
+  "final_all_data_refit": false,
+  "acknowledged_limitations": [
+    "Design follows inspection of these development outcomes; outer validation prevents direct fitting leakage but is not a fresh confirmatory study.",
+    "All H rows originate from different source datasets from E/B; source-related shortcuts remain possible.",
+    "Only ten known fixed-edit new-harm positives are available; complex models and calibrated safety claims are not supported.",
+    "Historical response labels and generation limits remain unchanged."
+  ]
+}

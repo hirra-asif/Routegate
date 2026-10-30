@@ -1,0 +1,79 @@
+{
+  "schema": "routegate/development_inputs/1",
+  "description": "The only inputs this package accepts for development analysis. Hashes are the gate: a file whose SHA256 differs is refused, never adapted to. No activation data is stored in this repository; the array is read in place from the path given in configs/paths.local.json.",
+  "recorded_utc": "2026-08-05",
+
+  "dataset": {
+    "role": "authoritative labelled corpus",
+    "filename": "rq3_dataset_final.csv",
+    "canonical_source_path": "results/rq3_ebh_final_dataset_20260804/rq3_dataset_final.csv",
+    "sha256": "0943449697327aa47912ef80337462414ab98255c3ad99b717baa716353e1d08",
+    "label_column": "final_ebh",
+    "excluded_label": "EXCLUDED_PARTIAL_OR_UNCLEAR",
+    "counts": {
+      "E": 89,
+      "B": 178,
+      "H": 213,
+      "EXCLUDED_PARTIAL_OR_UNCLEAR": 29,
+      "total": 509,
+      "analysis_eligible": 480
+    }
+  },
+
+  "extraction_manifest": {
+    "role": "row order of the activation array",
+    "filename": "manifest.csv",
+    "canonical_source_path": "results/rq3_residual_extraction_20260805_001100/manifest.csv",
+    "sha256": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd",
+    "expected_rows": 480,
+    "ordering": "ascending row_id; row_index equals the array row position"
+  },
+
+  "activation": {
+    "role": "residual stream at the final prompt token, one unsteered forward pass per prompt",
+    "filename": "residual_final_prompt_token.npy",
+    "canonical_source_path": "results/rq3_residual_extraction_20260805_001100/residual_final_prompt_token.npy",
+    "sha256": "af89872d5decd4dc432ec579a941e6247bc7de63ff5690432e9f5812a994e2d8",
+    "shape": [480, 49, 2048],
+    "dtype": "float32",
+    "axes": ["row", "state", "hidden_unit"],
+    "state_numbering": {
+      "0": "embedding output at the final prompt token",
+      "1-48": "transformer-block outputs",
+      "note": "state 0 is not a transformer block and must not be called layer 0"
+    },
+    "copied_into_this_repository": false
+  },
+
+  "analysed_contrast": {
+    "positive_class": "E",
+    "positive_label_value": 1,
+    "negative_class": "B",
+    "negative_label_value": 0,
+    "n": 267,
+    "n_E": 89,
+    "n_B": 178,
+    "positive_prevalence": 0.3333333333333333,
+    "withheld_class": "H",
+    "withheld_n": 213,
+    "withheld_reason": "not analysed at this stage"
+  },
+
+  "refused_inputs": {
+    "reason": "superseded label revisions kept beside the accepted file in the historical workspace; two of them carry more authoritative-sounding names than the accepted one",
+    "by_filename": [
+      "rq3_dataset_final_before_e_axis2_reaudit.csv",
+      "rq3_ebh_final_analysis_dataset.csv",
+      "rq3_ebh_final_dataset_summary.json",
+      "rq3_ebh_final_dataset_summary.md"
+    ],
+    "by_directory_token": [
+      "rq3_geometry_prepare_20260803_215218"
+    ],
+    "notes": {
+      "rq3_dataset_final_before_e_axis2_reaudit.csv": "E=114 B=162 excluded=20; pre re-audit",
+      "rq3_ebh_final_analysis_dataset.csv": "E=114 B=162 excluded=20; pre re-audit",
+      "rq3_geometry_prepare_20260803_215218": "E=116 B=180; original labels, and frozen folds built on them"
+    }
+  }
+}

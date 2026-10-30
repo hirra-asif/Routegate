@@ -1,0 +1,12 @@
+{
+  "bytes": 1009,
+  "immutable": true,
+  "note": "read-only reference. Nothing imports lm_eval; this file is parsed in tests to assert the frozen stop sequences and regexes match the upstream tag exactly.",
+  "path_in_repo": "lm_eval/tasks/gsm8k/gsm8k.yaml",
+  "repo": "EleutherAI/lm-evaluation-harness",
+  "sha256": "e76ec880da08b0d8f9ce0c70eb180ec3daef73363fe118d1b17bf86cc4db631f",
+  "tag": "v0.4.3",
+  "url": "https://raw.githubusercontent.com/EleutherAI/lm-evaluation-harness/v0.4.3/lm_eval/tasks/gsm8k/gsm8k.yaml",
+  "vendored_utc": "2026-09-08",
+  "what": "the official GSM8K task definition from lm-evaluation-harness at tag v0.4.3, vendored byte-for-byte so this repository's claim to reproduce it can be checked against an artifact rather than a recollection."
+}

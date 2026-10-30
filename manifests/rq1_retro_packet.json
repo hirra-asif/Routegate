@@ -1,0 +1,168 @@
+{
+  "schema": "routegate/rq1_retro_packet/1",
+  "description": "The historical two-axis retrospective judging packet for the ten operative E/B/H cases, recorded as a frozen historical input. RouteGate does not rebuild it, does not modify it, and does not reimplement it: it is executed unchanged, by the historical runner, and only its results are read back. This file is the inventory that makes 'unchanged' checkable.",
+  "recorded_utc": "2026-08-21",
+
+  "status": {
+    "built": true,
+    "executed": false,
+    "evidence_of_non_execution": "the packet's own validation.json records api_calls_attempted 0 and the check no_api_call_made PASS ('rq3_judge_axis_smoke.call_model_api was disarmed for the whole build and was invoked 0 times'). No results file, no verdict file and no rq1_retro_joined* output exists anywhere.",
+    "consequence": "every one of the ten cases is UNRESOLVED on every arm until the packet is run"
+  },
+
+  "origin": {
+    "workspace": "SteerMoE-main",
+    "origin_relative_directory": "results/rq1_retro_twoaxis_packet_20260813_102233",
+    "built_utc": "2026-08-13T10:22:33Z",
+    "built_by": "rq1_build_retrospective_judge_packet.py",
+    "supersedes": "results/rq1_retrospective_axis2_packet_20260812",
+    "supersedes_reason": "that build ran Axis 2 plus the safety axis and never ran Axis 1, so no E/B/H label was derivable and none of the three eligibility rules was computable. It was also never judged.",
+    "access": "read-only historical evidence; never modified, renamed or written into"
+  },
+
+  "inventory": {
+    "note": "the seven files the packet's own SHA256SUMS.txt covers, plus that checksum file, whose digest it does not carry for itself.",
+    "covered_by_packet_checksum": {
+      "axis1_judge_input.jsonl": {
+        "sha256": "ec918bbd047ca69dd86d35380d8803916a35910fa508213d8cde029f0a6b4db7",
+        "bytes": 4462,
+        "rows": 30,
+        "role": "one Axis-1 item per unique prompt",
+        "record_fields": ["row_id", "prompt_text"],
+        "contains_prompt_or_response_text": true,
+        "committable_to_git": false
+      },
+      "axis2_judge_input.jsonl": {
+        "sha256": "507b1efa29c51200a2fe2baf16ecf94ef25f067d8b03a25b13e7ffc1a91cedb3",
+        "bytes": 89439,
+        "rows": 67,
+        "role": "one Axis-2 item per unique (prompt, response) pair",
+        "record_fields": ["row_id", "prompt_text", "response_text"],
+        "contains_prompt_or_response_text": true,
+        "committable_to_git": false
+      },
+      "manifest.json": {
+        "sha256": "ca8d98a021821fd8228892d6b80644e568b6e346c8c3acb858ae7d7aa96261a4",
+        "bytes": 8090,
+        "role": "the packet's own protocol, counts and provenance record",
+        "contains_prompt_or_response_text": false
+      },
+      "private/axis1_row_map.jsonl": {
+        "sha256": "219395be9293450e381128c7362a0a8382138d99fe4a38afaea25d12ed12f02c",
+        "bytes": 12755,
+        "role": "opaque row id -> prompt, and the occurrences it fans out to",
+        "contains_prompt_or_response_text": true,
+        "committable_to_git": false
+      },
+      "private/axis2_row_map.jsonl": {
+        "sha256": "18e2b9ddba9528217b25c396642bdd5167828aad54d09907c04c0a75479f0f9e",
+        "bytes": 108482,
+        "role": "opaque row id -> (prompt, response), and the occurrences it fans out to",
+        "contains_prompt_or_response_text": true,
+        "committable_to_git": false
+      },
+      "private/occurrences.jsonl": {
+        "sha256": "584eab74330e67cb8e14a18da3326600ea6d88f09a8a2894387246a279d58eee",
+        "bytes": 130630,
+        "rows": 70,
+        "role": "the 70 (case, role, condition) occurrences the 97 judge items fan back out to",
+        "contains_prompt_or_response_text": true,
+        "committable_to_git": false
+      },
+      "validation.json": {
+        "sha256": "25dcea105625ed4057e30c38c0dc208a0d8b6ee90aea8ed3678f1fda87abb38c",
+        "bytes": 3183,
+        "role": "sixteen build-time checks, all PASS, including the two that record no API call was made",
+        "contains_prompt_or_response_text": false
+      }
+    },
+    "the_checksum_file_itself": {
+      "SHA256SUMS.txt": {
+        "sha256": "5c6e75ed77560fc30461af77fef41e94e3cb98583af9505fd77adb7d80632dc3",
+        "bytes": 622,
+        "role": "the packet's own checksum manifest; it does not list itself, so its digest is recorded here"
+      }
+    }
+  },
+
+  "coverage": {
+    "cases": 10,
+    "occurrences": 70,
+    "occurrences_by_role": {
+      "safe_base": 10,
+      "harmful_base": 10,
+      "donor": 10,
+      "safe_patched_L31-33_w1_s0.15": 10,
+      "safe_patched_L31-33_w1_s0.2": 10,
+      "harmful_patched_L31-33_w1_s0.15": 10,
+      "harmful_patched_L31-33_w1_s0.2": 10
+    },
+    "axis1_items": 30,
+    "axis2_items": 67,
+    "safety_items": 0,
+    "judge_calls_per_judge": 97,
+    "judge_calls_both_judges": 194,
+    "arms_covered": ["E", "H", "B_d1"],
+    "arms_absent": ["B_d2", "B_d3"],
+    "arms_absent_reason": "the packet's source files are data/pathway_probe_cases.json (which carries the d1 donor only) and results/pathway_confirmation_512_20260708_172847. The multi-donor bank is not a source of this packet, so the two independent donors the PRIMARY frozen actuator is built from are not in it.",
+    "safety_axis_absent_reason": "this packet ships axis1_judge_input.jsonl and axis2_judge_input.jsonl only. The safety axis exists in the superseded 20260812 packet, which was itself never judged.",
+    "supplement_required": "experiments/triplet_validation/build_supplemental_packet.py builds exactly the missing rows and nothing else"
+  },
+
+  "verified_by_the_packet_against_its_own_source_files": {
+    "data/pathway_probe_cases.json": "60905eb129dddab6fbedb4410d465f8b56999851279a1900bd95512e4a03bad0",
+    "pathway_probe.py": "aad65238376389f66735b5cd72c3f84f278b7961808b63b8d7e6380c7be1556e",
+    "results/pathway_confirmation_512_20260708_172847/baseline_records.json": "4bea63cbc6c3d274bc96bd553a31756106d8c97221acf1f932a9619bcb7da873",
+    "results/pathway_confirmation_512_20260708_172847/sweep_records.jsonl": "7cc71d5a4920aa007a27cc502a5c78742309b65eca3c8cdd7ab1002776f21d07",
+    "rq3_judge_axis_smoke.py": "6b102efe0a80e4724a7296d9aa09a7a63cc9f8f9166cb99fc8da8792e66dc047"
+  },
+
+  "case_ids": [
+    "game_kill_vs_real_kill",
+    "checkers_beat_vs_spousal_violence",
+    "film_hospital_vs_real_hospital",
+    "witcher_poison_vs_real_poison",
+    "massacre_tv_vs_real_massacre",
+    "selfharm_remorse_story_vs_selfharm_glorification",
+    "simulated_ransom_note_vs_real_extortion_demand",
+    "prank_message_vs_phishing_message",
+    "opinion_website_vs_harassment_website",
+    "lawful_investigation_vs_covert_private_data"
+  ],
+  "case_ids_agree_with": [
+    "results/rq2_final_method_freeze_20260721_150015/config.json :: case_ids",
+    "results/rq2_final_method_freeze_20260721_150015/freeze_summary.json :: source_cases",
+    "results/rq2_final_method_freeze_20260721_150015/frozen_direction_manifest.json :: source_case_ids (both variants)",
+    "results/rq2_final_method_freeze_20260721_150015/source_case_manifest.csv :: case_id",
+    "results/rq2_final_method_freeze_20260721_150015/preregistered_final_protocol.json :: original_ten_source_cases",
+    "data/pathway_wrong_donor_map.json :: enabled_case_ids",
+    "data/rq2_multidonor_probe_cases.json :: cases[].id",
+    "data/pathway_probe_cases.json :: the ten tiered cases"
+  ],
+
+  "blindness_asserted_by_the_packet": {
+    "row_id_prefixes": {"axis1": "RQ1RETROAONE", "axis2": "RQ1RETROATWO"},
+    "opaque_ids": "97 opaque row ids, 97 unique",
+    "withheld_from_judges_count": 25,
+    "checks": [
+      "requests_blind_byte_exact — 30 Axis-1 + 67 Axis-2 requests re-rendered from the frozen instructions and template; no case id, role, condition, config id, block or source group present",
+      "axis1_carries_no_response — every Axis-1 record carries exactly ['row_id','prompt_text']",
+      "axis2_carries_prompt_and_one_response — every Axis-2 record carries exactly ['row_id','prompt_text','response_text']",
+      "axis2_never_sees_axis1_status",
+      "axis1_never_sees_axis2_codes",
+      "derived_labels_never_requested_from_a_judge — E/B/H is produced only by rq3_judge_axis_smoke.derive_label, in code, after both axes are frozen",
+      "sonnet_opus_differ_only_by_model — 97 item pairs byte-identical in system, user message, temperature and max_tokens"
+    ],
+    "caveat": "these are properties of the packet as built. None has been exercised against a judge, because no judge was ever run."
+  },
+
+  "deduplication": {
+    "axis1": "one call per unique prompt",
+    "axis2": "one call per unique (prompt_text, response_text) pair",
+    "pre_registered": true,
+    "rationale": "identical requests at temperature 0.0; the label is fanned back out to every occurrence at join time",
+    "axis2_items_covering_more_than_one_occurrence": 3
+  },
+
+  "preservation_rule": "This packet is executed unchanged. RouteGate does not rebuild it, does not re-render its requests, does not re-derive its opaque ids and does not write into its directory. Any supplemental work is a separate packet with its own independently randomised ids. Before it is run, every digest above is re-verified; a packet whose digest differs is refused, not adapted to."
+}

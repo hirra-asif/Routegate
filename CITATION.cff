@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+type: software
+title: "RouteGate: Selective Activation Steering for Over-Refusal in Mixture-of-Experts Language Models"
+abstract: "Research code for the MSc thesis \"Calibrated Safety in Mixture-of-Experts Large Language Models\", conducted with Holistic AI."
+authors:
+  - family-names: "Asif"
+    given-names: "Hirra"
+version: "0.1.0"
+keywords:
+  - over-refusal
+  - activation steering
+  - mixture of experts
+  - interpretability

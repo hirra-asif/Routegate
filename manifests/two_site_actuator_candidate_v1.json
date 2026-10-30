@@ -1,0 +1,115 @@
+{
+  "bound_to": {
+    "artifacts": {
+      "input_hashes.json": "9d9594bb322416442f0b63f47eb2e0365671565914a5d8adf33ef4b1d0ead69d",
+      "output_hashes.json": "0c6d032b2c267324dc6fd618a56b623097227ea102738dfc360617942ad886c0",
+      "per_row_budgets.csv": "400b5ce76e8750c401a7734692be39a256d458babfa534f194ce4c437b46fd6c",
+      "run_manifest.json": "96723b0d9d473ad5aeab87df438a48bd88c260e21b86469d99a7a441de71c170",
+      "summary.json": "30caa46961ee254a9b7faa3b10b4820cfe46c00a3015d5df3f33d013c3b13276"
+    },
+    "rule": "the candidate's sites are derived from this summary's per-block verdicts, not asserted beside it. A summary that clears a different set of blocks is a different candidate.",
+    "run": "outputs/single_direction_controller/budget_equivalence_v2",
+    "summary_sha256": "30caa46961ee254a9b7faa3b10b4820cfe46c00a3015d5df3f33d013c3b13276"
+  },
+  "contains_prompt_or_response_text": false,
+  "controller": {
+    "g_R_is_fixed_at": 1.0,
+    "statement": "no controller is trained, loaded or consulted. This is a STATIC arm at a fixed strength, which is what makes it comparable to the phase-1 repair_015 arm.",
+    "used_in_this_validation": false
+  },
+  "direction": {
+    "artifact_sha256": "d759574b5be630ea5170fb440f8663d8c4bfaa32b479ce5cf641b6dbd73516bb",
+    "repair": "d_R = B_d1 - E",
+    "safety_direction_is_not_used": true,
+    "safety_direction_note": "d_S = H - E is retired as an actuator. The bank still carries it; nothing in this candidate reads it.",
+    "source": "validated_direction_bank.npz, array repair_direction",
+    "unchanged": true
+  },
+  "inherited_frozen": {
+    "corpus": "the 480-row E/B/H development frame",
+    "folds": "the frozen five-fold division; no fold is used by a static arm and none is re-derived",
+    "generation": "routegate.runtime.GenerationConfig, reused verbatim",
+    "model": "Qwen/Qwen3-30B-A3B",
+    "note": "every value is inherited. Nothing here is re-chosen, and a run whose records disagree with any of them is refused rather than recorded.",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "tokenizer_and_chat_template": "the frozen ones, by digest"
+  },
+  "intervention": {
+    "alpha_R": 0.15,
+    "alpha_S": 0.0,
+    "alpha_S_note": "0 permanently; d_S = H - E is retired as an actuator by the phase-2 closure and no coefficient scales it.",
+    "applied_strength": 0.15,
+    "arm_id": "repair_015_blocks31_32",
+    "budget_reference": "block_input",
+    "budget_reference_states": [
+      31,
+      32
+    ],
+    "dropped_blocks": [
+      33
+    ],
+    "dropped_states": [
+      34
+    ],
+    "formula": "delta(i, l) = alpha_R * g_R * r(i, l) * d_R(l)",
+    "forward_passes": 1,
+    "forward_passes_note": "one prefill forward pass. Each block's budget is snapshotted before that block's own edit is written, which the v2 run proved holds on all 480 rows.",
+    "g_R": 1.0,
+    "g_R_note": "fixed at 1 for the causal validation: this is a STATIC arm and no controller predicts anything in it. A gate is what a later controller would supply.",
+    "generated_token_positions_are_never_edited": true,
+    "historical_blocks": [
+      31,
+      32
+    ],
+    "intervention_type": "validated_dual_direction",
+    "numbering_rule": "historical block l is edited at package state l + 1 and budgeted against package state l. The two numbering systems are never used interchangeably.",
+    "operation": "additive",
+    "orthogonalisation_applied": false,
+    "package_states_edited": [
+      32,
+      33
+    ],
+    "prefill_only": true,
+    "site": "residual_stream",
+    "site_kind": "block_output",
+    "token_position": "final prompt token",
+    "why_dropped": "block 33's one-pass budget cannot reproduce the validated two-pass budget: it is read from block 32's output, and by then block 32 has consumed an edited state 32. v2 measured 7.455261e-02 maximum, 382 of 480 rows over the 1e-2 gate."
+  },
+  "name": "two_site_actuator_candidate_v1",
+  "preregistered_ablation": {
+    "budget_reference_states": [
+      32
+    ],
+    "historical_blocks": [
+      32
+    ],
+    "name": "historical block 32 only",
+    "numbering_warning": "historical block 32 is package state 33. It is NOT package state 32, which is the output of historical block 31. The two numbering systems differ by one and are never used interchangeably.",
+    "package_states_edited": [
+      33
+    ],
+    "run_when": "after the two-site arm has a causal result, as a preregistered ablation beside it",
+    "status": "PRESERVED_NOT_RUN"
+  },
+  "record_sha256": "b74cf644a862580183634f96d0aaa028613d62d2155c7c62bc3a78b7abf863e9",
+  "schema": "routegate/two_site_actuator_candidate/1",
+  "sealed_set": {
+    "accessible": false,
+    "statement": "prohibited. This validation runs on development prompts only and no option it exposes can reach held-out material."
+  },
+  "status": "DECLARED_NOT_RUN",
+  "status_meaning": "the arm is specified and no generation exists for it. It is a candidate: the sites are the ones the budget test cleared, and nothing about its causal effect has been measured.",
+  "supersedes": {
+    "closure": "one_pass_budget_equivalence_closure_v1",
+    "specification": "historical blocks 31, 32 and 33 driven from one forward pass",
+    "the_previous_specification_is_not_rewritten": true,
+    "why": "block 33 failed the one-pass budget equivalence test at the predeclared 1e-2 tolerance"
+  },
+  "version": 1,
+  "what_this_does_not_claim": {
+    "a_causal_result": false,
+    "statement": "the budget test says the two-site actuator can be driven from one pass. It says nothing about whether it repairs anything, and the phase-1 evidence for the three-block band does not transfer to it.",
+    "that_dropping_block_33_is_free": false,
+    "that_the_31_33_band_is_invalid": false
+  }
+}

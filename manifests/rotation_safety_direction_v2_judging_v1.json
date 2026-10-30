@@ -1,0 +1,210 @@
+{
+  "adjudication": {
+    "disagreement": "human_review_blinded",
+    "human_review_covers": "genuine Sonnet-Opus disagreements only. A technically unresolved cell is never exported: a human adjudicates a disagreement between two judges, and does not supply a verdict a judge never gave.",
+    "malformed": "unresolved_technical",
+    "missing": "unresolved_technical",
+    "procedure": "corpus_disagreement_only",
+    "technical_unresolved_manifest": null,
+    "technical_unresolved_manifest_is": "absent because no technical failure exists yet. If one occurs, the join refuses to proceed until it is named in such a manifest; that is the gate, and widening it is not the fix.",
+    "transport_failure": "unresolved_technical"
+  },
+  "analysis": {
+    "arithmetic": "144 judged here + 36 inherited = 180",
+    "counts_by_beta": "routegate.phase2judging.counts_by_strength, called with this screen's arm ids",
+    "decision_rule": "routegate.rotationfreeze.evaluate_rotation_decision",
+    "decision_rule_is": "phase 2's own rule, reached through routegate.phase2.evaluate_phase2_decision. Its recovery threshold, rotation-only veto, tie-break and UNDETERMINED branch are not copied, restated or weakened anywhere in this path.",
+    "denominator": 18,
+    "denominator_is": "the 18 selected rows, at every beta. Fixed by the frozen selection and never rescaled.",
+    "population_reportable": false,
+    "records": 180
+  },
+  "arms": {
+    "beta_grid": [
+      0.05,
+      0.1,
+      0.15,
+      0.2
+    ],
+    "beta_is_not_a_dose": "beta is the fraction of the per-row, per-layer rotation angle that is traversed. It is not an additive alpha and no arm here is dose-matched to any phase-2 arm.",
+    "candidate": [
+      "rotation_only_005",
+      "rotation_only_010",
+      "rotation_only_015",
+      "rotation_only_020",
+      "repair015_rotation005",
+      "repair015_rotation010",
+      "repair015_rotation015",
+      "repair015_rotation020"
+    ],
+    "reference": [
+      "baseline",
+      "repair_015"
+    ],
+    "reference_are_inherited_not_judged": "baseline and repair_015 for these 18 rows were generated, judged and adjudicated in phase 1, under this same rubric, by this same pair of judges, under this same procedure. They are READ. They are not in this packet, this run, this join or this adjudication, and this manifest declares no reference_records input for one to be read from, so there is no path by which a reference response reaches a judge."
+  },
+  "blindness": {
+    "judge_row_fields": [
+      "row_id",
+      "prompt_text",
+      "response_text"
+    ],
+    "judge_row_fields_are": "a whitelist projection, applied by routegate.judgingprotocol.project_row",
+    "private_map_location": "<rotation_judging_dir>/judging/packet/private/row_map.jsonl, outside git",
+    "prompt_or_response_text_in_git": false,
+    "stated_limitation": "the judge receives the rubric appropriate to the task, which reveals that the row is a safety evaluation and therefore that it is an H row. Every cell in this screen is an H row, so that distinguishes nothing between them. It reveals no arm, no beta, no coefficient, no direction and no expected outcome.",
+    "withheld": [
+      "arm",
+      "beta",
+      "alpha_R",
+      "rotation versus repair-plus-rotation",
+      "direction",
+      "layer or state",
+      "the realised angle or edit norm",
+      "baseline versus steered",
+      "row grouping",
+      "expected result",
+      "the other judge's verdict",
+      "judge agreement",
+      "the corpus row id, which names its source benchmark"
+    ]
+  },
+  "classes": {
+    "H": {
+      "rows": 144,
+      "rows_are": "cells, not corpus rows: 18 corpus rows at 8 arms each. Every cell is an H response and receives the safety rubric.",
+      "rubric": "safety"
+    }
+  },
+  "contains_prompt_or_response_text": false,
+  "coverage": {
+    "arithmetic": "18 row(s) x 8 arm(s) = 144 cell(s); x 2 judges = 288 call(s)",
+    "cells": 144,
+    "planned_calls": 288,
+    "records_per_judge": 144
+  },
+  "description": "Blind judging of the completed rotation screen rotation_safety_direction_v2. Metadata only: digests, counts, model identifiers, arm ids and policy. It carries no instruction, template, prompt or response text; the judge-facing text lives outside git under the private data root, is hash-gated on every read, and is refused if a single byte differs.",
+  "experiment_id": "rotation_safety_direction_v2_judging_v1",
+  "identity": {
+    "foreign_row_prefixes": [
+      "FDV1RESPONSE",
+      "FDV1SAFETY",
+      "FDV1HUMAN",
+      "FDV2SAFETY",
+      "FDV2HUMAN",
+      "TSJ1RESPONSE",
+      "TSJ1QUALITY",
+      "TSJ1SAFETY",
+      "TSJ1HUMAN",
+      "RQ1SUPPAONE",
+      "RQ1SUPPATWO",
+      "RQ1SUPPSAFE",
+      "RQ1RETROAONE",
+      "RQ1RETROATWO",
+      "RQ1HUMAN",
+      "RGJHUMAN"
+    ],
+    "foreign_row_prefixes_are": "every prefix any other packet in this repository has minted. This packet's own prefixes are new, so a rotation row can never be joined to a phase-1, phase-2, two-site or triplet row.",
+    "human_row_prefix": "RSD2HUMAN",
+    "row_prefixes": {
+      "safety": "RSD2SAFETY"
+    }
+  },
+  "inherited_reference_cells": {
+    "adjudicated_cells_sha256": "4e6be82bfaf934fa0248d9a7c35ab4205d99f4ad37305fed553f1bbc040d1e73",
+    "arms": [
+      "baseline",
+      "repair_015"
+    ],
+    "billed_calls_for_them": 0,
+    "never_re_judged": true,
+    "reconciled_by": "routegate.phase2judging.load_inherited_references, called unchanged",
+    "records": 36,
+    "rows": 18,
+    "selection_rule_they_carry": "safety NO at baseline and safety YES at repair_015. That is the frozen rule the 18 rows were selected by; the reconciliation re-checks it against phase 1's own file rather than assuming it.",
+    "source": "the completed phase-1 adjudication",
+    "source_records_sha256": "f0ee90a804268984367a4558ed82cf9d50f4e144cabaf71a88803cd760cc3918"
+  },
+  "inputs": {
+    "candidate_records": {
+      "adapted_from": "the completed consolidation package at paths.local.json[rotation_safety_direction_v2_consolidated_dir]",
+      "is_an_adaptation_not_a_regeneration": "the adapter carries each response verbatim and resolves each prompt from the accepted corpus by the digest the record already holds. No response is regenerated, edited, truncated or re-decoded.",
+      "path": "inputs/candidate_records.jsonl",
+      "records": 144,
+      "sha256": "0b510d8a084dd446e1d7a595edf48e4879934a2e0e23c43dea635280fc11b9f3",
+      "written_by": "experiments/rotation_safety_direction/build_judging_inputs.py"
+    },
+    "paths_key": "rotation_judging_dir"
+  },
+  "judges": {
+    "are_the_project_pair": "the same two judge identifiers phase 1 and phase 2 ran, so a rotation verdict is comparable with the repair_015 verdict it is read against.",
+    "both_run_on_every_row": true,
+    "opus": {
+      "expected_returned": "eu.anthropic.claude-opus-4-6-v1",
+      "model": "eu.anthropic.claude-opus-4-6-v1"
+    },
+    "order": [
+      "sonnet",
+      "opus"
+    ],
+    "sonnet": {
+      "expected_returned": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "model": "anthropic.claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "outputs": {
+    "adjudicated": "judging/adjudicated",
+    "joined": "judging/joined",
+    "none_of_it_is_committed": "the packet, the private row map, every raw API body, the joined cells, the review packet, the adjudicated cells and both reports are prompt-bearing, response-bearing or de-anonymising.",
+    "packet": "judging/packet",
+    "report": "judging/report",
+    "review": "judging/review",
+    "root_key": "rotation_judging_dir",
+    "runs": "judging/runs"
+  },
+  "packet_id": "rotation_safety_direction_v2_judging_v1_packet",
+  "reporting": {
+    "complete_case": true,
+    "module": "routegate.rotationjudging"
+  },
+  "rubrics": {
+    "safety": {
+      "digest_convention": "this engine hashes each of the three files as it reads them. The older loaders hashed the schema file's canonical JSON instead, which is why the schema pin here differs from the one in manifests/focused_direction_validation_v1_judging.json while naming the same bytes of the same file.",
+      "instructions_sha256": "6c93001d97a55f4af3879b3afc2856b3ea6df99ee49835386ae06eef81978dca",
+      "is_the_frozen_rubric": "the actionable-harmful-help safety rubric phase 1, phase 2 and the two-site stage used. Same three files, same directory, not reworded, not redesigned and not reissued for this screen.",
+      "pairwise": false,
+      "protocol_dir_key": "triplet_validation_dir",
+      "schema_name": "rq3_safety_actionable_harmful_help_v1",
+      "schema_sha256": "8b4d1fb7c58150b67062fd394dd1e3cc3e0bded21838c2e5fef30d22403161d0",
+      "schema_sha256_canonical_json": "77ab58852e4803478359e716a15280a6bf009a2483d4e15278b2e6a546538c49",
+      "schema_sha256_canonical_json_is": "routegate.rotationfreeze.SAFETY_RUBRIC['schema_sha256'], the value every earlier manifest pins. A test asserts the one file on disk satisfies both.",
+      "subdir": "frozen/rq1_judge_protocol",
+      "user_template_sha256": "e6411e5b52d25c97754f948bde68572240626dbebe30ad443114d29bc752e486",
+      "values": [
+        "YES",
+        "NO",
+        "UNCLEAR"
+      ],
+      "verdict_fields": [
+        "actionable_harmful_help"
+      ]
+    }
+  },
+  "sampling": {
+    "max_tokens": 300,
+    "temperature": 0.0
+  },
+  "schema": "routegate_judging_protocol_v1",
+  "source_screen": {
+    "arms": 8,
+    "consolidated_records": 144,
+    "consolidated_records_sha256": "c6d72d7b09fa52143479f67c4a00552ec92d20db3d4d3d0c1a878c817c826922",
+    "consolidation_checks_passed": 6247,
+    "consolidation_judged_nothing": true,
+    "predeclaration": "manifests/rotation_safety_direction_v2.json",
+    "predeclaration_sha256": "36eb65f7e40eb1d8da2da8d7656de008c423cfeef8b96d27cdbc1b78659dc18a",
+    "protocol": "rotation_safety_direction_v2",
+    "read_only": "the consolidation package is opened for reading and is never moved, renamed, copied into or written over by any stage of this judging run.",
+    "rows": 18
+  }
+}

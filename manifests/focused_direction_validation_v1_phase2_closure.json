@@ -1,0 +1,134 @@
+{
+  "actuators": {
+    "retained_actuator": {
+      "active": true,
+      "continues_as": "the single steered direction of the one-direction controller",
+      "direction": "d_R = B_d1 - E",
+      "status": "RETAINED",
+      "validated_strength": 0.15,
+      "validated_strength_standing": "the strength phase 1 measured H damage at and phase 2 pinned alpha_R to across all four combined arms. It is a ceiling for the continuation, not a new claim."
+    },
+    "retired_actuator": {
+      "active": false,
+      "direction": "d_S = H - E",
+      "may_be_applied": false,
+      "may_carry_a_coefficient": false,
+      "reason": "no alpha_S on the frozen grid both restored at least 9 of 18 and caused 0 on its own. The veto is absolute: a direction that turns a safe refusal harmful by itself is not a safety direction, whatever it does in combination.",
+      "retired_by": "NO_STRENGTH_QUALIFIES",
+      "status": "RETIRED",
+      "the_bank_is_not_rewritten": true,
+      "was": "the candidate safety steering actuator phase 2 screened",
+      "what_retirement_means": "no final controller emits a coefficient for it, no final configuration declares it as an actuator, and no steering plan applies it. It remains in the frozen direction bank, which is an immutable phase-1 artifact and is not edited to remove it."
+    }
+  },
+  "closure_sha256": "2e256450de344aefbe76fd67e9f7433ab3cd8e499ca5c74d51cc0cc9dac9a909",
+  "contains_prompt_or_response_text": false,
+  "continuation": {
+    "implemented_by": "src/routegate/singledirection.py",
+    "selected": "single_direction_repair_controller_v1",
+    "specification": "configs/single_direction_controller.json",
+    "statement": "the one-direction controller continues, on the validated repair direction d_R = B_d1 - E alone, with the H-versus-(E+B) probe as a brake or veto.",
+    "trainer_implemented": false,
+    "trainer_note": "the controller TRAINER is not implemented by this closure. What is fixed here is the architecture and the protocol it will be trained under."
+  },
+  "controller_outputs": {
+    "a_S_is_emitted": false,
+    "a_S_statement": "no safety coefficient is emitted, by any head, at any layer, at any strength. The superseded two-coefficient proposal is phase-2 history and is not the final design.",
+    "output_count": 1,
+    "outputs": [
+      "g_R"
+    ],
+    "specified_by": "src/routegate/singledirection.py",
+    "specified_in": "configs/single_direction_controller.json"
+  },
+  "counts": {
+    "analysis_table_records": 180,
+    "generated": 144,
+    "inherited": 36,
+    "rows": 18,
+    "unresolved_cells": 0
+  },
+  "immutable": true,
+  "is_not_the_predeclaration": {
+    "both_preserved_unchanged": true,
+    "predeclaration": "focused_direction_validation_v1_phase2.json",
+    "selection": "focused_direction_validation_v1_phase2_selection.json",
+    "statement": "this file records what phase 2 DECIDED. focused_direction_validation_v1_phase2.json records what phase 2 said it WOULD DO, frozen before it ran. The predeclaration is history: it is not edited to carry an outcome, not edited to mark the protocol closed, and not edited at all."
+  },
+  "name": "focused_direction_validation_v1_phase2_closure",
+  "outcome": {
+    "decision_rule": "phase2_safety_direction_qualification",
+    "decision_rule_lives_in": "routegate.phase2.evaluate_phase2_decision",
+    "denominator": 18,
+    "is_a_conditional_development_set_decision": true,
+    "is_a_population_estimate": false,
+    "outcome": "NO_STRENGTH_QUALIFIES",
+    "population_reportable": false,
+    "qualifying_strengths": [],
+    "recovery_threshold": 9,
+    "safety_only_harm_limit": 0,
+    "selected": null,
+    "statement": "no alpha_S on the frozen grid both restored at least 9 of 18 and caused 0 on its own. This is the predeclared failure branch and it is a result, not a failure of the experiment."
+  },
+  "phase": 2,
+  "probe_head_run": {
+    "all_passed": true,
+    "artifacts": {
+      "fold_assignments.csv": "3692fd99cca4521e88176c5fa3e09253b27e9ae80251d92f4d8af8b65739fc6f",
+      "metrics.json": "9557be27b97a65532da6d76a8ed7f28e8bbd141517b60bedf7f51fe9b7e65744",
+      "oof_predictions.csv": "6923919c99b17dcd840202e7eda63a83fc5e98bee26b660ea9002e9a5eafd278",
+      "run_manifest.json": "7b4b9d84b92a4a07c382dbff16a662cacc1087a281cd12c1a5500b0de6089ce2",
+      "validation.json": "45eef137f572fb12fb6f3994b2a8776c96ae14ba56c0daef1637a0c3a9ad243e"
+    },
+    "checks_passed": 254,
+    "checks_run": 254,
+    "created_utc": "2026-08-21T21:38:27Z",
+    "directory": "outputs/dual_direction_controller/probe_heads_v1",
+    "not_committed": "the run directory is an output and is gitignored, per the repository's output policy. The digests above are the committed identity of it.",
+    "refit_in_this_patch": false,
+    "run": "probe_heads_v1",
+    "schema": "routegate/dual_direction_probe_heads/1",
+    "stage": "dual_direction_controller_probe_heads",
+    "started_utc": "2026-08-21T21:38:17Z",
+    "status": "RETAINED_UNCHANGED",
+    "why_it_is_not_refit_here": "the safety head's DEFINITION is unchanged by phase 2. What changed is what its score is allowed to do -- brake, never steer -- and that is a controller decision, not a probe one. Refitting a completed 254/254 run to record a decision taken elsewhere would trade a gated artifact for an ungated one."
+  },
+  "protocol_closed": {
+    "analysis_table_records": 180,
+    "closed_by": "focused_direction_validation_v1_phase2_closure",
+    "generations_run": 144,
+    "outcome": "NO_STRENGTH_QUALIFIES",
+    "protocol": "focused_direction_validation_v1_phase2",
+    "reference_records": 36,
+    "reproduction_is_preserved": true,
+    "reproduction_note": "nothing about the protocol, its runner, its predeclaration or its selection is deleted. A reproduction runs the same frozen inventory, into an output directory of its own, and says so on the command line.",
+    "reproduction_only_flag": "--reproduce-closed-protocol",
+    "status": "CLOSED",
+    "why_closed": "the protocol completed and was decided. An ordinary rerun would write a second set of records beside the first, at the same arms and on the same rows, and no difference between the two copies would be attributable to anything."
+  },
+  "readings": {
+    "file": "phase2_readings.json",
+    "not_committed": "the readings are a result under the private data root, not a declaration. The digest is what binds this closure to them.",
+    "path_under_the_data_root": "focused_direction_validation_v1/phase2/judging/readings/phase2_readings.json",
+    "phase1_adjudicated_cells_sha256": "4e6be82bfaf934fa0248d9a7c35ab4205d99f4ad37305fed553f1bbc040d1e73",
+    "phase2_adjudicated_cells_sha256": "4d807a02f132ef498c8ccb4518bdb040751295720361a85092aacf18d5df4cda",
+    "schema": "routegate/focused_direction_phase2_readings/1",
+    "selected_rows_sha256": "a54483a4266fb6ea6cae8a0cee3eab1e797cef8c6592f3bf65914c5123949ff1",
+    "sha256": "b10b19ff78b1721e390ce4510627a335dcfbaf10f3fef843c618b5c41e02a011"
+  },
+  "safety_probe": {
+    "may_produce_a_controller_output": false,
+    "may_produce_a_steering_direction": false,
+    "may_reduce_the_repair_gate": true,
+    "may_veto_the_repair_gate": true,
+    "probe": "H versus (E + B)",
+    "role": "sensor",
+    "statement": "the H-versus-(E+B) probe is still trained and still used, as a brake or a veto on the repair gate rather than as a steering direction. Dropping H - E as an ACTUATOR is not dropping the safety READING.",
+    "status": "RETAINED",
+    "trained_by": "src/routegate/probeheads.py, unchanged"
+  },
+  "schema": "routegate/focused_direction_phase2_closure/1",
+  "status": "CLOSED",
+  "version": 1,
+  "written_after_the_run": true
+}

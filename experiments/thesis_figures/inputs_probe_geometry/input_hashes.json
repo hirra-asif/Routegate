@@ -1,0 +1,28 @@
+{
+  "dataset": {
+    "path": "/home/ucabh21/SteerMoE-main/results/rq3_ebh_final_dataset_20260804/rq3_dataset_final.csv",
+    "sha256": "0943449697327aa47912ef80337462414ab98255c3ad99b717baa716353e1d08",
+    "expected": "0943449697327aa47912ef80337462414ab98255c3ad99b717baa716353e1d08",
+    "matches": true
+  },
+  "extraction_manifest": {
+    "path": "/home/ucabh21/SteerMoE-main/results/rq3_residual_extraction_20260805_001100/manifest.csv",
+    "sha256": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd",
+    "expected": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd",
+    "matches": true
+  },
+  "activation": {
+    "path": "/home/ucabh21/SteerMoE-main/results/rq3_residual_extraction_20260805_001100/residual_final_prompt_token.npy",
+    "sha256": "af89872d5decd4dc432ec579a941e6247bc7de63ff5690432e9f5812a994e2d8",
+    "expected": "af89872d5decd4dc432ec579a941e6247bc7de63ff5690432e9f5812a994e2d8",
+    "matches": true,
+    "shape": [
+      480,
+      49,
+      2048
+    ],
+    "dtype": "float32",
+    "copied": false
+  },
+  "inputs_modified": false
+}

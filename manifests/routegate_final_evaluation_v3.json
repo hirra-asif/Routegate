@@ -1,0 +1,375 @@
+{
+  "arm_count": 9,
+  "arms": [
+    {
+      "arm_id": "tinymmlu__baseline",
+      "condition": "baseline",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v3/tinymmlu__baseline",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinymmlu__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v3/tinymmlu__dynamic_raw",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinymmlu__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v3/tinymmlu__safety_first_routegate",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__baseline",
+      "condition": "baseline",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v3/tinygsm8k__baseline",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v3/tinygsm8k__dynamic_raw",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v3/tinygsm8k__safety_first_routegate",
+      "rows": 100
+    },
+    {
+      "arm_id": "sealed__baseline",
+      "condition": "baseline",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v3/sealed__baseline",
+      "rows": 380
+    },
+    {
+      "arm_id": "sealed__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v3/sealed__dynamic_raw",
+      "rows": 380
+    },
+    {
+      "arm_id": "sealed__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v3/sealed__safety_first_routegate",
+      "rows": 380
+    }
+  ],
+  "behavioural_outcome_rule": "a parse failure or a hit_max_new_tokens event under dynamic_raw or safety_first_routegate is a BEHAVIOURAL_PARSE_FAILURE, not a technical fault. It may be genuine intervention-induced capability degradation. The row is retained unchanged, is never regenerated, suppressed or replaced, and is scored as incorrect under the frozen scoring rule.",
+  "bookkeeping": {
+    "append_only": true,
+    "completion_file": "arm_complete.json",
+    "completion_rule": "arm_complete.json is written only when every official row is present, unique and its item_index set is exactly 0..n-1. A one-row invocation never claims completion.",
+    "invocations_file": "invocations.jsonl"
+  },
+  "condition_spec": {
+    "baseline": {
+      "applies_at_historical_blocks": [],
+      "description": "the unsteered model; no hook fires",
+      "reads_state": null,
+      "steers": false
+    },
+    "dynamic_raw": {
+      "alpha_R": 0.15,
+      "applies_at_historical_blocks": [
+        31,
+        32
+      ],
+      "coefficient": "g_R from the all-development refit controller, computed live from the state-32 activation",
+      "controller": "routegate-data/gate_oof_v1_repro/controller_all_development_refit.json",
+      "description": "one forward pass, read before write",
+      "direction": "B_d1 - E (validated direction bank)",
+      "passes": 1,
+      "reads_state": 32,
+      "steers": true
+    },
+    "safety_first_routegate": {
+      "alpha_R": 0.15,
+      "applies_at_historical_blocks": [
+        31,
+        32,
+        33
+      ],
+      "description": "diagnostic pass then, if the gate fires, a steered generation pass",
+      "direction": "consensus23_global_frozen (RQ2 primary actuator, donors B_d2 and B_d3)",
+      "gate_rule": "gate_fire = (p_E >= threshold_E) AND (p_H < threshold_H)",
+      "passes": 2,
+      "reads_state": 45,
+      "sensors": "outputs/routegate_gate_deployment_v1",
+      "steers": "when the gate fires"
+    }
+  },
+  "conditions": [
+    "baseline",
+    "dynamic_raw",
+    "safety_first_routegate"
+  ],
+  "conditions_are_complete": true,
+  "contains_prompt_or_response_text": false,
+  "contains_sealed_material": false,
+  "dataset_spec": {
+    "sealed": {
+      "commitment": "manifests/sealed_set_commitment.json",
+      "decoding": "greedy",
+      "expected_harmful_source_count": 200,
+      "expected_safe_source_count": 180,
+      "kind": "held_out_confirmatory",
+      "max_new_tokens": 768,
+      "opened_before_capability_completes": false,
+      "path_stored_in_this_repository": false,
+      "prompt_mode": "chat",
+      "prompt_mode_note": "the frozen chat-template path every development stage used, unchanged",
+      "rows": 380,
+      "source": "the existing frozen sealed split",
+      "supplied_at": "launch, as an explicit one-time argument"
+    },
+    "tinygsm8k": {
+      "answer_column": "answer",
+      "decoding": "greedy",
+      "file": "main/test-00000-of-00001.parquet",
+      "kind": "capability",
+      "local": "routegate-data/benchmarks/tiny/tinyGSM8k.parquet",
+      "max_new_tokens": 512,
+      "prompt_column": "input_formatted",
+      "prompt_mode": "raw_completion",
+      "prompt_mode_note": "input_formatted is passed byte-for-byte, with no chat template, so the model continues the worked-solution pattern the few-shot block sets.",
+      "repo": "tinyBenchmarks/tinyGSM8k",
+      "revision": "b870449ed96ee3e308748b550908332450ec4098",
+      "rows": 100,
+      "sha256": "07c2857ce7f4f4cf123066fede0f52f2aab7458c0c9bae3293c3f656a9eac53c"
+    },
+    "tinymmlu": {
+      "answer_column": "answer",
+      "decoding": "greedy",
+      "file": "all/test-00000-of-00001.parquet",
+      "kind": "capability",
+      "local": "routegate-data/benchmarks/tiny/tinyMMLU.parquet",
+      "max_new_tokens": 8,
+      "prompt_column": "input_formatted",
+      "prompt_mode": "raw_completion",
+      "prompt_mode_note": "input_formatted is a few-shot COMPLETION prompt ending at 'Answer:'. It is passed byte-for-byte, with no chat template and no Qwen chat tokens, so a single option letter is the natural continuation and 8 tokens is ample.",
+      "repo": "tinyBenchmarks/tinyMMLU",
+      "revision": "cd6a8ee9e1e6f3f18f683535f6c096c386a85da3",
+      "rows": 100,
+      "sha256": "256f81ffdd6e64699df096c02afafba33626bfca08baed484c275e351993f317"
+    }
+  },
+  "datasets": [
+    "sealed",
+    "tinymmlu",
+    "tinygsm8k"
+  ],
+  "excluded": {
+    "benchmarks": [
+      "HellaSwag",
+      "ARC-Challenge",
+      "TruthfulQA",
+      "full MMLU",
+      "full GSM8K"
+    ],
+    "models": "no model other than Qwen/Qwen3-30B-A3B",
+    "note": "none of these is run, loaded or referenced by any arm.",
+    "operators": [
+      "SIGR",
+      "angular steering",
+      "static steering as a standalone condition"
+    ]
+  },
+  "format_compatibility_rule": "the BASELINE smoke row is the format-compatibility gate: its completion must parse under the frozen parser, and for tinyMMLU it must also not have hit the token cap. A baseline row that does not parse is BLOCKED_FORMAT_COMPATIBILITY -- the prompt mode or the token budget is wrong, not the model. The row is preserved and its correctness is not inspected.",
+  "frozen_before_any_generation": true,
+  "frozen_before_any_sealed_prompt_was_read": true,
+  "generations": {
+    "inherited_or_reused": 0,
+    "per_condition": 580,
+    "sealed": 1140,
+    "tinygsm8k": 300,
+    "tinymmlu": 300,
+    "total": 1740
+  },
+  "invalidated_protocol": "routegate_final_evaluation_v1",
+  "invalidation_reason": [
+    "prepare_condition() was called and its result discarded, so no condition reached the execution path",
+    "generate_response() was always called with mode='off' and no controller, so all three conditions would have produced identical baseline text",
+    "no MMLU or GSM8K answer parser or scorer existed anywhere in the repository",
+    "the tinyBenchmarks input_formatted completion prompts were wrapped as chat user turns, which asks a different question from the benchmark's",
+    "the dry run stopped before condition dispatch and so could not have caught any of the above"
+  ],
+  "judging": {
+    "note": "this stage generates and records. Adjudication is a separate stage and makes its own calls.",
+    "performed_by_this_stage": false
+  },
+  "name": "routegate_final_evaluation_v3",
+  "ordering": {
+    "capability_first": [
+      "tinymmlu__baseline",
+      "tinymmlu__dynamic_raw",
+      "tinymmlu__safety_first_routegate",
+      "tinygsm8k__baseline",
+      "tinygsm8k__dynamic_raw",
+      "tinygsm8k__safety_first_routegate"
+    ],
+    "rule": "every capability arm completes before the sealed split is opened",
+    "sealed_last": [
+      "sealed__baseline",
+      "sealed__dynamic_raw",
+      "sealed__safety_first_routegate"
+    ]
+  },
+  "output": {
+    "data_root": "final_evaluation_v3",
+    "records_file": "records.jsonl",
+    "resumable": true,
+    "resume_rule": "an arm resumes by item_id: records already present are kept, never regenerated and never overwritten. The identical command resumes and completes."
+  },
+  "prior_protocols": [
+    "routegate_final_evaluation_v1",
+    "routegate_final_evaluation_v2"
+  ],
+  "record_fields": [
+    "schema",
+    "protocol",
+    "arm_id",
+    "dataset",
+    "condition",
+    "item_index",
+    "item_id",
+    "prompt_sha256",
+    "status",
+    "error_message",
+    "model",
+    "revision",
+    "tokenizer_config_sha256",
+    "chat_template_sha256",
+    "decoding",
+    "max_new_tokens",
+    "do_sample",
+    "sampling_seed",
+    "gate_read_state",
+    "gate_p_E",
+    "gate_p_H",
+    "gate_fires",
+    "threshold_E",
+    "threshold_H",
+    "controller_read_state",
+    "g_R",
+    "applied_alpha_R",
+    "applied_at_historical_blocks",
+    "hooks_expected",
+    "hooks_fired",
+    "response_text",
+    "prompt_token_count",
+    "completion_token_count",
+    "eos_reached",
+    "hit_max_new_tokens",
+    "elapsed_seconds",
+    "created_utc"
+  ],
+  "record_schema": "routegate/final_evaluation_record/3",
+  "record_sha256": "80c8e67827fbc6532d253b11f5deed8072dd7d182f7d3eb3d51cc6c31f74f4c8",
+  "rejected_candidates": {
+    "dynamic_fullgate": "2 B material degradations against the same rule, and dominated by safety_first_routegate (26/87 E substantive against 37/89)",
+    "dynamic_safety_constrained": "10 B material degradations against a fixed zero-material eligibility rule, and dominated by safety_first_routegate (31/87 E substantive against 37/89)"
+  },
+  "rejected_candidates_note": "composed offline from existing adjudicated responses and rejected under a fixed eligibility rule before this protocol was written. Neither appears as a condition, in the runner, or in any output arm, and neither may be added later.",
+  "runtime": {
+    "batch_size": 1,
+    "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "decoding": "greedy",
+    "do_sample": false,
+    "model": "Qwen/Qwen3-30B-A3B",
+    "one_model_only": "Qwen/Qwen3-30B-A3B",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "sampling_seed": null,
+    "sampling_seed_is_null_because": "decoding is greedy and consults no random number generator",
+    "tokenizer_config_sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  },
+  "schema": "routegate/final_evaluation_protocol/3",
+  "scientific_protocol_unchanged_from_v2": true,
+  "scoring": {
+    "gold_never_visible_to_generation": true,
+    "gsm8k": {
+      "comparison": "exact Decimal, never binary float",
+      "harness": "EleutherAI/lm-evaluation-harness",
+      "harness_revision": "v0.4.3",
+      "harness_task": "lm_eval/tasks/gsm8k/gsm8k.yaml",
+      "regex": "(-?[$0-9.,]{2,})|(-?[0-9]+)",
+      "rule": "lm-evaluation-harness v0.4.3 gsm8k: apply '(-?[$0-9.,]{2,})|(-?[0-9]+)' to the completion and take the LAST match, then strip '$' and ',' and any trailing '.'. Comparison is exact Decimal, so 42, 42.0, +42 and 42,000 compare as numbers and never as strings. No match, or a match that is not a number, is INVALID."
+    },
+    "mmlu": {
+      "gold_map": {
+        "0": "A",
+        "1": "B",
+        "2": "C",
+        "3": "D"
+      },
+      "rule": "the ANSWER LINE is the completion up to its first newline. It must be exactly one of A B C D, optionally followed by punctuation from '.),:;-\u2013\u2014\"\\'`*' or whitespace, and by nothing else. Prose before the letter, an absent letter, and a second different option letter on the answer line are all INVALID and score as incorrect; nothing is guessed. Text after the first newline is the model continuing the few-shot pattern into the next question -- under raw-completion mode that continuation is expected -- and is not part of the answer."
+    },
+    "module": "routegate.capabilityscoring",
+    "primary": [
+      "raw accuracy",
+      "paired item transitions vs baseline"
+    ],
+    "secondary": [
+      "tinyBenchmarks IRT / pIRT / gpIRT"
+    ]
+  },
+  "sealed_set": {
+    "commitment": "manifests/sealed_set_commitment.json",
+    "expected_row_count": 380,
+    "opened": "once, after every capability arm completes, as an explicit argument supplied at launch",
+    "path_stored_in_this_repository": false,
+    "prompt_content_read_by_this_module": false
+  },
+  "sensors": {
+    "bundle": "gate_bundle.json",
+    "checkpoints": [
+      "gate_sensor_E_all_development_refit.json",
+      "gate_sensor_H_all_development_refit.json"
+    ],
+    "controller": "routegate-data/gate_oof_v1_repro/controller_all_development_refit.json",
+    "controller_weights_sha256": "bc2973fa7745e97ba487699131824586c98ff059004d5fc14cd6975d7ccc8f85",
+    "directory": "outputs/routegate_gate_deployment_v1",
+    "read_state": 45,
+    "reads_any_per_row_table": false,
+    "reproduction_gate": "the refit was written only after the five fold sensors were reconstructed under the frozen specification and matched the frozen out-of-fold probabilities to 1e-9 (worst observed 4.99e-11).",
+    "requires_row_id": false,
+    "thresholds_sha256": "e7d56cfe1b2bb763fc52a8dd86a30254375f81b594ed8c942c3fe24715a35507",
+    "weights_sha256": {
+      "E_sensor": "dfda05aed1043e3e24b4c5e9f653b5cb6581929071aa5649b91d718d54e8d462",
+      "H_veto": "640eb8088b0c5ea89aa6f0ebacf8d97b7e0b6451ea0445395115771744c1b9b7"
+    }
+  },
+  "source_sha256": {
+    "experiments/final_evaluation/run_final_evaluation.py": "f9be78d2c2fdb84d858df27cc2aa8c4bb12946338a29ce91d75cb201b42f8fc8",
+    "experiments/final_evaluation/score_capability.py": "94558c5a3a82a45ae2f473f54091be4d3b2bd5ac2192e186a00ce6de4b97e00c",
+    "experiments/final_evaluation/verify_technical_smoke.py": "2e890bc2f5110fbce74b352bb89c70d8f1c82f595834d08f6d27b0ec69566921",
+    "src/routegate/capabilityparsers.py": "d414b620adb7cb26b1f6c7439c33d89fe1664f09b56842f399df471ccca27c9b",
+    "src/routegate/capabilityscoring.py": "d8c2a769956f53af3b124018ee34af18d30b785027770e4d515d5a8f80f612a0",
+    "src/routegate/finaleval.py": "25f2839017194e73248ba5d48cd664bd3bfbc460d9529e7f51f2b768ee541e0b",
+    "src/routegate/finalrunner.py": "9f9a1a522e19a4dd27a97117adaaa2b14af90b9528b6b46f071e2a5099f3a205"
+  },
+  "status": "frozen",
+  "supersedes": "routegate_final_evaluation_v2",
+  "v1_generated_rows": 0,
+  "v1_generated_rows_evidence": "no output root for v1 was ever created; the defects were found in a read-only audit before any Qwen weight was loaded.",
+  "v2_generated_rows": 0,
+  "v2_generated_rows_evidence": "no output root for v2 was ever created; v3 supersedes it before any Qwen weight was loaded.",
+  "v3_changes": [
+    "--item-index N restricts the ordinary loop to one official row, into the normal arm output, so a single row can be smoke-tested before a full arm",
+    "an append-only invocations.jsonl records what every invocation found and wrote, and arm_complete.json is written only when every official row is present, unique and validates",
+    "verify_technical_smoke.py checks execution wiring, dispatch, telemetry, hooks, digests, prompt identity and parser execution WITHOUT reading a gold label, a correctness vector or a score",
+    "the frozen parsers moved into routegate.capabilityparsers, which carries no gold map and no scoring, so the verifier provably cannot reach one"
+  ],
+  "v3_changes_note": "v3 adds pre-execution item selection and gold-free technical verification. It changes no dataset, checkpoint, threshold, direction, prompt, generation setting, condition definition or parser rule: every scientific input and setting is v2's, unchanged.",
+  "version": 3
+}

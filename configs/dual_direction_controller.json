@@ -1,0 +1,582 @@
+{
+  "schema": "routegate/dual_direction_controller/1",
+  "name": "same_region_dual_direction_controller",
+  "status": "DECLARED_NOT_RUN",
+  "status_meaning": "The controller is declared and not implemented. This file fixes the read states, the two probe-head target definitions, the fold binding and -- under proposed_controller -- the controller method, its output parameterisation, the two direction signs and the direction source, all before any head is fitted or any controller trained, so that those are decisions on the record rather than whatever made the code run. Fitting the heads does not change this status; only implementing the controller does, and it has not been implemented.",
+  "recorded_utc": "2026-08-21",
+
+  "research_question": "Can two prompt-level readings taken at one representation region -- how much a prompt looks like an unnecessary refusal, and how much it looks like a harmful request that must stay refused -- support one shared, single-pass controller that emits per prompt two sigmoid coefficients, one scaling a fixed repair direction (B - E) and one scaling a fixed safety direction (H - E) applied in that same region, without a separate safety gate somewhere else in the network?",
+
+  "phases": {
+    "1_probe_heads": {
+      "status": "SPECIFIED",
+      "what": "two frozen probe heads, cross-fitted against the direction bank's 480-row division, producing one p(E) and one p(H) per prompt at each read state",
+      "produces": ["oof_predictions.csv", "metrics.json", "fold_assignments.csv", "run_manifest.json", "validation.json"],
+      "cpu_only": true,
+      "loads_a_model": false
+    },
+    "2_direction_pair": {
+      "status": "SPECIFIED",
+      "implemented": true,
+      "run": false,
+      "what": "two unit directions over historical layers 31/32/33 at the final prompt token, built from the ten retrospectively validated triplets",
+      "fixed": "signs, source, arms, per-case normalisation, aggregation and final renormalisation; the primary method applies no orthogonalisation and the direction bank embeds no steering strength",
+      "specification": "direction_construction",
+      "produces": ["validated_direction_bank.npz", "direction_bank_manifest.json"],
+      "cpu_only": true,
+      "loads_a_model": false
+    },
+    "2b_causal_screen": {
+      "status": "SPECIFIED",
+      "implemented": true,
+      "run": false,
+      "what": "a preregistered causal screen of the two built directions on the development E and H rows: does repair repair, does safety preserve or restore refusal, and is any restoration more than weakened repair",
+      "specification": "causal_screen",
+      "produces": ["screen_records.jsonl", "run_manifest.json"],
+      "cpu_only": false,
+      "loads_a_model": true,
+      "judges_responses": false,
+      "note": "generation only. Judging is a separate stage and no judge runs in this one."
+    },
+    "3_coefficient_controller": {
+      "status": "PARTIALLY_SPECIFIED",
+      "fixed": "one shared, single-pass coefficient controller emitting two sigmoid values in [0, 1], one scaling each direction, the pair reused unchanged across states 32-34; continuous scaling is the proposal and a binary gate is a comparison baseline",
+      "unresolved": "input, hidden size, depth, activation, loss, regularisation, optimiser, schedule, supervisory signal, sigmoid-to-strength mapping, selection criterion, operating point -- every one fixed before training, not after inspecting generated-response outcomes"
+    },
+    "4_generation_and_judging": {"status": "NOT_SPECIFIED"}
+  },
+
+  "read_states": {
+    "historical_layers": [31, 32, 33],
+    "states": [32, 33, 34],
+    "layer_to_state": {"31": 32, "32": 33, "33": 34},
+    "numbering_rule": "the historical index is a zero-based decoder block; this package numbers stored representations, where state 0 is the embedding output and state s (1..48) is the output of transformer block s-1. Historical layer L is therefore state L+1, always.",
+    "state_0_is_not_a_transformer_layer": true,
+    "primary_read_layer": 31,
+    "primary_read_state": 32,
+    "primary_read_state_standing": "predeclared. State 32 is the primary controller read state because it is the frozen RQ2 actuator's own first layer, fixed before any head was fitted. It is not chosen from the outcome of any head.",
+    "sensitivity_states": [33, 34],
+    "sensitivity_states_are_not_candidates": "states 33 and 34 are run and reported beside state 32 as a sensitivity check on the primary reading. No state is selected, reselected or promoted to 'best' on their outcomes, and this stage defines no rule that would rank them.",
+    "why_this_region": "it is the region the frozen actuator already edits, so a reading taken here and an edit applied here are at the same depth. This is a declared choice, not a measured optimum: the completed probe analysis reported its headline at state 45, which is deliberately given no preference here, and no probe score selects an intervention site."
+  },
+
+  "token_position": {
+    "position": "final prompt token",
+    "meaning": "the last row of the prefill forward pass -- the position the frozen activation array stores, and the position the actuator edits",
+    "window": 1,
+    "decode_positions_are_not_read": true
+  },
+
+  "targets": {
+    "repair_head": {
+      "score_column": "p_E",
+      "positive_class": ["E"],
+      "negative_class": ["B"],
+      "excluded_from_training": ["H"],
+      "label_encoding": {"E": 1, "B": 0},
+      "trained_on": ["E", "B"],
+      "scored_rows": ["E", "B", "H"],
+      "rule": "H is never in this head's training labels -- not as a positive, not as a negative, and not among the rows its scaler is estimated from. Every held-out row is scored regardless, so a cross-fitted p(E) exists for all 480 prompts including the H rows the head was never fitted on.",
+      "why": "the quantity the controller needs is the E-versus-B over-refusal signal the completed probe analysis measured. Admitting H rows to its training set or its scaler would change what p(E) means while leaving its name unchanged. Scoring H rows afterwards is a different act: applying a fixed function to new rows does not alter the function.",
+      "evaluated_on": ["E", "B"],
+      "not_evaluated_on": ["H"],
+      "not_evaluated_on_reason": "an H row has no E-versus-B target, so it carries a score and no label; it is written to oof_predictions.csv and excluded from this head's metrics"
+    },
+    "safety_head": {
+      "score_column": "p_H",
+      "positive_class": ["H"],
+      "negative_class": ["E", "B"],
+      "excluded_from_training": [],
+      "label_encoding": {"H": 1, "E": 0, "B": 0},
+      "trained_on": ["E", "B", "H"],
+      "scored_rows": ["E", "B", "H"],
+      "rule": "E and B form one negative class, not two. The question is whether a prompt should be refused at all, not why a safe prompt was or was not answered.",
+      "evaluated_on": ["E", "B", "H"]
+    },
+    "label_encoding_note": "the probe block below records the E/B encoding the frozen specification carries. Each head's own encoding is the one stated in its entry above; the two heads differ in their labels and in which rows they are fitted on, and in nothing else."
+  },
+
+  "probe": {
+    "pipeline": ["sklearn.preprocessing.StandardScaler", "sklearn.linear_model.LogisticRegression"],
+    "penalty": "l2",
+    "C": 0.1,
+    "class_weight": "balanced",
+    "max_iter": 5000,
+    "solver": "lbfgs",
+    "random_state": 20260805,
+    "tol": 1e-06,
+    "tol_note": "the reference pilot's gradient tolerance; scikit-learn's default of 1e-4 stops lbfgs short of the optimum and reproduces state 45 only to 6.3e-05",
+    "decision_threshold": 0.5,
+    "label_encoding": {"E": 1, "B": 0},
+    "scaler_scope": "fitted inside each training fold only, via Pipeline"
+  },
+  "probe_standing": {
+    "source": "src/routegate/probes.py",
+    "new_hyperparameters_introduced_at_this_stage": [],
+    "rule": "the specification above is the frozen one, reused verbatim. The runner refuses to execute if the estimator fields here differ from probes.probe_specification(), or if this block declares a field that specification does not carry."
+  },
+
+  "cross_fitting": {
+    "n_splits": 5,
+    "rule": "within fold k, each head is fitted on the training-fold rows of its own classes only and scores every row fold k holds out. Each head's scaler is fitted on that head's training rows alone, inside the pipeline.",
+    "repair_head_training_rows": "training-fold E and B rows",
+    "safety_head_training_rows": "training-fold E, B and H rows",
+    "every_row_receives": "exactly one cross-fitted p(E) and exactly one cross-fitted p(H)",
+    "rows": 480,
+    "leakage_guarantee": "a row is scored only by the fold that holds it out, and no row contributes to the probe or the scaler that scores it"
+  },
+
+  "fold_source": {
+    "resolved": true,
+    "source": "the cross-fitted direction bank's own frozen 480-row division",
+    "directory": "outputs/causal_repair/orthogonalized_population_scan/direction_bank",
+    "authoritative_file": "fold_assignment.csv",
+    "authoritative_file_sha256": "3692fd99cca4521e88176c5fa3e09253b27e9ae80251d92f4d8af8b65739fc6f",
+    "manifest_file": "manifest.json",
+    "manifest_canonical_sha256": "6e945d7349cb18c31a2d59e1984a309b72de05e601dc1493cb17a741329d570c",
+    "manifest_canonical_sha256_meaning": "the manifest's own manifest_sha256 field, computed over its canonical form with that field removed; it is not the SHA256 of manifest.json as a file",
+    "manifest_file_sha256_observed_2026_08_21": "6df30d2d3fc79093e9139b517820ff822c9d1e32bb92385ae409835994bd04cb",
+    "n_splits": 5,
+    "rows": 480,
+    "row_alignment": "array_row_index runs 0..479 in file order and the row_id sequence is identical, position for position, to the frozen extraction manifest and therefore to the activation array",
+    "class_counts": {"E": 89, "B": 178, "H": 213},
+    "held_out_per_fold": [
+      {"fold": 0, "E": 18, "B": 36, "H": 43},
+      {"fold": 1, "E": 18, "B": 36, "H": 43},
+      {"fold": 2, "E": 17, "B": 36, "H": 43},
+      {"fold": 3, "E": 18, "B": 35, "H": 42},
+      {"fold": 4, "E": 18, "B": 35, "H": 42}
+    ],
+    "inherited_E_and_B_assignment": {
+      "path": "outputs/residual_geometry/corrected/cv_assignments.csv",
+      "sha256": "be3961a264f3435e92bfb369da7460b3903d1c6abaff6fd45daec610cd8d1d85",
+      "repeat": 0,
+      "rows_covered": 267,
+      "uniqueness": "of the twenty repeats in that file, repeat 0 is the only one whose row_id to fold mapping equals the bank's E/B folds"
+    },
+    "withheld_assignment": {
+      "rule": "H rows sorted by (source_family, row_id) and dealt round-robin across the five folds from a single running counter; no seed and no random number",
+      "rows_covered": 213,
+      "read_back_not_recomputed": "the bank's written assignment is what the directions were built against and is what this stage uses"
+    },
+    "cross_check": "the runner rebuilds the division from the inherited repeat-0 file plus the deterministic withheld rule and refuses to continue unless it reproduces the bank's fold for every one of the 480 rows. Two conflicting historical assignments are never silently reconciled.",
+    "pilot_assignment_is_not_used": "the pilot's fold assignment is kept for the reproduction gate and for nothing else"
+  },
+
+  "inputs": {
+    "corpus": "development only",
+    "dataset_sha256": "0943449697327aa47912ef80337462414ab98255c3ad99b717baa716353e1d08",
+    "extraction_manifest_sha256": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd",
+    "activation_sha256": "af89872d5decd4dc432ec579a941e6247bc7de63ff5690432e9f5812a994e2d8",
+    "activation_shape": [480, 49, 2048],
+    "gate": "manifests/development_inputs.json; a file whose SHA256 differs is refused, never adapted to",
+    "withheld_evaluation_material": "not available to this stage, not referenced by it, and not reachable from any option this stage exposes; the study's commitment record under manifests/ is the standing statement, and this file deliberately does not name its path"
+  },
+
+  "metrics": {
+    "repair_head": {"on": "E versus B", "report": ["roc_auc", "pr_auc", "brier"]},
+    "safety_head": {"on": "H versus E+B", "report": ["roc_auc", "pr_auc", "brier"]},
+    "reported_separately_for_states": [32, 33, 34],
+    "chance_levels": "ROC-AUC 0.5; PR-AUC is the positive-class prevalence of that head's own scored rows, not 0.5",
+    "source": "src/routegate/metrics.py for ROC-AUC and PR-AUC; sklearn.metrics.brier_score_loss for the Brier score, which no earlier stage reported"
+  },
+
+  "calibration": {
+    "model_fitted": false,
+    "rule": "no calibration model is fitted at this stage. The Brier score measures the probability quality of the logistic outputs; the logistic probabilities themselves are unchanged."
+  },
+
+  "outputs": {
+    "directory": "supplied explicitly on the command line; an existing non-empty directory is refused",
+    "files": ["oof_predictions.csv", "metrics.json", "fold_assignments.csv", "run_manifest.json", "validation.json"],
+    "oof_predictions_columns": ["row_id", "final_ebh", "fold", "state", "p_E", "p_H"],
+    "no_prompt_text_is_written": true
+  },
+
+  "proposed_controller": {
+    "status": "DECLARED_NOT_IMPLEMENTED",
+    "method": "one shared coefficient controller: a single learned function, evaluated once per prompt (single-pass), shared across the intervention states rather than one controller per state",
+    "outputs": {
+      "parameterisation": "two sigmoid values, each in [0, 1]",
+      "repair_coefficient": "scales the repair direction",
+      "safety_coefficient": "scales the safety direction",
+      "continuous": "the proposed controller scales both directions continuously; a binary on/off gate is a comparison baseline, not the proposed controller"
+    },
+    "directions": {
+      "repair_sign": "B - E",
+      "repair_sign_meaning": "from the over-refusal signature towards benign compliance, the frozen actuator's own convention",
+      "safety_sign": "H - E",
+      "safety_sign_meaning": "from the over-refusal signature towards justified refusal",
+      "source": "the retrospectively validated triplets, contingent on their passing the frozen validation protocol; if they do not pass, the source decision reopens rather than falling back to a default",
+      "direction_bank_standing": "the existing 480-row direction bank is used in this phase only to bind the authoritative cross-fitting folds; its population directions are not automatically adopted as the final controller directions",
+      "normalisation_and_orthogonalisation": "see unresolved"
+    },
+    "application": {
+      "read_position": "final prompt token at state 32 = historical layer 31, the predeclared primary read state; states 33 and 34 are sensitivity checks on the reading and are not candidates for selecting a new best layer",
+      "intervention_region": "historical layers 31-33 = states 32-34, the frozen actuator's own region",
+      "coefficient_sharing": "the same predicted coefficient pair is reused unchanged across historical layers 31-33 = states 32-34",
+      "single_pass": true
+    },
+    "frozen_while_the_controller_trains": [
+      "the base model",
+      "the two probe heads",
+      "the final direction artefacts"
+    ],
+    "unresolved_before_training_rule": "every field in unresolved must be fixed before the controller is trained -- not after inspecting generated-response outcomes"
+  },
+
+  "direction_construction": {
+    "status": "FROZEN",
+    "recorded_utc": "2026-08-22",
+    "eligibility_record": "manifests/rq1_triplet_inclusion.json",
+    "eligibility_rule": "a case enters a direction if and only if the eligibility record marks that direction's own inclusion rule 'validated' for it",
+    "directions": {
+      "repair": {"arm": "B_d1", "baseline": "E", "delta": "B_d1 - E", "inclusion_rule": "comparator_actuator_source", "n_validated_cases": 10},
+      "safety": {"arm": "H", "baseline": "E", "delta": "H - E", "inclusion_rule": "h_e_direction_source", "n_validated_cases": 10}
+    },
+    "arm_binding_note": "proposed_controller.directions records the signs as 'B - E' and 'H - E'. B is bound here to B_d1, the historical d1 donor. It is not B_d2 or B_d3: those are the historical primary actuator's arms, that actuator's rule is primary_actuator_source, and that rule is validated for 3 of 10 cases. It remains a comparison baseline and is not a source for this bank.",
+    "recipe": {
+      "layers": [31, 32, 33],
+      "per_layer": "each layer is built independently; no information crosses between 31, 32 and 33",
+      "steps": [
+        "for every validated case and every layer: delta = arm_activation - E_activation",
+        "for every validated case and every layer: case_direction = delta / ||delta||_2",
+        "average the ten case-level unit directions, separately for repair and for safety",
+        "L2-normalise each resulting mean direction to unit norm"
+      ],
+      "subtraction_order": "arm minus baseline, never baseline minus arm",
+      "per_case_normalisation_before_averaging": true,
+      "per_case_normalisation_reason": "every case carries one vote; a case whose two activations happen to sit far apart cannot dominate the bank",
+      "identical_recipe_for_both_directions": true,
+      "refuses": ["zero or near-zero deltas", "non-finite activations", "malformed shapes or dtypes"]
+    },
+    "primary_method": {
+      "uses": "the direct repair and safety directions, as constructed above",
+      "orthogonalisation_applied": false,
+      "statement": "the primary method applies no orthogonalisation of any kind. The bank holds the direct normalised B_d1 - E and H - E directions. Their per-layer cosine is measured and recorded as a diagnostic; nothing reads it to alter either direction."
+    },
+    "steering_strength": {
+      "embedded_in_the_direction_bank": false,
+      "value": null,
+      "statement": "no steering strength is selected, embedded or defaulted in the direction bank. This phase constructs unit directions. How far to move along one is a separate decision and remains open under unresolved.sigmoid_to_maximum_strength_mapping."
+    },
+    "parity_gate": {
+      "reference": "historical_d1_global_frozen",
+      "claim": "the repair direction must reproduce the frozen RQ2 comparator to float32 rounding; both are B_d1 - E over the same ten cases by this same recipe, so a disagreement means a different construction and stops the build"
+    },
+    "implemented_by": {
+      "arithmetic": "src/routegate/directionbank.py",
+      "runner": "experiments/dual_direction_controller/build_validated_direction_bank.py",
+      "input_pin": "manifests/rq2_geometry_capture.json"
+    }
+  },
+
+  "protocols": {
+    "note": "named, reportable inventories over the same frozen generation path. A protocol is reportable only when every one of its records is present; completeness is established by consolidate_causal_screen.py and never by a single shard. Arbitrary --only-row-id, --only-arm and --limit runs are smoke tests, are marked as such on every record they write, and are never a protocol.",
+    "exploratory_dual_direction_v1": {
+      "status": "SPECIFIED",
+      "role": "the original exploratory screen, unchanged",
+      "expected_generations": 3214,
+      "specification": "causal_screen",
+      "tests_safety_direction": true
+    },
+    "focused_direction_validation_v1": {
+      "status": "SPECIFIED",
+      "recorded_utc": "2026-08-23",
+      "role": "phase 1 of the focused plan",
+      "purpose": [
+        "measure whether the CURRENT validated repair direction d_R = B_d1 - E repairs E prompts",
+        "identify which H prompts, if any, the CURRENT d_R damages"
+      ],
+      "does_not_test": "d_S = H - E. That is phase 2, and it is applied only to the d_R failures this phase finds.",
+      "tests_safety_direction": false,
+      "alpha_safety_in_every_arm": 0.0,
+      "expected_generations": 871,
+      "inventory": {
+        "E_rows": 89,
+        "E_arms": 5,
+        "E_generations": 445,
+        "H_rows": 213,
+        "H_arms": 2,
+        "H_generations": 426,
+        "arithmetic": "89 E x 5 arms + 213 H x 2 arms = 445 + 426 = 871"
+      },
+      "arms": {
+        "E": [
+          {"arm_id": "baseline", "alpha_R": 0.00, "alpha_S": 0.00},
+          {"arm_id": "repair_005", "alpha_R": 0.05, "alpha_S": 0.00},
+          {"arm_id": "repair_010", "alpha_R": 0.10, "alpha_S": 0.00},
+          {"arm_id": "repair_015", "alpha_R": 0.15, "alpha_S": 0.00},
+          {"arm_id": "repair_020", "alpha_R": 0.20, "alpha_S": 0.00}
+        ],
+        "H": [
+          {"arm_id": "baseline", "alpha_R": 0.00, "alpha_S": 0.00},
+          {"arm_id": "repair_015", "alpha_R": 0.15, "alpha_S": 0.00}
+        ]
+      },
+      "h_arm_rationale": "the E ladder measures the dose-response; H is asked one question at the mid-ladder setting, which is where the exploratory repair arms and the legacy static actuator both sat.",
+      "direction_bank": {
+        "path": "frozen/validated_direction_bank",
+        "root": "routegate-data",
+        "artifact_sha256": "d759574b5be630ea5170fb440f8663d8c4bfaa32b479ce5cf641b6dbd73516bb",
+        "repair_direction": "B_d1 - E",
+        "orthogonalisation_applied": false
+      },
+      "intervention": {
+        "historical_layers": [31, 32, 33],
+        "routegate_states": [32, 33, 34],
+        "token_position": "final prompt token",
+        "prefill_only": true,
+        "generated_token_positions_are_never_edited": true,
+        "budget_reference": "block_input",
+        "formula": "delta = ||block_input|| * (alpha_R * d_R + alpha_S * d_S), with alpha_S = 0 throughout"
+      },
+      "generation": "the existing frozen model, revision, tokenizer and generation configuration, reused verbatim from routegate.runtime.GenerationConfig",
+      "reportable_when": "all 871 records are present, unique and verified. A short run is not a smaller result.",
+      "population_definition": {
+        "source": "the 480-row development corpus: all 89 E rows and all 213 H rows",
+        "not_defined_by": "the 20 legacy B_d2/B_d3 regressions in manifests/targeted_h_legacy_regressions_v1.json",
+        "statement": "the legacy stress set neither selects nor defines this population. It was produced by a different actuator (consensus23_global_frozen, donors d2/d3) and remains a separate secondary stress set. Phase 1 asks about the current direction over the whole development population."
+      },
+      "out_of_scope": [
+        "the safety direction d_S = H - E",
+        "the coefficient controller",
+        "any judging of the generated responses",
+        "any evaluation material outside the development corpus"
+      ]
+    },
+
+    "focused_direction_validation_v1_phase2": {
+      "status": "FROZEN",
+      "recorded_utc": "2026-08-25",
+      "role": "phase 2 of the focused plan",
+      "purpose": [
+        "on the H rows the frozen phase-1 regression rule returned, does the safety direction d_S = H - E return the model from actionable harmful compliance?",
+        "does d_S alone disturb a refusal that was already safe?"
+      ],
+      "conditional_on": "the 18 H rows adjudicated safety NO at baseline and YES at repair_015 in phase 1. Selected before any phase-2 output existed; the row ids and their digest are pinned in manifests/focused_direction_validation_v1_phase2_selection.json and in routegate.dualsteer.",
+      "tests_safety_direction": true,
+      "expected_generations": 144,
+      "generations_run": 0,
+      "generations_run_note": "no phase-2 record exists. The eight arms below are TO GENERATE.",
+      "inventory": {
+        "E_rows": 0,
+        "E_arms": 0,
+        "E_generations": 0,
+        "H_rows": 18,
+        "H_arms": 8,
+        "H_generations": 144,
+        "arithmetic": "0 E x 0 arms + 18 H x 8 arms = 0 + 144 = 144"
+      },
+      "arms": {
+        "E": [],
+        "H": [
+          {"arm_id": "safety_005", "alpha_R": 0.00, "alpha_S": 0.05},
+          {"arm_id": "safety_010", "alpha_R": 0.00, "alpha_S": 0.10},
+          {"arm_id": "safety_015", "alpha_R": 0.00, "alpha_S": 0.15},
+          {"arm_id": "safety_020", "alpha_R": 0.00, "alpha_S": 0.20},
+          {"arm_id": "repair015_safety005", "alpha_R": 0.15, "alpha_S": 0.05},
+          {"arm_id": "repair015_safety010", "alpha_R": 0.15, "alpha_S": 0.10},
+          {"arm_id": "repair015_safety015", "alpha_R": 0.15, "alpha_S": 0.15},
+          {"arm_id": "repair015_safety020", "alpha_R": 0.15, "alpha_S": 0.20}
+        ]
+      },
+      "h_arm_rationale": "the safety ladder asks what d_S does on its own; the combined ladder holds alpha_R at the phase-1 operating point and varies alpha_S alone, so a return that tracks alpha_S is not explicable as less repair.",
+      "reference_arms": {
+        "H": [
+          {"arm_id": "baseline", "alpha_R": 0.00, "alpha_S": 0.00},
+          {"arm_id": "repair_015", "alpha_R": 0.15, "alpha_S": 0.00}
+        ],
+        "records": 36,
+        "status": "ALREADY RECORDED IN PHASE 1",
+        "note": "inherited from the completed phase-1 records for these same rows at the same model, revision, direction bank, generation configuration, tokenizer and chat template. They are read, never regenerated, and they are NOT expected inside the phase-2 shards."
+      },
+      "consolidated_generation_records": 144,
+      "analysis_table_records": 180,
+      "analysis_table_note": "the consolidated generation output is 144 records. The 36 inherited references are joined afterwards to form the 180-record analysis table; requiring them inside the shards would demand that phase 2 regenerate the cells it inherits.",
+      "direction_bank": {
+        "path": "frozen/validated_direction_bank",
+        "root": "routegate-data",
+        "artifact_sha256": "d759574b5be630ea5170fb440f8663d8c4bfaa32b479ce5cf641b6dbd73516bb",
+        "repair_direction": "B_d1 - E",
+        "safety_direction": "H - E",
+        "orthogonalisation_applied": false
+      },
+      "intervention": {
+        "historical_layers": [31, 32, 33],
+        "routegate_states": [32, 33, 34],
+        "token_position": "final prompt token",
+        "prefill_only": true,
+        "generated_token_positions_are_never_edited": true,
+        "budget_reference": "block_input",
+        "combined_delta_renormalised": false,
+        "formula": "delta = ||block_input|| * (alpha_R * d_R + alpha_S * d_S)"
+      },
+      "generation": "the phase-1 model, revision, tokenizer and generation configuration, inherited verbatim and not re-chosen",
+      "reportable_when": "all 144 generated records are present, unique and verified, over exactly the 18 bound rows, with no inherited reference arm among them.",
+      "population_reportable": false,
+      "population_reportable_note": "these 18 rows were selected because they regressed under d_R. Anything measured on them is conditioned on that selection: no phase-2 count is a population rate, and none may be divided by 212, by 213 or by any corpus denominator.",
+      "population_definition": {
+        "source": "the 18 H rows returned by the frozen phase-1 regression rule",
+        "not_defined_by": "the 20 legacy B_d2/B_d3 regressions in manifests/targeted_h_legacy_regressions_v1.json",
+        "statement": "the legacy stress set neither selects nor defines this population. It came from a different repair direction and no file in the phase-2 code path reads it."
+      },
+      "out_of_scope": [
+        "any E row: the E corpus was phase 1's question and is not re-asked",
+        "any alpha_S other than 0.05, 0.10, 0.15 and 0.20",
+        "a population-level H regression rate",
+        "the held-out benchmark split, which is not available to this stage and is not reachable from any option it exposes",
+        "judging: no phase-2 response is scored or labelled by the generation stage"
+      ]
+    }
+  },
+
+  "predeclared_ablations": {
+    "note": "declared here, before any of them is built, so that a variant cannot later be introduced as though it had always been the plan. None is implemented and none is run.",
+    "orthogonalised_safety": {
+      "status": "PREDECLARED_NOT_IMPLEMENTED",
+      "what": "the safety direction with its component along the repair direction removed, per layer, then renormalised to unit norm; the repair direction unchanged",
+      "role": "an optional ablation, compared against the primary method. It is not the primary method and does not replace it.",
+      "motivation": "the two direct directions are measurably non-orthogonal, so a coefficient on one moves the representation along the other as well. Whether removing that overlap helps or harms is a question to be measured, not assumed.",
+      "built_from": "the same validated case-level unit directions as the primary bank; it introduces no new source, no new case and no new arm",
+      "reported_as": "an ablation beside the primary result, never instead of it",
+      "open": "whether it is run at all, and against which endpoint it would be compared"
+    }
+  },
+
+  "resolved": {
+    "note": "questions that were open in this file and have since been fixed. Each names where its answer now lives. Entries are added, not rewritten; a decision that is later reversed gets a new entry in docs/decision_log.md rather than an edit here.",
+    "direction_normalisation_and_orthogonalisation": {
+      "resolved_utc": "2026-08-22",
+      "answer": "normalisation: per-case L2 normalisation of each case-level delta before averaging, then L2 normalisation of the mean. Orthogonalisation: none in the primary method.",
+      "recorded_in": "direction_construction",
+      "ablation": "predeclared_ablations.orthogonalised_safety",
+      "fixed_before": "any controller is trained, and before the direction bank is built from the real capture"
+    }
+  },
+
+  "causal_screen": {
+    "status": "FROZEN",
+    "recorded_utc": "2026-08-22",
+    "purpose": [
+      "does the repair direction d_R = B_d1 - E causally repair development E prompts",
+      "does the safety direction d_S = H - E preserve or restore safe refusal on development H prompts",
+      "is any apparent H restoration more than simply weakening the repair steering"
+    ],
+    "question_three_design": "the four combined arms hold alpha_R fixed at 0.15 and vary alpha_S alone. A restoration that moves with alpha_S while the repair coefficient does not move is not explicable as less repair. Renormalising the combined delta would destroy this: it would make the two coefficients compete for one budget, so raising alpha_S would lower the repair component even at constant alpha_R.",
+    "direction_bank": {
+      "artifact": "validated_direction_bank.npz",
+      "artifact_sha256": "d759574b5be630ea5170fb440f8663d8c4bfaa32b479ce5cf641b6dbd73516bb",
+      "built_by": "experiments/dual_direction_controller/build_validated_direction_bank.py",
+      "rule": "the screen refuses any other artefact, and the digest is checked before a model is loaded"
+    },
+    "corpus": {
+      "population": "the 480-row E/B/H development frame",
+      "gate": "manifests/development_inputs.json",
+      "E_rows": 89,
+      "H_rows": 213,
+      "B_rows_are_targets": false,
+      "B_note": "B rows built the historical directions and are not steered here",
+      "withheld_evaluation_material": "not available to this stage, not referenced by it, and not reachable from any option it exposes"
+    },
+    "intervention": {
+      "historical_layers": [31, 32, 33],
+      "routegate_states": [32, 33, 34],
+      "site": "residual_stream",
+      "site_kind": "block_output",
+      "token_position": "final prompt token",
+      "prefill_only": true,
+      "generated_token_positions_are_never_edited": true,
+      "operation": "additive",
+      "budget_reference": "block_input",
+      "budget_reference_note": "the target's own residual norm at the preceding state; the tensor being edited is not the reference",
+      "formula": "delta = ||block_input|| * (alpha_R * d_R + alpha_S * d_S)",
+      "combined_delta_renormalised": false,
+      "same_coefficients_at_every_layer": true,
+      "per_layer_directions_differ": "the bank stores one direction per layer; the coefficients do not vary by layer",
+      "orthogonalisation_applied": false,
+      "convention_gate": "with alpha_S = 0 the edit must agree with routegate.steering.build_steering_plan to within the bank's unit-norm error; a larger disagreement stops the run"
+    },
+    "arms": {
+      "E": [
+        {"arm_id": "baseline", "alpha_R": 0.00, "alpha_S": 0.00},
+        {"arm_id": "repair_005", "alpha_R": 0.05, "alpha_S": 0.00},
+        {"arm_id": "repair_010", "alpha_R": 0.10, "alpha_S": 0.00},
+        {"arm_id": "repair_015", "alpha_R": 0.15, "alpha_S": 0.00},
+        {"arm_id": "repair_020", "alpha_R": 0.20, "alpha_S": 0.00}
+      ],
+      "H": [
+        {"arm_id": "baseline", "alpha_R": 0.00, "alpha_S": 0.00},
+        {"arm_id": "repair_005", "alpha_R": 0.05, "alpha_S": 0.00},
+        {"arm_id": "repair_010", "alpha_R": 0.10, "alpha_S": 0.00},
+        {"arm_id": "repair_015", "alpha_R": 0.15, "alpha_S": 0.00},
+        {"arm_id": "repair_020", "alpha_R": 0.20, "alpha_S": 0.00},
+        {"arm_id": "safety_005", "alpha_R": 0.00, "alpha_S": 0.05},
+        {"arm_id": "safety_010", "alpha_R": 0.00, "alpha_S": 0.10},
+        {"arm_id": "safety_015", "alpha_R": 0.00, "alpha_S": 0.15},
+        {"arm_id": "safety_020", "alpha_R": 0.00, "alpha_S": 0.20},
+        {"arm_id": "repair015_safety005", "alpha_R": 0.15, "alpha_S": 0.05},
+        {"arm_id": "repair015_safety010", "alpha_R": 0.15, "alpha_S": 0.10},
+        {"arm_id": "repair015_safety015", "alpha_R": 0.15, "alpha_S": 0.15},
+        {"arm_id": "repair015_safety020", "alpha_R": 0.15, "alpha_S": 0.20}
+      ]
+    },
+    "inventory": {
+      "E_generations": 445,
+      "H_generations": 2769,
+      "total": 3214,
+      "arithmetic": "89 E x 5 arms + 213 H x 13 arms = 445 + 2769 = 3214",
+      "rule": "the full inventory is built and checked before a model is loaded; a screen of any other size is refused rather than run short"
+    },
+    "generation": {
+      "source": "routegate.runtime.GenerationConfig",
+      "rule": "the frozen EBH generation settings are reused verbatim -- model, revision, dtype, attention implementation, chat template, thinking mode, greedy decoding and max_new_tokens. No sampling, tokenizer or prompt-template setting is introduced at this stage.",
+      "recorded_per_record": ["model", "revision", "tokenizer_config_sha256", "chat_template_sha256", "generation_config_sha256"]
+    },
+    "resume_key": ["row_id", "row_class", "arm_id", "alpha_R", "alpha_S", "direction_bank_sha256", "generation_config_sha256"],
+    "resume_rule": "a record is skipped only if all seven agree. Records already in an output directory must also agree on the model, revision, tokenizer and chat-template digests, the intervention type, the budget reference, the states, the layers and the dataset digest; a mismatch stops the run rather than mixing two experiments in one file.",
+    "judging": {
+      "in_this_stage": false,
+      "statement": "no response is judged, scored or labelled by the screen. Generation and judging are separate stages, and the judging stage is not specified yet."
+    },
+    "controller": {
+      "trained_in_this_stage": false,
+      "statement": "the coefficient controller is not implemented or trained here. The screen measures what fixed coefficients do; choosing them per prompt is a later stage."
+    },
+    "outputs": {
+      "root": "outside git, under the data root or outputs/ per the repository policy",
+      "files": ["screen_records.jsonl", "run_manifest.json"]
+    },
+    "implemented_by": {
+      "arithmetic": "src/routegate/dualsteer.py",
+      "runner": "experiments/dual_direction_controller/run_causal_screen.py",
+      "submission": "experiments/dual_direction_controller/submit_causal_screen.sh"
+    }
+  },
+
+  "unresolved": {
+    "note": "each field below is open. None has a default in this file, in code, or anywhere else in this repository, and none is to be given one until the question is answered on its own terms. Every one of them must be fixed BEFORE the controller is trained -- not after inspecting generated-response outcomes: a choice taken after seeing generation results would tune the design on the very endpoint it is to be evaluated on. controller_input asks: the state-32 activation, the two probe scores, or both. See docs/open_questions_pre_controller.md.",
+    "controller_input": "UNRESOLVED",
+    "controller_hidden_size": "UNRESOLVED",
+    "controller_depth": "UNRESOLVED",
+    "controller_activation_function": "UNRESOLVED",
+    "controller_loss": "UNRESOLVED",
+    "controller_regularisation": "UNRESOLVED",
+    "controller_optimiser": "UNRESOLVED",
+    "controller_training_schedule": "UNRESOLVED",
+    "controller_training_rows": "UNRESOLVED",
+    "sigmoid_to_maximum_strength_mapping": "UNRESOLVED",
+    "successful_strength_targets_or_other_supervisory_signal": "UNRESOLVED",
+    "controller_selection_criterion": "UNRESOLVED",
+    "operating_point": "UNRESOLVED"
+  },
+
+  "out_of_scope_at_this_stage": [
+    "the controller itself (its method is declared under proposed_controller; nothing of it is implemented or trained)",
+    "any orthogonalised direction, and any steering strength (the two direct directions are specified under direction_construction and implemented; nothing scales them, and the orthogonalised variant is predeclared as an ablation and not built)",
+    "generation, judging, and any behavioural label",
+    "any use of held-out benchmark material",
+    "selecting a read state from a probe score",
+    "fitting a calibration model"
+  ]
+}

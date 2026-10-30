@@ -1,0 +1,79 @@
+{
+  "schema": "routegate/residual_geometry_pilot/1",
+  "name": "residual_geometry_pilot_reproduction",
+  "purpose": "Re-derive the completed residual-geometry pilot's numbers with scikit-learn, using the pilot's own fold assignment, before any corrected or extended analysis is attempted.",
+
+  "contrast": {
+    "positive_class": "E",
+    "negative_class": "B",
+    "positive_label_value": 1,
+    "negative_label_value": 0,
+    "withheld_classes": ["H"]
+  },
+
+  "states": {
+    "all": true,
+    "count": 49,
+    "numbering": "state 0 is the embedding output; states 1-48 are transformer-block outputs",
+    "expected_degenerate": [0],
+    "degenerate_policy": "zero-variance states are scored, flagged, and excluded from any maximum; an undefined statistic is written as empty, never as NaN"
+  },
+
+  "folds": {
+    "source": "frozen",
+    "recovered_from": "best_layer_oof_scores.csv",
+    "row_id_column": "row_id",
+    "fold_column": "fold",
+    "n_splits": 5,
+    "rationale": "the pilot built folds with a bespoke round-robin deal; an independently constructed StratifiedKFold gives different held-out sets and therefore different numbers, so reproduction must import the assignment rather than rebuild it"
+  },
+
+  "probe": {
+    "pipeline": ["sklearn.preprocessing.StandardScaler",
+                 "sklearn.linear_model.LogisticRegression"],
+    "penalty": "l2",
+    "C": 0.1,
+    "class_weight": "balanced",
+    "max_iter": 5000,
+    "solver": "lbfgs",
+    "random_state": 20260805,
+    "tol": 1e-06,
+    "tol_rationale": "a convergence setting, not part of the estimand. The reference pilot minimised this same objective to a gradient tolerance of 1e-06, explicitly noting that this is tighter than scikit-learn's default tol=1e-04. Left at the default, lbfgs stops short of the optimum and state 45 reproduces only to 6.3e-05; at 1e-06 it reproduces to 3.7e-07, which is the reference file's own six-decimal rounding. Metrics are identical at 1e-05, 1e-06, 1e-08 and 1e-12.",
+    "decision_threshold": 0.5,
+    "scaler_scope": "fitted inside each training fold only"
+  },
+
+  "metrics": {
+    "reported": ["roc_auc", "pr_auc", "balanced_accuracy", "accuracy"],
+    "implementation": "scikit-learn: roc_auc_score, average_precision_score, balanced_accuracy_score, accuracy_score",
+    "pr_auc_chance": "positive class prevalence (0.3333), not 0.5"
+  },
+
+  "comparison": {
+    "reference": "manifests/pilot_reference.json",
+    "absolute_tolerance": 1e-06,
+    "gate_state": 45,
+    "gate_metrics": ["roc_auc", "pr_auc", "balanced_accuracy"]
+  },
+
+  "outputs": {
+    "directory": "outputs/residual_geometry/pilot_reproduction",
+    "files": ["config.json", "environment.json", "input_hashes.json",
+              "fold_assignments.csv", "oof_predictions_all_states.csv",
+              "layerwise_metrics.csv", "comparison_with_legacy.csv",
+              "validation.json", "VALIDATION.md", "output_hashes.json"],
+    "figures": false,
+    "figures_note": "publication figures belong to the corrected analysis, not to reproduction"
+  },
+
+  "explicitly_not_run": [
+    "control baselines",
+    "label permutations",
+    "held-out or nested state selection",
+    "unit-normalised or norm-residualised probes",
+    "centroid and projection geometry",
+    "any analysis of the withheld class",
+    "any routing or expert feature extraction",
+    "any intervention"
+  ]
+}

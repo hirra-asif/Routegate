@@ -1,0 +1,116 @@
+{
+  "schema": "routegate/rq2_geometry_capture/1",
+  "description": "The historical RQ2 geometry capture: per-case residual-stream activations for the safe target (E), the historical d1 donor (B_d1) and the harmful contrast (H), at the final prompt token, for historical decoder blocks 31/32/33. It is the source of the validated dual-direction bank and of the frozen RQ2 comparator direction, and it is the only activation input that bank reads.",
+  "recorded_utc": "2026-08-22",
+  "role": "frozen input; read-only, never rebuilt, never regenerated",
+  "origin": {
+    "workspace": "SteerMoE-main",
+    "origin_relative_directory": "results/rq2_geometry_capture_20260709_130906",
+    "captured_utc": "2026-07-09T13:09:06Z",
+    "produced_by": "rq2_capture_residual_deltas.py",
+    "access": "read-only historical evidence; never modified, renamed or written into"
+  },
+  "local_destination": {
+    "logical_name": "routegate_data_root",
+    "destination_relative_directory": "frozen/rq2_geometry_capture",
+    "paths_key": "rq2_geometry_capture_dir",
+    "outside_git": true,
+    "note": "the absolute path of the data root is machine-local and appears only in configs/paths.local.json, which is gitignored. The destination above is relative to that root."
+  },
+  "verification_rule": "Every file is re-hashed before use. The recorded SHA256 is the gate: a file whose digest differs is refused, and no run proceeds. Copying a file to the local data root does not change its digest; a copy whose digest differs from its source is a failed copy, not a new input.",
+  "files": {
+    "capture.pt": {
+      "sha256": "85481c9d59b241d3e1bc62b82d9ad99c8d6d243e226b4679786b86e0880c7a9d",
+      "bytes": 2463289,
+      "role": "the activation tensors and their metadata",
+      "read_with": "torch.load(map_location='cpu', weights_only=True); no pickle in this file is executed",
+      "contains_prompt_or_response_text": false,
+      "committable_to_git": false
+    },
+    "manifest.json": {
+      "sha256": "e50e565edf9cf117e73b96ea71a8153d7a176c231b485a8c818f560f33ceaf0f",
+      "bytes": 5201,
+      "role": "the capture's own provenance record: model, dtype, layers, slot convention and the per-case prompt digests",
+      "contains_prompt_or_response_text": false,
+      "committable_to_git": false
+    }
+  },
+  "digests_agree_with": {
+    "record": "the RQ2 final method freeze's own input-hash manifest",
+    "path": "frozen/rq2_actuator/input_hash_manifest.json :: original_capture.files",
+    "note": "the freeze recorded these two digests when it consumed the capture on 2026-07-21. They are reproduced here so this manifest is independently checkable, not so it becomes a second source of truth."
+  },
+  "tensors_read_by_the_direction_bank": {
+    "E": "safe_residual_stream",
+    "B_d1": "donor_residual_stream",
+    "H": "harmful_residual_stream",
+    "shape": [10, 3, 2048],
+    "dtype": "float32",
+    "dtype_note": "the forward pass ran in bfloat16; the capture stores float32 casts of those activations, not float32-precision activations",
+    "not_read": [
+      "sensor_safe_residual_stream",
+      "sensor_donor_residual_stream",
+      "sensor_harmful_residual_stream",
+      "raw_delta",
+      "unit_delta",
+      "rq1_scaled_delta",
+      "safe_residual_input",
+      "raw_delta_norm",
+      "scaled_delta_norm",
+      "residual_norm",
+      "zero_delta_mask"
+    ],
+    "not_read_note": "the bank recomputes its deltas from the three arm tensors. The capture's own derived deltas are left unread so the recipe in routegate.directionbank is the only construction in play."
+  },
+  "geometry": {
+    "site": "residual_stream",
+    "site_kind": "block_output",
+    "historical_layers": [31, 32, 33],
+    "routegate_states": [32, 33, 34],
+    "layer_to_state": {"31": 32, "32": 33, "33": 34},
+    "numbering_rule": "the historical index is a zero-based decoder block; this package numbers stored representations with the embedding output as state 0, so state = block + 1",
+    "token_position": "final prompt token",
+    "token_position_note": "window=1, slot 0: the final prefill row, the position that decides generated token 1. Decode positions are not read.",
+    "sensor_layers_present_but_unused": [20, 24, 25]
+  },
+  "model": {
+    "name": "Qwen/Qwen3-30B-A3B",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "dtype": "bfloat16",
+    "attention_implementation": "eager",
+    "prompt_style": "chat_template_enable_thinking_false",
+    "revision_provenance": "the capture's own manifest.json records the model name but no revision. The revision above is the one pinned by manifests/rq2_actuator.json, configs/causal_repair.json and configs/orthogonalized_population_scan.json for the same model and the same historical workspace. It is asserted from those records, not stamped in the capture, and is recorded here as a provenance limitation rather than closed over."
+  },
+  "eligibility_gate": {
+    "record": "manifests/rq1_triplet_inclusion.json",
+    "sha256": "e79e7b66c57aadd6e8db9ea6991310a8984de21565e9197a1f40d88ac3139c9f",
+    "bytes": 103524,
+    "role": "the authoritative eligibility record. Which cases enter which direction is read from it and from nothing else."
+  },
+  "case_digest_cross_check": {
+    "record": "frozen/rq2_actuator/source_case_manifest.csv",
+    "sha256": "18feafb52ffca8265817f4498167eabe84a9a0d9fd593310f410c2451432edd3",
+    "bytes": 4033,
+    "columns_used": {
+      "E": "safe_target_sha256",
+      "B_d1": "donor_d1_historical_sha256",
+      "H": "harmful_contrast_sha256"
+    },
+    "note": "the thirty prompt digests are checked three ways -- inclusion manifest, capture manifest, this file -- before any activation is read. All three agreed when this manifest was recorded."
+  },
+  "parity_reference": {
+    "record": "frozen/rq2_actuator",
+    "gate": "manifests/rq2_actuator.json",
+    "variant": "historical_d1_global_frozen",
+    "claim": "the repair direction rebuilt from this capture must reproduce that frozen comparator to float32 rounding. Both are B_d1 - E over the same ten cases by the same recipe, so a disagreement means the rebuild is a different construction.",
+    "observed_2026_08_22": {
+      "per_layer_cosine": {"31": 0.999999880791, "32": 1.0, "33": 1.000000119209},
+      "per_layer_max_abs_diff": {"31": 2.235e-08, "32": 1.49e-08, "33": 1.49e-08}
+    }
+  },
+  "explicitly_not_an_input": [
+    "any held-out or sealed evaluation material",
+    "the 480-row RQ3 corpus extraction, which is a different population and carries none of these thirty prompts",
+    "the historical B_d2/B_d3 primary actuator, which is a comparison baseline and is validated for 3 of 10 cases"
+  ]
+}

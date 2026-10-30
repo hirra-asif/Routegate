@@ -1,0 +1,113 @@
+{
+  "schema": "routegate/causal_repair/1",
+  "name": "causal_repair_all_state_scan",
+  "status": "DECLARED, NOT RUN",
+  "purpose": "All-state causal activation patching: does a B-donor direction, added at one state at the final prompt token, repair an over-refused E prompt? The earlier evidence came from three states chosen by a five-band grid over about ten hand-built triplets; this scans every eligible state on the accepted development corpus.",
+
+  "recovered_from_history": {
+    "source_files": [
+      "~/SteerMoE-main/pathway_probe.py (build_site_plan, PathwayController, site=residual_stream)",
+      "~/SteerMoE-main/pathway_grid_sweep.py (compute_layer_bands)",
+      "~/SteerMoE-main/docs/pathway_wrong_donor_map.md",
+      "~/SteerMoE-main/rq2_freeze_final_method.py (the frozen actuator, which reuses build_site_plan verbatim)",
+      "~/SteerMoE-main/rq3_dev_generation.py (the frozen generation and pinning)"
+    ],
+    "operation": "applied = unit(donor_state - target_state) * strength * ||reference||; added to the hooked tensor, not substituted",
+    "hook": "torch.nn.Module.register_forward_hook on the decoder block; the block OUTPUT hidden state is modified",
+    "budget_reference": "the historical budget norm is the block INPUT hidden state, captured by a forward pre-hook, not the block output being patched",
+    "token_position": "the final row of the prefill forward (row -1), window 1, decode forwards untouched",
+    "generation": "greedy, do_sample=False, use_cache=True, enable_thinking=False, no system prompt, batch size 1",
+    "historical_layers": [31, 32, 33],
+    "historical_layers_as_states": [32, 33, 34],
+    "historical_layer_numbering": "zero-based decoder-block indices; block i output is state i+1 in this package's numbering",
+    "historical_strengths": {
+      "rq1_grid_selected": 0.15,
+      "rq2_frozen_actuator": 0.15,
+      "population_scan_pilot_value": 0.2,
+      "rq1_grid_selected_basis": "band-level preference at layers 31-33, confirmed as the overall first place only in the final confirmation run",
+      "rq1_grid_selected_evidence": "every RQ1 grid run that completed ranks configurations safety-first -- zero harmful breaks outrank everything, and a configuration with any harmful break can never outrank one without. Under that ordering L31-33_w1_s0.15 outranks L31-33_w1_s0.2 in ALL THREE completed summaries, which is the band-level preference this field records. Its OVERALL ranks were 2 of 18 in pathway_supervisor_layer_extension_20260707_234542, 2 of 8 in pathway_confirmation_256_20260708_023720, and 1 of 2 in pathway_confirmation_512_20260708_172847 (COMPLETE, 40/40) -- so it placed first overall ONLY in that final 512 confirmation, and was second overall in the two earlier runs, behind a window-6 configuration at the same band. L31-33_w1_s0.2 placed 11 of 18, 3 of 8 and 2 of 2 respectively and carried 1 harmful break in every completed run.",
+      "rq1_grid_selected_is_not": "a claim that 0.15 ranked first overall in every completed run. It did not; it was first overall only in pathway_confirmation_512_20260708_172847. What holds across all three is that it outranked 0.2 at this band.",
+      "rq1_grid_selected_caveat": "every count in those grid summaries is a PROVISIONAL keyword readout, labelled as such by the summaries themselves; the linked manual semantic audits have not been verified against them. Treat 0.15 as the strength the recorded ordering preferred at this band, not as a semantically confirmed optimum.",
+      "rq2_frozen_actuator_evidence": "results/rq2_final_method_freeze_20260721_150015 froze consensus23_global_frozen at 0.15, and results/rq2_final_frozen_unseen_eval_20260721_172100, results/rq3_e_rq2_transfer_20260809 and results/rq3_bh_rq2_static_20260810 all carried that value unchanged.",
+      "population_scan_pilot_value_status": "0.2 is a pilot value carried forward so that one axis is fixed while the block axis is searched. It is NOT a measured optimum, it is NOT what the RQ1 grid selected, and it is NOT the frozen RQ2 actuator's strength. It is named here only so that the value this stage and the orthogonalised population scan both operate at has a provenance.",
+      "corrected_utc": "2026-08-21",
+      "superseded_value": {
+        "rq1_grid_best": 0.2,
+        "why_it_was_wrong": "it attributed the population-scan pilot value to the RQ1 grid's selection. The located grid summaries do not support that attribution; they rank 0.15 above 0.2 at these layers. On raw repair count 0.2 does lead (9 selective repairs against 6), so a reading exists under which the old value was defensible, but it is not the ordering the runs were designed around.",
+        "evidence_and_reasoning": "docs/decision_log.md, entry of 2026-08-21 'What the RQ1 grid actually ranked first (corrects 2026-08-06)'"
+      }
+    },
+    "historical_max_new_tokens": {"rq1_confirmation": 512, "rq3_development_generation": 768}
+  },
+
+  "states": {
+    "all": true,
+    "count": 49,
+    "numbering": "state 0 is the embedding output; states 1-48 are transformer-block outputs",
+    "expected_degenerate": [0],
+    "degenerate_policy": "state 0 is run and reported; the donor and target embedding outputs are identical on this corpus, so the delta has no direction and the record says zero_delta"
+  },
+
+  "contrast": {
+    "targets": "E, over-refusal",
+    "donors": "B, benign compliance",
+    "withheld": ["H"],
+    "withheld_policy": "refused by the pairing loader, not filtered out downstream"
+  },
+
+  "intervention": {
+    "type": "donor_direction",
+    "strength": 0.2,
+    "strength_rationale": "the population-scan pilot value, carried forward unchanged so that one axis is fixed while every eligible state is searched. It is a declared starting point for a scan, not a frozen method, not a measured optimum, and not what the RQ1 grid selected -- see recovered_from_history.historical_strengths. The frozen RQ2 actuator's strength is 0.15 and is a different setting on a different artefact; a strength sweep for THIS stage is a separate decision taken after the scan, not before it.",
+    "strength_rationale_corrected_utc": "2026-08-21",
+    "budget_reference": "block_input",
+    "window": 1,
+    "token_position": -1,
+    "one_state_at_a_time": true,
+    "available_types": ["none", "self_patch", "donor_direction", "donor_replace"]
+  },
+
+  "conditions": {
+    "baseline": "no intervention; the model runs untouched",
+    "self_patch": "the target is its own donor, so the delta is exactly zero and nothing is applied; proves the machinery is inert when it should be",
+    "donor_patch": "the B-donor direction applied to the E target"
+  },
+
+  "donor_pairing": {
+    "frozen_before_execution": true,
+    "manifest": "outputs/causal_repair/donor_manifest.json",
+    "permitted_fields": ["source_family", "topic_standardized", "task_frame", "prompt length in characters"],
+    "forbidden_inputs": ["activation values", "generated responses", "patching results", "held-out benchmark material"],
+    "tiers": ["source_topic_task", "topic_task", "topic", "task_frame", "length_only"],
+    "fallback_policy": "every pair records the tier it was satisfied at and whether it is an exact three-column match"
+  },
+
+  "generation": {
+    "model": "Qwen/Qwen3-30B-A3B",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "dtype": "bfloat16",
+    "attn_implementation": "eager",
+    "enable_thinking": false,
+    "enable_thinking_fail_closed": true,
+    "system_prompt": null,
+    "do_sample": false,
+    "max_new_tokens": 768,
+    "max_new_tokens_note": "the development responses this stage compares against were generated at 768; RQ1's causal-repair runs used 512",
+    "use_cache": true,
+    "batch_size": 1
+  },
+
+  "outputs": {
+    "directory": "outputs/causal_repair",
+    "records": "one JSON line per generation, keyed by (target, donor, state, intervention, strength, condition)",
+    "resumable": true
+  },
+
+  "out_of_scope_at_this_stage": [
+    "any analysis of the withheld class H",
+    "harmful-preservation evaluation",
+    "LLM judging of the generated responses",
+    "any use of held-out benchmark material",
+    "any claim from keyword-matched refusal detection"
+  ]
+}

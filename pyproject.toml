@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "routegate"
+version = "0.1.0"
+description = "Activation steering and selective gating for over-refusal in Qwen3-30B-A3B: analysis, intervention and assessment code for the RouteGate study."
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["interpretability", "over-refusal", "activation steering", "mixture of experts", "linear probe", "residual stream"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+
+# Pinned to the versions installed in the project environment at release, inside the
+# project container (vllm/vllm-openai:v0.10.1.1 as an Apptainer image, Python 3.12.11).
+# numpy, scipy, torch, transformers, huggingface-hub and PyYAML are the image's
+# own builds; pandas, matplotlib and pyarrow were installed in the user
+# site-packages ($HOME/.local), and scikit-learn and pytest in the repository
+# .venv (created with --system-site-packages). See docs/environment.md.
+# scikit-learn replaces the pilot's hand-written estimator, scaler, splitter and
+# metrics; there is no fallback to a custom logistic regression.
+dependencies = [
+    "numpy==2.2.6",
+    "scipy==1.16.1",
+    "pandas==3.0.3",
+    "scikit-learn==1.7.1",
+    "matplotlib==3.11.0",
+]
+
+# Deep-learning runtimes are deliberately absent from the required set. The
+# analysis half reads a frozen activation array; it never loads a model,
+# generates text, or touches a GPU.
+#
+# The causal-patching half does need one, and says so as an extra rather than by
+# quietly promoting torch to a hard dependency: importing routegate, running the
+# probes, or planning a patching run all work without it. Only executing an
+# intervention needs it, and that happens inside the same Apptainer image the
+# extraction used, which already carries these versions.
+
+# Versions below are those installed in the project environment (see
+# docs/environment.md). `evaluation` reads the tinyBenchmarks Parquet files;
+# PyYAML is used by one test that parses the vendored lm-evaluation-harness task.
+# The tinyBenchmarks package is not required: its IRT estimate is optional in
+# routegate.capabilityscoring and was not computed for the reported results.
+[project.optional-dependencies]
+dev = ["pytest==8.4.1", "PyYAML==6.0.2"]
+evaluation = ["pyarrow==24.0.0"]
+patching = [
+    "torch==2.7.1",
+    "transformers==4.55.2",
+    "huggingface-hub==0.34.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+filterwarnings = ["error::RuntimeWarning"]

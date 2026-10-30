@@ -1,0 +1,324 @@
+{
+  "schema": "routegate/rq2_actuator/1",
+  "description": "The frozen RQ2 repair actuator, as migrated into this study. This manifest is the gate: every file listed here is re-hashed before anything is read out of it, and the two direction tensors are bound to their variant names by content -- by matching their per-layer SHA256 against the historical freeze manifest -- rather than by trusting the order of the entries inside the archive. A file whose digest differs is refused, never adapted to.",
+  "recorded_utc": "2026-08-21",
+
+  "what_this_is": {
+    "is": "the single global repair direction that RQ2 froze on 2026-07-21, plus the freeze's own record of how it was built and what it was frozen on",
+    "is_not": [
+      "the cross-fitted H-orthogonalised population direction bank, which is a separate ablation built from the 480-row corpus at strength 0.2 and lives in outputs/causal_repair/orthogonalized_population_scan/direction_bank/",
+      "the 89-row E-B donor-pair table in outputs/causal_repair/, which is a metadata pairing of corpus rows with no H arm",
+      "the original matched E/B/H triplets, which are the prompts this actuator was estimated from and are not migrated here"
+    ],
+    "see": "docs/artifact_taxonomy.md"
+  },
+
+  "origin": {
+    "workspace": "SteerMoE-main",
+    "origin_relative_directory": "results/rq2_final_method_freeze_20260721_150015",
+    "run_identifier": "rq2_final_method_freeze_20260721_150015",
+    "created_utc": "2026-07-21T15:00Z",
+    "produced_by": "rq2_freeze_final_method.py",
+    "produced_by_sha256_recorded": false,
+    "produced_by_note": "the freeze run recorded the SHA256 of every input it read and every file it wrote, but not of its own script. The actuator's bytes are therefore verifiable; the exact builder revision that emitted them is not. Recorded as a limitation rather than closed over.",
+    "access": "read-only historical evidence; never modified, renamed or written into"
+  },
+
+  "local_destination": {
+    "logical_name": "rq2_actuator_dir",
+    "layout": "frozen/rq2_actuator/ under the machine-local data root",
+    "outside_git": true,
+    "resolved_by": "configs/paths.local.json key 'rq2_actuator_dir'",
+    "note": "the absolute path of the data root is machine-local and appears only in configs/paths.local.json, which is gitignored. No file listed here is committed: the tensor archive is a tensor, and the remaining files are freeze records rather than reproduction inputs a reader needs in git."
+  },
+
+  "files": {
+    "note": "exactly the nine files covered by the historical FREEZE_SHA256SUMS.txt, plus that checksum file itself. Nothing else from the freeze directory was copied, and nothing was renamed.",
+    "covered_by_historical_checksum": {
+      "config.json": {
+        "sha256": "a668d8ca6f0f9f13bb570e83ac27d9e27847704b5adf383f78077d1a0b0c321c",
+        "bytes": 4279,
+        "role": "the frozen settings, roles and constructions",
+        "contains_prompt_or_response_text": false
+      },
+      "freeze_summary.json": {
+        "sha256": "37ed84f5c2f171c12d550661c3a765a637e7aa5f2ae4a91fca67af0b4fa57e4f",
+        "bytes": 3055,
+        "role": "the verified development counts the freeze was taken on",
+        "contains_prompt_or_response_text": false
+      },
+      "freeze_summary.md": {
+        "sha256": "1e300acd69fec7a8d0b23dd061b60b5b7ec01607a715d0506e74e0682296c1fc",
+        "bytes": 1245,
+        "role": "the same summary, rendered",
+        "contains_prompt_or_response_text": false
+      },
+      "frozen_direction_manifest.json": {
+        "sha256": "7e18ed274cc8aa2183c5948baab723124da0893b7af5819e27fda68ee5051f38",
+        "bytes": 9424,
+        "role": "per-variant per-layer SHA256, fingerprint, unit norms, source case ids and construction. This is the file the tensors are bound to by content.",
+        "contains_prompt_or_response_text": false
+      },
+      "frozen_directions.pt": {
+        "sha256": "ee23afd98c5b9c39cc864af0e475392a69deb5ed2ef33a30d9f10703b5cb2bea",
+        "bytes": 53109,
+        "role": "the two direction tensors",
+        "contains_prompt_or_response_text": false,
+        "committable_to_git": false,
+        "committable_reason": "it is a tensor archive; see artifacts/README.md"
+      },
+      "input_hash_manifest.json": {
+        "sha256": "40fe7b4bb2642fba4ad00c4e819bef6b5edf7be05559977d443723049752614c",
+        "bytes": 5397,
+        "role": "the SHA256 of every run directory and file the freeze read",
+        "contains_prompt_or_response_text": false
+      },
+      "preregistered_final_protocol.json": {
+        "sha256": "a8ce3b088e98e4f9273a1b468be169fbad8016a4bea4abb9e127b8c3e44388c2",
+        "bytes": 11052,
+        "role": "the protocol the freeze bound the final test to",
+        "contains_prompt_or_response_text": false,
+        "text_kind": "prompt SHA256 values only, in the exclusion list; no prompt text"
+      },
+      "preregistered_final_protocol.md": {
+        "sha256": "13e137830772eed9626c85a79eb33f1aa0b121b4a4716f509de5ac41556be931",
+        "bytes": 3860,
+        "role": "the same protocol, rendered",
+        "contains_prompt_or_response_text": false
+      },
+      "source_case_manifest.csv": {
+        "sha256": "18feafb52ffca8265817f4498167eabe84a9a0d9fd593310f410c2451432edd3",
+        "bytes": 4033,
+        "role": "the ten source cases, by prompt SHA256",
+        "contains_prompt_or_response_text": false,
+        "text_kind": "prompt SHA256 values only; 10 rows x 5 prompt-hash columns",
+        "committable_to_git": false,
+        "committable_reason": "the repository-wide *.csv rule; it is not needed in git"
+      }
+    },
+    "the_checksum_file_itself": {
+      "FREEZE_SHA256SUMS.txt": {
+        "sha256": "b90f0714dcfca5f9b0b4b6ce533736a2dad886558f9b15bbb1d2e280bf2b4588",
+        "bytes": 1244,
+        "role": "the historical checksum manifest. It does not list itself, so its own digest is recorded here instead. It is copied because it is the record that says which nine files the freeze covered.",
+        "contains_prompt_or_response_text": false
+      }
+    }
+  },
+
+  "archive": {
+    "filename": "frozen_directions.pt",
+    "container": "zip",
+    "root": "frozen_directions",
+    "expected_members": [
+      ".data/serialization_id",
+      ".format_version",
+      ".storage_alignment",
+      "byteorder",
+      "data.pkl",
+      "data/0",
+      "data/1",
+      "version"
+    ],
+    "expected_member_bytes": {
+      ".data/serialization_id": 40,
+      ".format_version": 1,
+      ".storage_alignment": 2,
+      "byteorder": 6,
+      "data.pkl": 2284,
+      "data/0": 24576,
+      "data/1": 24576,
+      "version": 2
+    },
+    "byteorder": "little",
+    "format_version": "1",
+    "storage_alignment": "64",
+    "torch_serialization_version": "3",
+    "compression": "stored; every member is uncompressed",
+    "member_policy": "the member set must match expected_members exactly -- no extra member, no missing member, no member outside the single expected root",
+    "pickle_policy": {
+      "loaded": false,
+      "how_it_is_checked": "data.pkl is never unpickled. It is decoded opcode-by-opcode with pickletools.genops, which reads the byte stream and executes nothing, purely to confirm that the archive is the object it claims to be.",
+      "allowed_globals": [
+        "torch._utils _rebuild_tensor_v2",
+        "torch FloatStorage",
+        "collections OrderedDict"
+      ],
+      "allowed_globals_note": "these are the only three symbols the historical archive references. Any other GLOBAL or STACK_GLOBAL is refused. The tensor data is read from the raw data/N members and never from the pickle, so the pickle is an integrity check and not a data path.",
+      "expected_string_atoms": 58,
+      "expected_string_atoms_sha256": "6a9e6131f41eb039c62213e7ab0127b719292436a405143ae9c2fc92cb13d5f6",
+      "expected_string_atoms_rule": "sha256 over the distinct string atoms of data.pkl, sorted ascending and joined with newlines. Decoded with pickletools.genops; nothing is unpickled. This pins the archive's metadata exactly: the 58 atoms are the two variant names, the storage keys, the device, the settings keys and values, the ten source case ids, the donor ids, the two source-capture SHA256 values and the three construction and scaling sentences. A prompt, a response or any other unexpected string would change the digest."
+    }
+  },
+
+  "tensors": {
+    "dtype": "float32",
+    "numpy_dtype": "<f4",
+    "shape": [3, 2048],
+    "axes": ["layer", "hidden_unit"],
+    "layer_axis_order": [31, 32, 33],
+    "hidden_size": 2048,
+    "n_layers": 3,
+    "bytes_per_storage": 24576,
+    "finiteness": "no NaN or Inf",
+    "unit_norm_tolerance": 1e-05,
+    "unit_norm_tolerance_note": "the freeze's own gate, rq2_freeze_final_method.UNIT_NORM_TOL"
+  },
+
+  "variants": {
+    "primary": "consensus23_global_frozen",
+    "comparator": "historical_d1_global_frozen",
+    "consensus23_global_frozen": {
+      "role": "primary",
+      "expected_archive_member": "data/0",
+      "member_binding": "derived by content, then checked against expected_archive_member; the recorded member is a cross-check, not the source of truth",
+      "per_layer_sha256": {
+        "31": "73e547cba0f9d2f38aebf45b4955867ad3a1aaa455b54fbb548c498468ce60c8",
+        "32": "1040f3f678b91ae704997232f880dc30e3a05268245ef700e42fe5bd146a0478",
+        "33": "c1c12e8920846b23b78faaeeb7e61898e36b50975da78a2e8e3b01d501f24815"
+      },
+      "fingerprint": "4855cc95b14df9521d8e6d43f2f1033c20e179bc0e4f2d9f79f333f29b1dbc2c",
+      "fingerprint_rule": "sha256 over, for each layer in ascending order, str(layer).encode() followed by that layer's float32 bytes; the historical rq2_eval_mean_direction.direction_fingerprint",
+      "per_layer_norm": [0.9999999996822789, 0.999999998897949, 1.0000000007891143],
+      "donor_ids_used": ["d2_independent", "d3_independent"],
+      "n_source_cases": 10,
+      "audited_equivalent": "consensus23_loo_global",
+      "construction": "for each of the ten source cases, average that case's d2_independent and d3_independent per-layer unit directions and renormalise the case consensus to unit norm; then average all ten case consensuses and renormalise the final global direction to unit norm, per layer 31/32/33"
+    },
+    "historical_d1_global_frozen": {
+      "role": "comparator",
+      "expected_archive_member": "data/1",
+      "member_binding": "derived by content, then checked against expected_archive_member; the recorded member is a cross-check, not the source of truth",
+      "per_layer_sha256": {
+        "31": "ba9dd3317d402a6552cf5eaaa3f1fa85ed2568ad3bde028d9b2068d4ae912a3e",
+        "32": "6970067de0603ede7e55d2865dbff410b09b72f670c4e02fa858c6e6b95293b0",
+        "33": "067b827e570305baf7f41488e5b6f5d0cc21bdc5875250c99ed8663aab5f2069"
+      },
+      "fingerprint": "404ce4988aee557eb6822014101bf5b30d570ae57e2eb1eb5c240bb10f477058",
+      "fingerprint_rule": "sha256 over, for each layer in ascending order, str(layer).encode() followed by that layer's float32 bytes; the historical rq2_eval_mean_direction.direction_fingerprint",
+      "per_layer_norm": [1.0000000041168944, 0.9999999992012325, 0.9999999999709804],
+      "donor_ids_used": ["d1_historical"],
+      "n_source_cases": 10,
+      "audited_equivalent": "historical_d1_loo_global",
+      "construction": "reconstruct each source case's historical d1 per-layer unit direction (donor residual minus safe residual, unit-normalised; verified against the stored original-capture unit deltas), average all ten source-case directions and renormalise to unit norm, per layer 31/32/33"
+    }
+  },
+
+  "direction_semantics": {
+    "sign": "B minus E: the per-pair delta is the benign donor's residual minus the over-refused safe target's residual, unit-normalised before averaging",
+    "estimator": "per pair, then averaged; never a difference of class means",
+    "orthogonalisation": "none. No H term enters this actuator at any point.",
+    "estimated_from": "10 hand-matched E/B/H triplets whose prompts are disjoint from the 480-row development corpus (zero prompt-SHA256 overlap)"
+  },
+
+  "layer_mapping": {
+    "historical_decoder_blocks": [31, 32, 33],
+    "routegate_states": [32, 33, 34],
+    "rule": "block i output is state i+1; routegate.intervention.historical_layer_to_state is the only place this translation is performed",
+    "numbering_note": "state 0 is the embedding output and is not a transformer block"
+  },
+
+  "intervention": {
+    "site": "residual_stream",
+    "routegate_site_kind": "block_output",
+    "site_note": "the decoder block's OUTPUT hidden state, modified by a forward hook on the block",
+    "operation": "additive; the delta is added to the hooked tensor, never substituted for it",
+    "window": 1,
+    "slot": 0,
+    "token_position": "the final row of the prefill forward (row index -1), i.e. the final prompt token, immediately before the first answer token is decided",
+    "prefill_only": true,
+    "prefill_only_note": "window 1 means decision_slots(1) == [(forward_index 0, row -1, slot 0)], so the edit fires once during prefill and no decode forward is touched",
+    "strength": 0.15,
+    "strength_provenance": "frozen 2026-07-21; the value carried unchanged by results/rq2_final_frozen_unseen_eval_20260721_172100, results/rq3_e_rq2_transfer_20260809 and results/rq3_bh_rq2_static_20260810",
+    "budget_reference": "block_input",
+    "budget_reference_note": "the budget norm is read from the patched block's INPUT hidden state -- the preceding state -- and not from the block output being modified. This is the historical RQ1/RQ2 rule; changing it changes what every recorded number means.",
+    "application_scaling": "applied_delta = unit_direction * strength * ||target block-input residual at that layer||",
+    "expected_patch_hits_per_row": 3,
+    "expected_patch_hits_note": "one per frozen layer, all during prefill"
+  },
+
+  "application_paths": {
+    "description": "Two ways to compute the edit exist, and only one of them may produce a generation. RQ2 did not add its direction directly: it built a synthetic donor (donor = target + direction) and let pathway_probe.build_site_plan recompute donor - target. In exact arithmetic that is the identity; in float32 it is not, because fl(target + direction) - target discards low-order bits of the direction in proportion to ||target||. Every recorded RQ2 and static-steering result carries that cancellation, so reproducing it is the point.",
+    "canonical": "historical_exact",
+    "historical_exact": {
+      "implementation": "routegate.actuator.FrozenActuator.applied_delta",
+      "exact": true,
+      "may_produce_a_generation": true,
+      "is_default": true,
+      "operation_order": [
+        "donor     = target + direction            (rq2_eval_mean_direction.make_synthetic_donor)",
+        "raw_delta = donor - target                (pathway_probe.build_site_plan)",
+        "budget    = coefficient * ||reference||   (pathway_probe.build_site_plan, float32 norm)",
+        "applied   = raw_delta * (budget / ||raw_delta||)   (pathway_probe.unit_scaled)"
+      ],
+      "coefficient": "0.15 by default; the order is preserved for any positive coefficient, which is what a later per-prompt controller will supply",
+      "backend": "dispatches on the type it is given. Torch tensors in, torch arithmetic out, bit-identical to the historical implementation. numpy in, numpy out, same operation order.",
+      "bit_identity_condition": "torch tensors, and either a torch reference vector or a reference_norm measured on the model's own tensor"
+    },
+    "analytical_approximate": {
+      "implementation": "routegate.actuator.FrozenActuator.analytical_delta_approx",
+      "exact": false,
+      "may_produce_a_generation": false,
+      "is_default": false,
+      "formula": "unit(direction) * coefficient * ||reference||",
+      "gate": "acknowledge_not_exact=True is mandatory and keyword-only; the method has no target_vector parameter at all, so it cannot impersonate the canonical call",
+      "use_for": "reasoning, plotting and sanity arithmetic",
+      "never_use_for": "any generation, any run record, or anything claiming to reproduce a historical result"
+    },
+    "measured_divergence": {
+      "_units": "relative L2 difference between the two paths, float32 throughout, one layer, keyed by the target vector's element scale",
+      "1e-1": 1.2e-07,
+      "1e+0": 1.1e-06,
+      "1e+1": 1.2e-05,
+      "1e+2": 1.1e-04,
+      "1e+3": 1.1e-03,
+      "why": "the cancellation is proportional to ||target||, so the divergence grows linearly with it",
+      "shape": "a small rotation, not a different edit: the cosine between the two stays above 0.9999994 across that range and the applied norm is unchanged"
+    },
+    "coefficient_modes": {
+      "description": "How the coefficient reaches the budget. Orthogonal to the application path above, and recorded separately, because only one of the two is a replay of what RQ2 ran. Added 2026-08-21 with the differentiable path; no frozen artifact, hash or recorded number changed.",
+      "default": "historical_fixed_scalar",
+      "historical_fixed_scalar": {
+        "accepts": "a Python number, 0.15 by default",
+        "differentiable": false,
+        "is_a_replay_of_rq2": true,
+        "zero_permitted": false,
+        "zero_note": "a zero-strength historical generation is the baseline, not an edit; the historical code recorded 'zero_delta' and applied nothing",
+        "arithmetic": "Python-float throughout, bit-identical to the historical implementation"
+      },
+      "differentiable_controller_coefficient": {
+        "accepts": "a scalar torch tensor, when the target is a torch tensor",
+        "differentiable": true,
+        "is_a_replay_of_rq2": false,
+        "is_a_replay_of_rq2_note": "NOT a historical RQ2 generation at any value -- not even at 0.15, where it is numerically equal but is a new run of a learned actuator rather than a replay of a frozen one. A run record must say which mode produced it.",
+        "zero_permitted": true,
+        "zero_note": "an exact zero edit, which is how a controller declines to act; the gradient still flows",
+        "refused": ["negative", "non-finite", "more than one element", "a numpy target"],
+        "gradient_scope": "the coefficient only. The frozen direction, the reference norm and the base model are not in the graph and are not learned.",
+        "device": "a coefficient on another device is moved with a differentiable .to(device=...), so a controller head emitting on CPU while the model runs on CUDA works and still trains",
+        "validation": "reads coefficient.detach() so validation never becomes the path the gradient flows through; the multiplication uses the caller's own tensor"
+      }
+    },
+    "reduction_library_residue": {
+      "_units": "relative L2 difference between numpy and torch for the SAME operation order",
+      "bound_observed": 3.3e-07,
+      "why": "a 2048-term float32 sum is not associative and the two libraries do not order it the same way. The raw delta bytes are always identical; only the norm reductions differ.",
+      "how_to_avoid": "run the arithmetic in torch on the model's own tensors, or pass reference_norm measured there"
+    }
+  },
+
+  "generation_settings_at_freeze": {
+    "model": "Qwen/Qwen3-30B-A3B",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "attn_implementation": "eager",
+    "dtype": "bfloat16",
+    "decoding": "greedy",
+    "enable_thinking": false,
+    "system_prompt": null,
+    "max_new_tokens": 256,
+    "max_new_tokens_note": "the two RQ3 static-steering transfers declared one deviation, max_new_tokens 768, to match the BEFORE responses they compare against. Because window is 1 the edit fires only during prefill, so the generation cap cannot change the applied delta; both runs asserted patch_hits == 3 at run time.",
+    "not_used_by_this_phase": "no model is loaded, no token is generated and no GPU is touched by anything that reads this manifest"
+  },
+
+  "verification_rule": "Every file is re-hashed before use. The archive's member set, member sizes, byte order and format markers are checked before a byte of tensor data is read. Each storage's per-layer SHA256 must match exactly one variant in the historical frozen_direction_manifest.json, the binding must be bijective, and the recomputed fingerprint and per-layer norms must match. Any failure raises; nothing is repaired, defaulted or warned about."
+}

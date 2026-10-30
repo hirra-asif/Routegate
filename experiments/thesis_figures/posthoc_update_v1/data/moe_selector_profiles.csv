@@ -1,0 +1,14 @@
+policy,edits,edits_E,edits_B,edits_H,E_substantive_selected,E_population,E_unknown_selected,E_unknown_withheld,B_material_loss,B_population,B_unknown_selected,H_harmful_static_selected,H_population,H_unknown_selected
+no_edit,0,0,0,0,0,89,0,1,0,178,0,0,213,0
+always_fixed,480,89,178,213,79,89,1,0,8,178,0,20,213,0
+residual_only__zero_validation_damage,70,43,16,11,38,89,0,1,0,178,0,2,213,0
+residual_only__H1pct_B2pct_validation,116,56,43,17,49,89,1,0,0,178,0,2,213,0
+residual_only__H5pct_B5pct_validation,211,83,78,50,74,89,1,0,2,178,0,9,213,0
+routing_only__zero_validation_damage,71,39,24,8,38,89,0,1,1,178,0,1,213,0
+routing_only__H1pct_B2pct_validation,125,61,47,17,57,89,1,0,3,178,0,1,213,0
+routing_only__H5pct_B5pct_validation,231,84,93,54,75,89,1,0,4,178,0,7,213,0
+combined__zero_validation_damage,70,42,19,9,39,89,0,1,0,178,0,2,213,0
+combined__H1pct_B2pct_validation,92,47,31,14,43,89,0,1,1,178,0,3,213,0
+combined__H5pct_B5pct_validation,227,87,84,56,78,89,1,0,3,178,0,10,213,0
+historical_residual_gate,59,41,17,1,37,89,1,0,0,178,0,0,213,0
+historical_hybrid_residualE_combinedH,86,59,25,2,54,89,1,0,0,178,0,1,213,0

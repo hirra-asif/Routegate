@@ -1,0 +1,246 @@
+{
+  "actuator": {
+    "alpha_R": 0.15,
+    "alpha_S": 0.0,
+    "application_scaling": "accepted CPR-Min: applied_delta = unit_direction * 0.15 * current prompt layer residual norm, slot 0",
+    "direction_variant": "consensus23_global_frozen",
+    "donors": [
+      "B_d2",
+      "B_d3"
+    ],
+    "expected_patch_hits_per_row": 3,
+    "historical_layers": [
+      31,
+      32,
+      33
+    ],
+    "is_not": "historical_d1_global_frozen (B_d1 - E), which is a different direction used by later controller work and did not produce this outcome table",
+    "prefill_only": true,
+    "role": "primary",
+    "site": "residual_stream",
+    "slot": 0,
+    "tensors": "routegate-data/frozen/rq2_actuator (pinned by manifests/rq2_actuator.json; not committed)",
+    "window": 1
+  },
+  "calls_a_judge": false,
+  "capability_evaluation": {
+    "datasets_cached_at_freeze_time": false,
+    "note": "the capability suite, the conditions and the sealed evaluation are declared in the final-evaluation manifest and are not restated here. This record's scope is the sensor checkpoint.",
+    "protocol": "routegate_final_evaluation_v1",
+    "protocol_manifest": "manifests/routegate_final_evaluation_v1.json"
+  },
+  "changes_nothing_else": [
+    "representation",
+    "estimator",
+    "hyperparameter grid",
+    "C selection rule",
+    "threshold_E",
+    "threshold_H",
+    "gate rule",
+    "actuator direction",
+    "alpha",
+    "intervention layers"
+  ],
+  "closes_blocker": "no deployable sensor for the safety-first gate: the completed run kept out-of-fold probabilities and no weights, so the gate could be applied only by row-id lookup",
+  "contains_prompt_or_response_text": false,
+  "contains_row_ids": false,
+  "development_estimates": {
+    "B_material_degradation": [
+      0,
+      178
+    ],
+    "E_substantive_repair": [
+      37,
+      89
+    ],
+    "H_actionable_regression": [
+      0,
+      213
+    ],
+    "source": "recomputed by routegate.thesisresults from the frozen outcome table and the frozen gate; the derived gate matches the recorded gate_full column row for row",
+    "standing": "out-of-fold; unchanged by this stage",
+    "steered_rows": 59
+  },
+  "does_not_claim": {
+    "statement": "the refit produces weights and nothing else. The reported development estimates remain the out-of-fold 37/89 E substantive repairs, 0/178 material B degradations and 0/213 actionable H regressions, computed from the frozen outcome table under the frozen gate. A sensor fitted on all 480 rows has seen every one of them, so its predictions there are training-set predictions and are never reported.",
+    "the_development_estimates_changed": false,
+    "the_refit_is_an_evaluation": false
+  },
+  "downloads_anything": false,
+  "gate": {
+    "recomputed_here": false,
+    "rule": "gate_fire = (p_E >= threshold_E) AND (p_H < threshold_H)",
+    "threshold_E": 0.29185573339357973,
+    "threshold_H": 0.06975384354575279,
+    "thresholds_sha256": "e7d56cfe1b2bb763fc52a8dd86a30254375f81b594ed8c942c3fe24715a35507",
+    "thresholds_source": "outputs/routegate_residual_v1/thresholds.json",
+    "unchanged": true
+  },
+  "generates_responses": false,
+  "modifies_sigr": false,
+  "name": "routegate_gate_deployment_v1",
+  "output": {
+    "bundle": "outputs/routegate_gate_deployment_v1/gate_bundle.json",
+    "checkpoint_schema": "routegate/gate_sensor_checkpoint/1",
+    "checkpoints": {
+      "E_sensor": "outputs/routegate_gate_deployment_v1/gate_sensor_E_all_development_refit.json",
+      "H_veto": "outputs/routegate_gate_deployment_v1/gate_sensor_H_all_development_refit.json"
+    },
+    "directory": "outputs/routegate_gate_deployment_v1",
+    "is_new_directory": true,
+    "kind": "all_development_refit",
+    "modifies_any_existing_run": false
+  },
+  "reads_the_sealed_set": false,
+  "record_sha256": "578d0ec1955aae1967c1cf759638b88ef132f93dff78a6326707b0b730ab4ae6",
+  "representation": {
+    "hidden_size": 2048,
+    "read_state": 45,
+    "read_state_means": "block 44 output",
+    "rows": 480,
+    "token_position": "final token of the rendered chat prompt, before generation",
+    "warning": "package state 45 is NOT transformer layer 45"
+  },
+  "runtime": {
+    "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "decoding": "greedy",
+    "design": "TWO-PASS prompt-level gate: an unsteered diagnostic forward pass reads state 45 at the final prompt token and yields p_E and p_H; if the gate fires the second pass generates with the frozen actuator, otherwise it generates normally.",
+    "max_new_tokens": 768,
+    "model": "Qwen/Qwen3-30B-A3B",
+    "reads_any_per_row_table": false,
+    "requires_row_id": false,
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "row_id_note": "the deployed gate takes an activation vector and nothing else. It consults no table, and GateBundle.decide accepts no row identifier.",
+    "tokenizer_config_sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  },
+  "schema": "routegate/gate_deployment_predeclaration/1",
+  "sealed_evaluation": {
+    "commitment": "manifests/sealed_set_commitment.json",
+    "expected_row_count": 380,
+    "how_established": "this repository stores no sealed prompt, no sealed prompt hash and no path to sealed material, and configs/paths.local.json names none. Nothing here can reach it.",
+    "opened_by_this_stage": false,
+    "prompt_content_read": false,
+    "protocol": "routegate_final_evaluation_v1"
+  },
+  "sources": {
+    "development_corpus": {
+      "path": "rq3_dataset_final.csv",
+      "paths_key": "dataset",
+      "role": "the 480 development rows and their frozen final_ebh labels",
+      "root": "routegate-data",
+      "sha256": "0943449697327aa47912ef80337462414ab98255c3ad99b717baa716353e1d08"
+    },
+    "residual_activations": {
+      "path": "residual_final_prompt_token.npy",
+      "paths_key": "extraction_dir",
+      "role": "the frozen feature artifact, [480, 49, 2048]; state 45 at the final prompt token is the sensor input",
+      "root": "routegate-data",
+      "sha256": "af89872d5decd4dc432ec579a941e6247bc7de63ff5690432e9f5812a994e2d8"
+    },
+    "residual_extraction_manifest": {
+      "path": "manifest.csv",
+      "paths_key": "extraction_dir",
+      "role": "the row order of the activation array",
+      "root": "routegate-data",
+      "sha256": "a3b7444b1a2782b5bc04142f3545ac5d71ad57a5f546edc315d7d51d14947abd"
+    },
+    "sensor_config": {
+      "path": "outputs/routegate_residual_v1/config.json",
+      "paths_key": "",
+      "role": "the frozen protocol every constant in this stage is transcribed from",
+      "root": "repository",
+      "sha256": "d691c5d8520039c6fc9e467d4326e7e047eeda433abef691333112538cdbc5ec"
+    },
+    "sensor_oof_predictions": {
+      "path": "outputs/routegate_residual_v1/oof_predictions.csv",
+      "paths_key": "",
+      "role": "the frozen out-of-fold probabilities the reconstruction must reproduce before any deployment weight may be written",
+      "root": "repository",
+      "sha256": "875b3843983fa37cd834572186aff440ec368439e0f48edc6d35cecd4abb61d2"
+    },
+    "sensor_thresholds": {
+      "path": "outputs/routegate_residual_v1/thresholds.json",
+      "paths_key": "",
+      "role": "both frozen thresholds and the frozen gate rule; read, never recomputed",
+      "root": "repository",
+      "sha256": "e7d56cfe1b2bb763fc52a8dd86a30254375f81b594ed8c942c3fe24715a35507"
+    },
+    "static_run_config": {
+      "path": "frozen/static_steering/rq3_bh_rq2_static_20260810/run_config.json",
+      "paths_key": "",
+      "role": "the actuator, alpha, layers and generation settings the outcome table was produced under",
+      "root": "routegate-data",
+      "sha256": "e8b1b46f0923ba1bef1a770ed1bc95d4e92c49e6457a52bcdb0ef3a0d1e31777"
+    },
+    "static_steering_master": {
+      "path": "rq3_static_steering_ebh_master_20260811.csv",
+      "paths_key": "static_steering_master",
+      "role": "the frozen per-row outcome table behind the reported development estimates; read by the reporting stage, not by the fit",
+      "root": "routegate-data",
+      "sha256": "525e62e0a6fdac3200111deae146d699ea2db9b3459dab2e57b09c705b11b9e4"
+    }
+  },
+  "stage": "gate_sensor_deployment_refit",
+  "status": "predeclared",
+  "training": {
+    "C_for_the_refit": "selected by the SAME inner rule applied to all 480 rows. It is not copied from an outer fold and is not chosen by hand; the value is recorded in the checkpoint after the fit.",
+    "C_grid": [
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "C_selected_per_outer_fold_in_the_completed_run": {
+      "E_sensor": [
+        1.0,
+        0.01,
+        0.01,
+        0.1,
+        0.01
+      ],
+      "H_veto": [
+        0.01,
+        0.01,
+        0.01,
+        0.01,
+        0.01
+      ]
+    },
+    "C_selection_rule": "C is chosen by StratifiedKFold(n_splits=5, shuffle=True, random_state=20260811) inner cross-validation scored by roc_auc, maximising the mean inner score; deterministic tie-break = the smallest maximising C (first argmax over the ascending grid). This is the frozen run's own rule, applied to the fit set it is given.",
+    "class_weight": "balanced",
+    "deterministic": "lbfgs on a fixed design with a fixed seed. Refitting twice on the same inputs yields byte-identical weights, and a test asserts it.",
+    "estimator": "StandardScaler -> LogisticRegression(penalty=l2, solver=lbfgs, class_weight=balanced, max_iter=5000)",
+    "heads": {
+      "E_sensor": {
+        "fitted_on": "the E and B rows of the fit set",
+        "negative": [
+          "B"
+        ],
+        "positive": "E"
+      },
+      "H_veto": {
+        "fitted_on": "all rows of the fit set",
+        "negative": [
+          "E",
+          "B"
+        ],
+        "positive": "H"
+      }
+    },
+    "inner_cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=20260811) scored by roc_auc",
+    "max_iter": 5000,
+    "outer_cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=20260811) -- the frozen fold division, reproduced and checked, used only for the reproduction gate",
+    "penalty": "l2",
+    "reproduction_gate": {
+      "atol": 1e-09,
+      "on_failure": "nothing is written. A specification that cannot reproduce the frozen probabilities is not the specification that produced them, and a deployment artifact built from it would be a different sensor.",
+      "rule": "before any deployment weight is written, the five fold sensors are reconstructed under this exact specification and their out-of-fold probabilities compared against the frozen oof_predictions.csv row for row."
+    },
+    "seed": 20260811,
+    "solver": "lbfgs",
+    "what_is_refitted": "both sensors, on all 480 development rows",
+    "why": "to obtain final deployment weights. The completed run kept out-of-fold probabilities and no weights, so the gate could only be applied by row-id lookup."
+  },
+  "version": 1
+}

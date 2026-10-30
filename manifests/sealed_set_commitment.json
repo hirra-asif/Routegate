@@ -1,0 +1,26 @@
+{
+  "schema": "routegate/sealed_set_commitment/1",
+  "description": "A commitment to the size and composition of the held-out benchmark split, recorded so the split can be verified when it is eventually opened, without any of its content being available to development code.",
+  "recorded_utc": "2026-08-05",
+
+  "expected_row_count": 380,
+  "expected_safe_source_count": 180,
+  "expected_harmful_source_count": 200,
+
+  "availability": {
+    "sealed_prompt_text_available_to_development_code": false,
+    "statement": "Sealed prompt text is unavailable to development code. This repository stores no sealed prompt, no sealed prompt hash, and no path to sealed material. configs/paths.local.json must not name it, no module under src/routegate contains or can infer its location, and the input gates refuse any path whose name suggests held-out material.",
+    "enforcement": [
+      "src/routegate/validation.py rejects paths and configuration values matching generic held-out tokens",
+      "the loader refuses any input path that fails that check",
+      "a test asserts that the development experiment configuration names no held-out path or filename"
+    ]
+  },
+
+  "release_conditions": [
+    "the residual-geometry analysis is corrected and frozen",
+    "the incremental MoE-feature analysis is complete and frozen",
+    "a preregistered protocol for the dynamic-gate evaluation is written, with the joint outcome as the primary endpoint",
+    "opening the split is an explicit, logged, one-time action outside the development entry points"
+  ]
+}

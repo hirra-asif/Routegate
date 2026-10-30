@@ -1,0 +1,205 @@
+# Environment ---------------------------------------------------------------
+.venv/
+venv/
+env/
+
+# Run outputs ---------------------------------------------------------------
+# Run records are reproducible from the inputs and the committed code, and some
+# of them are large. They are kept on disk, not in history.
+outputs/
+
+# Machine-local absolute input paths ----------------------------------------
+configs/paths.local.json
+
+# Data --------------------------------------------------------------------
+# No activation array, checkpoint or tensor blob is ever committed. The
+# accepted array is read in place from the path in paths.local.json.
+*.npy
+*.npz
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.h5
+*.parquet
+*.feather
+*.pkl
+*.pickle
+
+# Prompt-bearing datasets ---------------------------------------------------
+# Prompt text is study material, not source code. Nothing prompt-bearing is
+# committed as ordinary source. Final evaluation uses a separately released
+# input; development loaders retain their held-out-data guards.
+*.csv
+*.tsv
+*.jsonl
+prompts/
+data/
+sealed/
+**/*prompt*.csv
+**/*prompts*.json
+
+# Caches --------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+.hypothesis/
+.cache/
+
+# Logs ----------------------------------------------------------------------
+*.log
+logs/*
+!logs/.gitkeep
+nohup.out
+slurm-*.out
+*.o[0-9]*
+*.e[0-9]*
+
+# Editor and OS -------------------------------------------------------------
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# ===========================================================================
+# Added 2026-08-19 (standalone-migration Phase 1). Additive only: no existing
+# rule above was changed, reordered or removed. In particular the `outputs/`
+# rule on line 9 is left exactly as it was -- see docs/standalone_migration.md
+# before proposing any change to how completed run outputs are handled.
+# ===========================================================================
+
+# Agent / editor local state ------------------------------------------------
+# Currently ignored only by the machine-global ~/.config/git/ignore, which does
+# not travel with a clone. Pinned here so a clone is protected too.
+.claude/settings.local.json
+.claude/settings.local.json.bak
+
+# Credentials and environment files -----------------------------------------
+# Judging stages use credentials supplied outside version control.
+# Frozen-feature analysis does not need judge credentials.
+.env
+.env.*
+!.env.example
+*.env
+.envrc
+secrets.json
+secrets.yaml
+credentials.json
+*.pem
+*.key
+!*.pub.key
+.netrc
+.htpasswd
+api_key*
+*_api_key*
+.aws/
+.hf_token
+huggingface_token*
+
+# Temporary and editor scratch ----------------------------------------------
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*.old
+*~$*
+.#*
+\#*\#
+core.[0-9]*
+
+# Cluster job logs ----------------------------------------------------------
+# This cluster is SGE (qsub); the Slurm patterns are included so a move does
+# not silently start committing job output. `*.o[0-9]*` / `*.e[0-9]*` are
+# already covered above; these are the parallel-environment and Slurm forms.
+*.po[0-9]*
+*.pe[0-9]*
+slurm-*.err
+slurm_*.out
+slurm_*.err
+qsub_*.log
+sge_*.log
+jobreport*.txt
+
+# Local model, tokenizer and compiler caches --------------------------------
+# Weights are pinned by revision and downloaded to the local HuggingFace cache;
+# they are never vendored into this repository. Container images are large and
+# live in ~/containers.
+.huggingface/
+huggingface/
+hf_cache/
+transformers_cache/
+models--*/
+*.sif
+*.simg
+containers/
+.torch/
+torch_extensions/
+.triton/
+.nv/
+.cache_ld/
+
+# Frozen artifacts ----------------------------------------------------------
+# artifacts/ is NOT excluded: it is meant to be committed. But the broad data
+# rules above (*.csv, *.npy, *.jsonl ...) still apply inside it, so each frozen
+# artifact needs its own explicit negation, added when that file is promoted.
+# One line per file, each justified in artifacts/README.md. Never negate a
+# pattern, and never un-ignore artifacts/ as a whole.
+#
+#   !artifacts/<exact-filename>
+#
+# Promoted 2026-08-19 (Phase 2 step 5). Both are small, frozen, hash-verified,
+# carry no prompt text, and are required to reproduce the residual-geometry
+# pilot. Provenance for each is recorded in artifacts/README.md.
+!artifacts/pilot_reference/layerwise_eb_probe_metrics.csv
+!artifacts/pilot_reference/best_layer_oof_scores.csv
+
+# Aggregate inputs needed to rebuild the post-hoc thesis figures.
+# Allow only these nine files; raw data and generated figures stay excluded.
+!experiments/thesis_figures/posthoc_update_v1/data/
+experiments/thesis_figures/posthoc_update_v1/data/*
+!experiments/thesis_figures/posthoc_update_v1/data/cancellation_plotdata.csv
+!experiments/thesis_figures/posthoc_update_v1/data/controller_plotdata.csv
+!experiments/thesis_figures/posthoc_update_v1/data/moe_selector_folds.csv
+!experiments/thesis_figures/posthoc_update_v1/data/moe_selector_profiles.csv
+!experiments/thesis_figures/posthoc_update_v1/data/moe_source_quality.csv
+!experiments/thesis_figures/posthoc_update_v1/data/selector_capacity_folds.csv
+!experiments/thesis_figures/posthoc_update_v1/data/selector_capacity_profiles.csv
+!experiments/thesis_figures/posthoc_update_v1/data/static_audit.json
+!experiments/thesis_figures/posthoc_update_v1/data/static_report.json
+experiments/thesis_figures/posthoc_update_v1/Figures/
+
+# ===========================================================================
+# Added 2026-10-09 (public-release preparation). Additive only.
+# ===========================================================================
+
+# Agent and editor session state ---------------------------------------------
+# `.claude/settings.local.json` was already pinned above, but `RESUME.md` was
+# ignored only by `.git/info/exclude`, which does not travel with a clone. The
+# whole directory is local assistant state and none of it is research material.
+.claude/
+
+# Raw assessment material ----------------------------------------------------
+# `consistency_review_v1.json` carries the full held-out prompt text and the
+# complete saved model replies for the six identical-text label conflicts. It is
+# held-out benchmark content and prompt-bearing study material, so it falls under
+# the same rule as every other prompt-bearing file: it stays on disk and out of
+# git. `consistency_review_v1.public.json` is the committed derivative -- the
+# same record with the prompt and reply text replaced by their lengths, the
+# existing SHA256 digests retained, and every label, reason and qualification
+# preserved unchanged.
+docs/final_evaluation/consistency_review_v1.json
+
+# Package-delivery pages -----------------------------------------------------
+# A 9.4 MB single-file download page with every figure embedded as a base64
+# data URI. It duplicates the figures in Figures/ and exists only to hand the
+# images over outside the repository.
+experiments/thesis_figures/posthoc_update_v1/RouteGate_Figure_Downloads.html

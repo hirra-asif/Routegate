@@ -1,0 +1,299 @@
+{
+  "arm_count": 9,
+  "arms": [
+    {
+      "arm_id": "tinymmlu__baseline",
+      "condition": "baseline",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v1/tinymmlu__baseline",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinymmlu__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v1/tinymmlu__dynamic_raw",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinymmlu__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v1/tinymmlu__safety_first_routegate",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__baseline",
+      "condition": "baseline",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v1/tinygsm8k__baseline",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v1/tinygsm8k__dynamic_raw",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v1/tinygsm8k__safety_first_routegate",
+      "rows": 100
+    },
+    {
+      "arm_id": "sealed__baseline",
+      "condition": "baseline",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v1/sealed__baseline",
+      "rows": 380
+    },
+    {
+      "arm_id": "sealed__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v1/sealed__dynamic_raw",
+      "rows": 380
+    },
+    {
+      "arm_id": "sealed__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v1/sealed__safety_first_routegate",
+      "rows": 380
+    }
+  ],
+  "condition_spec": {
+    "baseline": {
+      "applies_at_historical_blocks": [],
+      "description": "the unsteered model; no hook fires",
+      "reads_state": null,
+      "steers": false
+    },
+    "dynamic_raw": {
+      "alpha_R": 0.15,
+      "applies_at_historical_blocks": [
+        31,
+        32
+      ],
+      "coefficient": "g_R from the all-development refit controller, computed live from the state-32 activation",
+      "controller": "routegate-data/gate_oof_v1_repro/controller_all_development_refit.json",
+      "description": "one forward pass, read before write",
+      "direction": "B_d1 - E (validated direction bank)",
+      "passes": 1,
+      "reads_state": 32,
+      "steers": true
+    },
+    "safety_first_routegate": {
+      "alpha_R": 0.15,
+      "applies_at_historical_blocks": [
+        31,
+        32,
+        33
+      ],
+      "description": "diagnostic pass then, if the gate fires, a steered generation pass",
+      "direction": "consensus23_global_frozen (RQ2 primary actuator, donors B_d2 and B_d3)",
+      "gate_rule": "gate_fire = (p_E >= threshold_E) AND (p_H < threshold_H)",
+      "passes": 2,
+      "reads_state": 45,
+      "sensors": "outputs/routegate_gate_deployment_v1",
+      "steers": "when the gate fires"
+    }
+  },
+  "conditions": [
+    "baseline",
+    "dynamic_raw",
+    "safety_first_routegate"
+  ],
+  "conditions_are_complete": true,
+  "contains_prompt_or_response_text": false,
+  "contains_sealed_material": false,
+  "dataset_spec": {
+    "sealed": {
+      "commitment": "manifests/sealed_set_commitment.json",
+      "decoding": "greedy",
+      "expected_harmful_source_count": 200,
+      "expected_safe_source_count": 180,
+      "kind": "held_out_confirmatory",
+      "max_new_tokens": 768,
+      "opened_before_capability_completes": false,
+      "path_stored_in_this_repository": false,
+      "rows": 380,
+      "source": "the existing frozen sealed split",
+      "supplied_at": "launch, as an explicit one-time argument"
+    },
+    "tinygsm8k": {
+      "answer_column": "answer",
+      "decoding": "greedy",
+      "file": "main/test-00000-of-00001.parquet",
+      "kind": "capability",
+      "local": "routegate-data/benchmarks/tiny/tinyGSM8k.parquet",
+      "max_new_tokens": 512,
+      "prompt_column": "input_formatted",
+      "repo": "tinyBenchmarks/tinyGSM8k",
+      "revision": "b870449ed96ee3e308748b550908332450ec4098",
+      "rows": 100,
+      "sha256": "07c2857ce7f4f4cf123066fede0f52f2aab7458c0c9bae3293c3f656a9eac53c"
+    },
+    "tinymmlu": {
+      "answer_column": "answer",
+      "decoding": "greedy",
+      "file": "all/test-00000-of-00001.parquet",
+      "kind": "capability",
+      "local": "routegate-data/benchmarks/tiny/tinyMMLU.parquet",
+      "max_new_tokens": 8,
+      "prompt_column": "input_formatted",
+      "repo": "tinyBenchmarks/tinyMMLU",
+      "revision": "cd6a8ee9e1e6f3f18f683535f6c096c386a85da3",
+      "rows": 100,
+      "sha256": "256f81ffdd6e64699df096c02afafba33626bfca08baed484c275e351993f317"
+    }
+  },
+  "datasets": [
+    "sealed",
+    "tinymmlu",
+    "tinygsm8k"
+  ],
+  "excluded": {
+    "benchmarks": [
+      "HellaSwag",
+      "ARC-Challenge",
+      "TruthfulQA",
+      "full MMLU",
+      "full GSM8K"
+    ],
+    "models": "no model other than Qwen/Qwen3-30B-A3B",
+    "note": "none of these is run, loaded or referenced by any arm.",
+    "operators": [
+      "SIGR",
+      "angular steering",
+      "static steering as a standalone condition"
+    ]
+  },
+  "frozen_before_any_generation": true,
+  "frozen_before_any_sealed_prompt_was_read": true,
+  "generations": {
+    "inherited_or_reused": 0,
+    "per_condition": 580,
+    "sealed": 1140,
+    "tinygsm8k": 300,
+    "tinymmlu": 300,
+    "total": 1740
+  },
+  "judging": {
+    "note": "this stage generates and records. Adjudication is a separate stage and makes its own calls.",
+    "performed_by_this_stage": false
+  },
+  "name": "routegate_final_evaluation_v1",
+  "ordering": {
+    "capability_first": [
+      "tinymmlu__baseline",
+      "tinymmlu__dynamic_raw",
+      "tinymmlu__safety_first_routegate",
+      "tinygsm8k__baseline",
+      "tinygsm8k__dynamic_raw",
+      "tinygsm8k__safety_first_routegate"
+    ],
+    "rule": "every capability arm completes before the sealed split is opened",
+    "sealed_last": [
+      "sealed__baseline",
+      "sealed__dynamic_raw",
+      "sealed__safety_first_routegate"
+    ]
+  },
+  "output": {
+    "data_root": "final_evaluation_v1",
+    "records_file": "records.jsonl",
+    "resumable": true,
+    "resume_rule": "an arm resumes by item_id: records already present are kept, never regenerated and never overwritten. The identical command resumes and completes."
+  },
+  "record_fields": [
+    "schema",
+    "protocol",
+    "arm_id",
+    "dataset",
+    "condition",
+    "item_index",
+    "item_id",
+    "prompt_sha256",
+    "status",
+    "error_message",
+    "model",
+    "revision",
+    "tokenizer_config_sha256",
+    "chat_template_sha256",
+    "decoding",
+    "max_new_tokens",
+    "do_sample",
+    "sampling_seed",
+    "gate_read_state",
+    "gate_p_E",
+    "gate_p_H",
+    "gate_fires",
+    "threshold_E",
+    "threshold_H",
+    "controller_read_state",
+    "g_R",
+    "applied_alpha_R",
+    "applied_at_historical_blocks",
+    "hooks_expected",
+    "hooks_fired",
+    "response_text",
+    "prompt_token_count",
+    "completion_token_count",
+    "eos_reached",
+    "hit_max_new_tokens",
+    "elapsed_seconds",
+    "created_utc"
+  ],
+  "record_schema": "routegate/final_evaluation_record/1",
+  "record_sha256": "51a8bda67f4901fdba8df0fd316cdaf4cc6e3bd511f6f9580f907099fb6e05f7",
+  "rejected_candidates": {
+    "dynamic_fullgate": "2 B material degradations against the same rule, and dominated by safety_first_routegate (26/87 E substantive against 37/89)",
+    "dynamic_safety_constrained": "10 B material degradations against a fixed zero-material eligibility rule, and dominated by safety_first_routegate (31/87 E substantive against 37/89)"
+  },
+  "rejected_candidates_note": "composed offline from existing adjudicated responses and rejected under a fixed eligibility rule before this protocol was written. Neither appears as a condition, in the runner, or in any output arm, and neither may be added later.",
+  "runtime": {
+    "batch_size": 1,
+    "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "decoding": "greedy",
+    "do_sample": false,
+    "model": "Qwen/Qwen3-30B-A3B",
+    "one_model_only": "Qwen/Qwen3-30B-A3B",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "sampling_seed": null,
+    "sampling_seed_is_null_because": "decoding is greedy and consults no random number generator",
+    "tokenizer_config_sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  },
+  "schema": "routegate/final_evaluation_protocol/1",
+  "sealed_set": {
+    "commitment": "manifests/sealed_set_commitment.json",
+    "expected_row_count": 380,
+    "opened": "once, after every capability arm completes, as an explicit argument supplied at launch",
+    "path_stored_in_this_repository": false,
+    "prompt_content_read_by_this_module": false
+  },
+  "sensors": {
+    "bundle": "gate_bundle.json",
+    "checkpoints": [
+      "gate_sensor_E_all_development_refit.json",
+      "gate_sensor_H_all_development_refit.json"
+    ],
+    "controller": "routegate-data/gate_oof_v1_repro/controller_all_development_refit.json",
+    "controller_weights_sha256": "bc2973fa7745e97ba487699131824586c98ff059004d5fc14cd6975d7ccc8f85",
+    "directory": "outputs/routegate_gate_deployment_v1",
+    "read_state": 45,
+    "reads_any_per_row_table": false,
+    "reproduction_gate": "the refit was written only after the five fold sensors were reconstructed under the frozen specification and matched the frozen out-of-fold probabilities to 1e-9 (worst observed 4.99e-11).",
+    "requires_row_id": false,
+    "thresholds_sha256": "e7d56cfe1b2bb763fc52a8dd86a30254375f81b594ed8c942c3fe24715a35507",
+    "weights_sha256": {
+      "E_sensor": "dfda05aed1043e3e24b4c5e9f653b5cb6581929071aa5649b91d718d54e8d462",
+      "H_veto": "640eb8088b0c5ea89aa6f0ebacf8d97b7e0b6451ea0445395115771744c1b9b7"
+    }
+  },
+  "status": "frozen",
+  "version": 1
+}

@@ -1,0 +1,8 @@
+{
+  "manifests/development_inputs.json": "9d97bb2f89785e3edd6b5f982a8cb7eb6fbfdfef8f1436cb305342c224f599ca",
+  "artifacts/gate_oof_v1/fold_assignments.json": "f654c0bb6c1ccfcdaf924960ee92f67921c645169083fb586681f157972a2cd7",
+  "manifests/two_site_actuator_judging_v1.json": "093c4e3cecd9c372c36c1e864d5b4eaf5d818e92d61c03f7984fac957c4b3d7b",
+  "src/routegate/dynamicjudging.py": "abc9bbd389d60c3c591a70848d37ef06b2a081f3e0265b5326653f68d70f76ab",
+  "src/routegate/gatecontroller.py": "e914a776041f73ed0c6cb4281e9affd2135b7d229482b330469346129c8f4391",
+  "manifests/focused_direction_validation_v1_technical_exclusions.json": "c358dce670a449e65f84343b6be6598ce88ff137380e8d23f9c3f44dfdf7b032"
+}

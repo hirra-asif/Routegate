@@ -1,0 +1,24 @@
+{
+  "data_sha256": {
+    "moe_selector_folds.csv": "d692afb8d7981dd46eb67c490b021b1b8e2b28a03847fd22b302b43aaedb44ab",
+    "moe_selector_profiles.csv": "e5679d275fb8de79c5faef8ee3a0c4ff61e5edfee0afa5f31d6d238532936e32",
+    "moe_source_quality.csv": "1fbba3396592cfac53b853a7dcdf03f30e93af68007e912e2ea3a3ec4e7aa251",
+    "selector_capacity_folds.csv": "007e39dfc28161bd056019161b3d4e5d4e19d65068f17372a818dad3008dac78",
+    "selector_capacity_profiles.csv": "07f5a08431cab2fc8adf18ee0da833aa9e22d0a259f23250877e01d94dcd5929"
+  },
+  "figures": [
+    "selector_capacity_profiles",
+    "moe_selector_profiles",
+    "selector_fold_variation",
+    "moe_h_source_controls"
+  ],
+  "endpoint_colours": {
+    "E": "#B47B48",
+    "B": "#2F6595",
+    "H": "#9E594C"
+  },
+  "unknown_display": "Known count remains unchanged; selected unknowns shown as separate unfilled caps with u annotation.",
+  "uncertainty": "No confidence intervals are invented.",
+  "layout_revision": "20260913 print-size correction; data unchanged",
+  "matplotlib_version": "3.10.8"
+}

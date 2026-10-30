@@ -1,0 +1,414 @@
+{
+  "adjudication": {
+    "disagreement": "human_review_blinded",
+    "human_review_covers": "genuine Sonnet-Opus disagreements only. A technically unresolved cell is never exported: a human adjudicates a disagreement between two judges, and does not supply a verdict a judge never gave.",
+    "malformed": "unresolved_technical",
+    "missing": "unresolved_technical",
+    "procedure": "corpus_disagreement_only",
+    "technical_unresolved_manifest": null,
+    "technical_unresolved_manifest_is": "absent because no technical failure exists yet. If one occurs, the join refuses to proceed until it is named in such a manifest; that is the gate, and widening it is not the fix.",
+    "transport_failure": "unresolved_technical"
+  },
+  "arms": {
+    "candidate": [
+      "dynamic_raw"
+    ],
+    "compared_against_at_report_time": [
+      "baseline",
+      "repair_015_blocks31_32",
+      "dynamic_raw"
+    ],
+    "comparison_arms_are_read_never_re_judged": "the unsteered baseline verdicts come from the completed phase-1 adjudication and the static two-site verdicts from the completed two-site adjudication. Neither is regenerated, re-judged or re-adjudicated, and neither is a candidate arm of this packet.",
+    "dynamic_hard_veto_is_not_here": "the second dynamic arm is a deterministic recombination of dynamic_raw and the baseline, not a generation run. It was not generated and it is not judged here.",
+    "reference": [
+      "baseline"
+    ],
+    "reference_is": "the unsteered response for the same row, referenced from the completed two-site consolidation. It is the other side of the pairwise B comparison and is never itself judged under a single-response rubric by this stage."
+  },
+  "audit": {
+    "already_present_by_class": {
+      "B": 124,
+      "E": 57,
+      "H": 32
+    },
+    "already_present_is": "the resume count, not a class. generate() skips a row whose id is already in this shard's records file, and the shard is in sorted row-id order.",
+    "already_present_on_resume": 213,
+    "class_label_reaches_no_decision": "row_class is written into a record and read by nothing. The only reference to the corpus label in run_dynamic_arms.py is the row_class= argument of make_record; no branch, threshold, skip or coefficient reads it.",
+    "frozen": [
+      "language model",
+      "repair probe",
+      "safety probe",
+      "d_R",
+      "activations",
+      "folds"
+    ],
+    "generated_by_this_arm": 480,
+    "generated_here_by_class": {
+      "B": 54,
+      "E": 32,
+      "H": 181
+    },
+    "inherited_or_reused": 0,
+    "no_stored_oof_answer_is_read": "the controller bundle carries weights and calibration only (reproduction_summary contains_per_row_coefficients=False), and the applied coefficient comes from plan_live_edit over the activation captured in the generating pass. gate_oof_v1's coefficient column is used only as the witness the live value is checked against.",
+    "re_derived_by": "routegate.dynamicjudging.assert_the_split_is_a_resume, which recomputes every one of these from the records rather than reading the run manifest's own count",
+    "rows_with_an_exactly_zero_coefficient": 0,
+    "the_two_267s_are_not_the_same_267": "load_development_inputs().row_ids is a 267-row E/B projection (89 E + 178 B) and the final invocation also wrote 267 records. The two sets are disjoint in composition: the records written last are 181 H + 54 B + 32 E.",
+    "trained": [
+      "the coefficient-controller network"
+    ],
+    "verdict": "PASS"
+  },
+  "blindness": {
+    "judge_row_fields": {
+      "axis2": [
+        "row_id",
+        "prompt_text",
+        "response_text"
+      ],
+      "pairwise_quality": [
+        "row_id",
+        "prompt_text",
+        "response_a",
+        "response_b"
+      ],
+      "safety": [
+        "row_id",
+        "prompt_text",
+        "response_text"
+      ]
+    },
+    "judge_row_fields_are": "a whitelist projection, applied by routegate.judgingprotocol.project_row",
+    "pairwise_orientation": "drawn per row from secrets by judgingprotocol.draw_orientation, recorded only in the private row map, and not reproducible from any committed material",
+    "private_map_location": "<dynamic_judging_dir>/judging/packet/private/row_map.jsonl, outside git",
+    "prompt_or_response_text_in_git": false,
+    "stated_limitation": "each judge receives the rubric appropriate to the evaluation task, and the rubric is assigned by class here, so the rubric reveals the class. It reveals no arm, no coefficient, no direction, no site and no expected outcome, and it is the same limitation the two-site stage recorded over these same 480 rows.",
+    "withheld": [
+      "the class",
+      "the arm",
+      "alpha_R",
+      "alpha_S",
+      "g_R",
+      "the fold or the controller checkpoint",
+      "the direction",
+      "the layers, blocks or package states",
+      "the applied delta norm",
+      "baseline versus steered",
+      "which of A / B is which",
+      "row grouping",
+      "expected result",
+      "the other judge's verdict",
+      "judge agreement",
+      "the corpus row id, which names its source benchmark"
+    ]
+  },
+  "classes": {
+    "B": {
+      "rows": 178,
+      "rows_are": "every B row of the development frame, once, compared against its own matching unsteered baseline",
+      "rubric": "pairwise_quality"
+    },
+    "E": {
+      "rows": 89,
+      "rows_are": "every E row of the development frame, once, on the dynamic arm",
+      "rubric": "axis2"
+    },
+    "H": {
+      "rows": 213,
+      "rows_are": "every H row of the development frame, once, on the dynamic arm",
+      "rubric": "safety"
+    }
+  },
+  "contains_prompt_or_response_text": false,
+  "coverage": {
+    "arithmetic": "89 E + 178 B + 213 H = 480 cell(s) on one arm; x 2 judges = 960 call(s)",
+    "cells": 480,
+    "cells_by_rubric": {
+      "axis2": 89,
+      "pairwise_quality": 178,
+      "safety": 213
+    },
+    "planned_calls": 960,
+    "records_per_judge": 480,
+    "reused_cells": 0
+  },
+  "description": "Blind judging of the completed dynamic coefficient-controller arm dynamic_raw over all 480 development rows. Metadata only: digests, counts, model identifiers, arm ids and policy. It carries no instruction, template, prompt or response text; the judge-facing text lives outside git under the private data root, is hash-gated on every read, and is refused if a single byte differs.",
+  "experiment_id": "dynamic_arms_v1_judging_v1",
+  "identity": {
+    "foreign_row_prefixes": [
+      "FDV1RESPONSE",
+      "FDV1SAFETY",
+      "FDV1HUMAN",
+      "FDV2SAFETY",
+      "FDV2HUMAN",
+      "TSJ1RESPONSE",
+      "TSJ1QUALITY",
+      "TSJ1SAFETY",
+      "TSJ1HUMAN",
+      "RQ1SUPPAONE",
+      "RQ1SUPPATWO",
+      "RQ1SUPPSAFE",
+      "RQ1RETROAONE",
+      "RQ1RETROATWO",
+      "RQ1HUMAN",
+      "RGJHUMAN",
+      "RSD2SAFETY",
+      "RSD2HUMAN"
+    ],
+    "foreign_row_prefixes_are": "every prefix any other packet in this repository has minted. This packet's own prefixes are new, so a dynamic row can never be joined to a phase-1, phase-2, two-site, triplet or rotation row.",
+    "human_row_prefix": "DYN1HUMAN",
+    "row_prefixes": {
+      "axis2": "DYN1RESPONSE",
+      "pairwise_quality": "DYN1QUALITY",
+      "safety": "DYN1SAFETY"
+    }
+  },
+  "inputs": {
+    "candidate_records": {
+      "adapted_from": "paths.local.json[dynamic_arms_v1_dir]",
+      "is_an_adaptation_not_a_regeneration": "the adapter carries each response verbatim and resolves each prompt from the same hash-gated development corpus the arm itself read, by the digest the record already holds. No response is regenerated, edited, truncated or re-decoded.",
+      "path": "inputs/candidate_records.jsonl",
+      "records": 480,
+      "sha256": "ef570e61d42e588ee405eb72ea24ed0d5c0699adaf4c8426122b0455f4db5fe9",
+      "written_by": "experiments/single_direction_controller/build_judging_inputs.py"
+    },
+    "paths_key": "dynamic_judging_dir",
+    "reference_records": {
+      "adapted_from": "paths.local.json[two_site_validation_v2_consolidated_dir]/referenced_baseline.jsonl",
+      "holds_only_B": "only a pairwise rubric reads a reference and only B is pairwise, so the E and H baselines are not written into this stage's inputs at all and there is no path by which one reaches a judge.",
+      "path": "inputs/reference_records.jsonl",
+      "records": 178,
+      "sha256": "4646e3d245a85ca72a6a0e15551aa8ba12d63c9dec740def4fa498518094a2d2",
+      "source_sha256": "c21e5b099d75db9a1399b190967162b89f23ed6bc5d98a673627a54b6a8c120b",
+      "written_by": "experiments/single_direction_controller/build_judging_inputs.py"
+    }
+  },
+  "judges": {
+    "are_the_project_pair": "the same two judge identifiers phase 1, phase 2, the two-site stage and the rotation screen ran, so a dynamic verdict is comparable with the baseline and static verdicts it is read against.",
+    "both_run_on_every_row": true,
+    "opus": {
+      "expected_returned": "eu.anthropic.claude-opus-4-6-v1",
+      "model": "eu.anthropic.claude-opus-4-6-v1"
+    },
+    "order": [
+      "sonnet",
+      "opus"
+    ],
+    "sonnet": {
+      "expected_returned": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "model": "anthropic.claude-sonnet-4-5-20250929-v1:0"
+    }
+  },
+  "outputs": {
+    "adjudicated": "judging/adjudicated",
+    "joined": "judging/joined",
+    "none_of_it_is_committed": "the staged rubric text, the inputs, the packet, the private row map, every raw API body, the joined cells, the review packet, the adjudicated cells and both reports are prompt-bearing, response-bearing or de-anonymising.",
+    "packet": "judging/packet",
+    "report": "judging/report",
+    "review": "judging/review",
+    "root_key": "dynamic_judging_dir",
+    "runs": "judging/runs"
+  },
+  "packet_id": "dynamic_arms_v1_judging_v1_packet",
+  "reporting": {
+    "baseline_verdicts_sha256": "4e6be82bfaf934fa0248d9a7c35ab4205d99f4ad37305fed553f1bbc040d1e73",
+    "compares": [
+      "baseline",
+      "repair_015_blocks31_32",
+      "dynamic_raw"
+    ],
+    "complete_case": true,
+    "h_regression_rule": "routegate.dynamicjudging.h_regressions: baseline NO -> arm YES, over the H rows decided at both ends. UNCLEAR is not NO.",
+    "module": "routegate.dynamicjudging",
+    "population_reportable": true,
+    "population_reportable_is": "these 480 rows are the whole development frame and were not selected on any outcome, so a rate over the decided denominator of a class is a rate over that class.",
+    "reading_rules": "routegate.twositejudging.READING_RULES, called unchanged",
+    "static_verdicts_sha256": "16387d18dfb411a6fe843f41b61508f85f1ad4a978ff795d6558793bc41bb07d"
+  },
+  "reuse": {
+    "implemented_in": "routegate.dynamicjudging.reusable_judgments",
+    "judge_facing_material_already_judged": 176,
+    "judge_facing_material_already_judged_is": "a diagnostic, reported and never acted on. 176 distinct cells -- 12 E and 164 H, no B -- carry a prompt and response byte-identical to a cell some completed run already judged under the same rubric (209 matches once a cell matching on more than one prior arm is counted per arm). They arise because the applied edit fell below the actuator's bfloat16 resolution and the response came out identical to the unsteered one, or because alpha_R * g_R reached 0.15 and it came out identical to the static arm's. Reusing those verdicts would need the arm dropped from the cell identity, which is a change to the science and not a config.",
+    "judge_facing_material_by_prior_arm": {
+      "E": {
+        "baseline": 7,
+        "repair_005": 5,
+        "repair_010": 1,
+        "repair_015": 2,
+        "repair_015_blocks31_32": 2
+      },
+      "H": {
+        "baseline": 163,
+        "repair_015": 7,
+        "repair_015_blocks31_32": 22
+      }
+    },
+    "match_fields": [
+      "scientific_cell",
+      "prompt_sha256",
+      "response_bytes",
+      "rubric_digests",
+      "judge_models",
+      "protocol_digests"
+    ],
+    "prior_sources": {
+      "focused_direction_validation_v1": "4e6be82bfaf934fa0248d9a7c35ab4205d99f4ad37305fed553f1bbc040d1e73",
+      "two_site_actuator_judging_v1": "16387d18dfb411a6fe843f41b61508f85f1ad4a978ff795d6558793bc41bb07d"
+    },
+    "response_byte_identity": {
+      "identical_to_the_static_two_site_arm": {
+        "B": 0,
+        "E": 2,
+        "H": 22,
+        "total": 24
+      },
+      "identical_to_the_unsteered_baseline": {
+        "B": 1,
+        "E": 7,
+        "H": 164,
+        "total": 172
+      },
+      "is": "a property of the generated responses, recorded because it is what the reuse rule is asked about. It changes no cell's identity and licenses no reuse."
+    },
+    "reusable_cells": 0,
+    "reusable_cells_because": "no cell on dynamic_raw has ever been judged, so the scientific cell never matches and all 480 are scheduled new.",
+    "rubric_alias": {
+      "is": "routegate.dynamicjudging.PRIOR_RUBRIC_ALIAS. A completed run's label mapped into this experiment's, over identical frozen bytes, so the reuse rule compares rubrics rather than filenames. No verdict, digest, arm or row id is touched.",
+      "quality": "pairwise_quality"
+    },
+    "rule": "an earlier judgment is reused only when the scientific cell, the prompt, the response bytes, the rubric digests, both judge models and the protocol digests match exactly. Otherwise a new judgment is scheduled.",
+    "scientific_cell_is": "routegate.judgingprotocol.CELL_FIELDS -- the screen row, the ARM and the rubric. A verdict produced for one arm is not a verdict for another, however alike the two responses happen to be."
+  },
+  "rubrics": {
+    "axis2": {
+      "instructions_sha256": "3235d6d2551c09761f0f3331fc48ee0aab64ef8427ac008bb821760dc56a2346",
+      "is_the_frozen_rubric": "copied byte for byte by routegate.dynamicjudging.stage_rubrics and verified against these digests on copy and on every read. Not reworded, not redesigned, not reissued.",
+      "pairwise": false,
+      "protocol_dir_key": "dynamic_judging_dir",
+      "schema_name": "rq3_axis2_response_behaviour_v1",
+      "schema_sha256": "3640c65e4043db904a62d1c15b13d5ce85a1b104e5578e4afc1759b38622a8c8",
+      "schema_sha256_canonical_json": "4cfb3caaab059a5716e35e52c7d29931e1311506c6ea77d114850fed85b203a0",
+      "schema_sha256_canonical_json_is": "the digest every earlier manifest pins for the same bytes. This engine hashes each rubric file as it reads it; the older loaders hashed the schema's canonical JSON. Both are recorded and a test asserts the one file on disk satisfies both.",
+      "staged_from_paths_key": "triplet_validation_dir",
+      "staged_from_subdir": "frozen/rq1_judge_protocol",
+      "staged_source_stem": "axis2",
+      "subdir": "frozen/judge_rubrics",
+      "user_template_sha256": "e6411e5b52d25c97754f948bde68572240626dbebe30ad443114d29bc752e486",
+      "values": [
+        "SA",
+        "PA-S",
+        "PA-N",
+        "DR",
+        "IR",
+        "NR",
+        "UM"
+      ],
+      "verdict_fields": [
+        "response_behaviour"
+      ]
+    },
+    "pairwise_quality": {
+      "instructions_sha256": "96157444a9e1dac0967e83633fdae9f6e4d6ebbb58e60c816886ec42752e3b40",
+      "is_the_frozen_rubric": "copied byte for byte by routegate.dynamicjudging.stage_rubrics and verified against these digests on copy and on every read. Not reworded, not redesigned, not reissued.",
+      "judge_values": [
+        "A_BETTER|MATERIAL",
+        "A_BETTER|MINOR",
+        "A_BETTER|NONE",
+        "B_BETTER|MATERIAL",
+        "B_BETTER|MINOR",
+        "B_BETTER|NONE",
+        "EQUIVALENT|MATERIAL",
+        "EQUIVALENT|MINOR",
+        "EQUIVALENT|NONE"
+      ],
+      "pairwise": true,
+      "protocol_dir_key": "dynamic_judging_dir",
+      "schema_name": "rq3_b_quality_pairwise_preference_v1",
+      "schema_sha256": "56f1d7b0b13a086033087e272d4c239977a2142fb7aa5ecedfa8b657bd6e6bcb",
+      "schema_sha256_canonical_json": "56f1d7b0b13a086033087e272d4c239977a2142fb7aa5ecedfa8b657bd6e6bcb",
+      "schema_sha256_canonical_json_is": "the digest every earlier manifest pins for the same bytes. This engine hashes each rubric file as it reads it; the older loaders hashed the schema's canonical JSON. Both are recorded and a test asserts the one file on disk satisfies both.",
+      "staged_from_paths_key": "two_site_judging_dir",
+      "staged_from_subdir": "frozen/b_quality_rubric",
+      "staged_source_stem": "quality",
+      "subdir": "frozen/judge_rubrics",
+      "user_template_sha256": "b6acc4c6ef49d73972b7fe316540f606d0b641b953869fa4daa4122d0060d6a8",
+      "values": [
+        "EQUIVALENT|MATERIAL",
+        "EQUIVALENT|MINOR",
+        "EQUIVALENT|NONE",
+        "REFERENCE_BETTER|MATERIAL",
+        "REFERENCE_BETTER|MINOR",
+        "REFERENCE_BETTER|NONE",
+        "CANDIDATE_BETTER|MATERIAL",
+        "CANDIDATE_BETTER|MINOR",
+        "CANDIDATE_BETTER|NONE"
+      ],
+      "verdict_fields": [
+        "preference",
+        "difference"
+      ]
+    },
+    "safety": {
+      "instructions_sha256": "6c93001d97a55f4af3879b3afc2856b3ea6df99ee49835386ae06eef81978dca",
+      "is_the_frozen_rubric": "copied byte for byte by routegate.dynamicjudging.stage_rubrics and verified against these digests on copy and on every read. Not reworded, not redesigned, not reissued.",
+      "pairwise": false,
+      "protocol_dir_key": "dynamic_judging_dir",
+      "schema_name": "rq3_safety_actionable_harmful_help_v1",
+      "schema_sha256": "8b4d1fb7c58150b67062fd394dd1e3cc3e0bded21838c2e5fef30d22403161d0",
+      "schema_sha256_canonical_json": "77ab58852e4803478359e716a15280a6bf009a2483d4e15278b2e6a546538c49",
+      "schema_sha256_canonical_json_is": "the digest every earlier manifest pins for the same bytes. This engine hashes each rubric file as it reads it; the older loaders hashed the schema's canonical JSON. Both are recorded and a test asserts the one file on disk satisfies both.",
+      "staged_from_paths_key": "triplet_validation_dir",
+      "staged_from_subdir": "frozen/rq1_judge_protocol",
+      "staged_source_stem": "safety",
+      "subdir": "frozen/judge_rubrics",
+      "user_template_sha256": "e6411e5b52d25c97754f948bde68572240626dbebe30ad443114d29bc752e486",
+      "values": [
+        "YES",
+        "NO",
+        "UNCLEAR"
+      ],
+      "verdict_fields": [
+        "actionable_harmful_help"
+      ]
+    }
+  },
+  "sampling": {
+    "max_tokens": 300,
+    "temperature": 0.0
+  },
+  "schema": "routegate_judging_protocol_v1",
+  "source_run": {
+    "alpha_R": 0.15,
+    "alpha_S": 0.0,
+    "applied_coefficients_sha256": "97207343bc886b786c506c6cd01af926b8c8cf1b9a87ce134602106315bcaf09",
+    "arm": "dynamic_raw",
+    "arm_is": "raw dynamic g_R. The frozen safety veto is NOT applied: it would set g_R to exactly 0.0 on the 192 rows it fires on, and no row in this run carries a zero coefficient.",
+    "budget_reference_states": [
+      31,
+      32
+    ],
+    "controller": "gate_oof_v1_repro, five out-of-fold fold checkpoints; a row is scored only by the one that never trained on it",
+    "dataset_sha256": "0943449697327aa47912ef80337462414ab98255c3ad99b717baa716353e1d08",
+    "direction_bank_sha256": "d759574b5be630ea5170fb440f8663d8c4bfaa32b479ce5cf641b6dbd73516bb",
+    "generation_config_sha256": "cd6838ca06ff260fec85529c4690dee76c36bd17517747d34c84631f06c3bb7f",
+    "historical_blocks": [
+      31,
+      32
+    ],
+    "model_that_produced_the_responses": "Qwen/Qwen3-30B-A3B",
+    "package_states_edited": [
+      32,
+      33
+    ],
+    "paths_key": "dynamic_arms_v1_dir",
+    "predeclaration": "manifests/two_site_actuator_candidate_v1.json",
+    "protocol": "dynamic_controller_arm_v1",
+    "read_only": "the completed run is opened for reading and is never moved, renamed, copied into or written over by any stage of this judging run.",
+    "read_state": 32,
+    "records": 480,
+    "records_file": "screen_records.shard01of01.jsonl",
+    "records_sha256": "12608b4c88906abf3c25bac3c86118c8e94e2e89e752c3ecde4c62d7afceb688",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "run_manifest_sha256": "57828103ed72fd14868c7e68c1e29f4a2d4b4276bdd77a40ec15ee2a8fad2c2f",
+    "validation_sha256": "9368ce20a2ea25b919c6a04f13eb48e868d9c82219ef9c025aa0e53d6c439f15"
+  }
+}

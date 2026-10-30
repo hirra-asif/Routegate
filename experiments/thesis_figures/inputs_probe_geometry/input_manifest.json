@@ -1,0 +1,41 @@
+{
+  "source_archive": "routegate_handoff_20260908(5).zip",
+  "source_archive_sha256": "f830189a860a53cd4fcab97303a62c428aaa81bcb7488929a6562e1d00dd58f0",
+  "source_directory": "outputs/residual_geometry/corrected",
+  "verified_original_sha256": {
+    "oof_predictions.csv": "b842e977a9f8e21161d418ca284b7da6c318208f7a9bd181ef96be1ed2bc6b14",
+    "probe_direction_similarity.csv": "4f6faa6be4038868f2af8d94222a9e910a6dfd36c76d9ee3fc9e5c2db60478dc",
+    "probe_directions_headline_state.csv": "33bec95cf36221066b94d17aa26edc729ef2596e0c114831f40883b4697c4eec",
+    "centroid_separation.csv": "2eea9272164801517a149aa02c21408997cbbd7b23530c9358bce06c4b29528c",
+    "cv_assignments.csv": "be3961a264f3435e92bfb369da7460b3903d1c6abaff6fd45daec610cd8d1d85",
+    "state_metrics.csv": "c4fdf0a75b4d0e4ce639708eda4888c15d78e1eca78a19842b8f8e24f349ccae",
+    "input_hashes.json": "5167ccc03e00e84d74f14580c6418e2ad3c32edbdde657808f6493634365948c"
+  },
+  "extraction": {
+    "file": "raw_probe_scores_repeat0.csv",
+    "conditions": {
+      "feature_set": "activation",
+      "variant": "raw",
+      "repeat": 0,
+      "state": "1 through 48"
+    },
+    "rows": 12816
+  },
+  "analysis": "Saved development outputs only; no new classifier or language model fit.",
+  "classes": {
+    "E": "over-refused benign prompt",
+    "B": "answered benign prompt"
+  },
+  "H": "excluded from this E/B analysis",
+  "state_to_layer": "For s > 0, state s is the output of zero-based layer s - 1.",
+  "files": {
+    "centroid_separation.csv": "2eea9272164801517a149aa02c21408997cbbd7b23530c9358bce06c4b29528c",
+    "cv_assignments.csv": "be3961a264f3435e92bfb369da7460b3903d1c6abaff6fd45daec610cd8d1d85",
+    "heldout_pls3d_state45_repeat0_fold0_metadata.json": "671ec2ce709f56574800f3a4fca55ab88362e3dfe219ab4e640e3bb8c6779bf1",
+    "input_hashes.json": "5167ccc03e00e84d74f14580c6418e2ad3c32edbdde657808f6493634365948c",
+    "probe_direction_similarity.csv": "4f6faa6be4038868f2af8d94222a9e910a6dfd36c76d9ee3fc9e5c2db60478dc",
+    "probe_directions_headline_state.csv": "33bec95cf36221066b94d17aa26edc729ef2596e0c114831f40883b4697c4eec",
+    "raw_probe_scores_repeat0.csv": "274dbd6bb89bf0a8394d393d1ad493a0c394f56b161032fba0fe005fd76bf36f",
+    "state_metrics.csv": "c4fdf0a75b4d0e4ce639708eda4888c15d78e1eca78a19842b8f8e24f349ccae"
+  }
+}

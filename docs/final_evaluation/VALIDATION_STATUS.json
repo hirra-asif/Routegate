@@ -1,0 +1,11 @@
+{
+  "offline_judgement_audit": "completed against supplied final archive",
+  "python_syntax": "passed",
+  "bash_syntax": "passed",
+  "tampered_reply_guard": "tested and rejected",
+  "eligibility_change_guard": "tested and rejected",
+  "frozen_adjudications_unchanged": true,
+  "real_tensor_arithmetic": "not executed; required development cache and actuator tensors not supplied",
+  "numerical_test_scope": "480 development prompts; not sealed generations",
+  "github_changes_made": false
+}

@@ -1,0 +1,106 @@
+{
+  "schema": "routegate/pilot_reference/1",
+  "description": "The completed residual-geometry pilot, treated as a frozen reference. This package reproduces its numbers before extending it. The reference outputs are read only; nothing is written back to them.",
+  "recorded_utc": "2026-08-05",
+  "reference_run": {
+    "canonical_source_path": "results/rq3_residual_geometry_20260805",
+    "produced_by": "the historical workspace, 2026-08-05",
+    "estimator": "an in-house L2 logistic regression minimising the scikit-learn LogisticRegression objective by L-BFGS-B, because scikit-learn was not installed in that environment",
+    "estimator_tolerances": {
+      "gtol": 1e-06,
+      "ftol": 1e-15,
+      "max_gradient_norm_over_all_fits": 9.99e-07,
+      "note": "the reference deliberately converged an order of magnitude tighter than scikit-learn's default tol=1e-04, and recorded that it had done so. Reproduction must set tol=1e-06 to compare like with like; at the scikit-learn default the two differ by 6.3e-05 at state 45 purely because lbfgs stopped earlier."
+    },
+    "why_reproduced": "the pilot's estimator, folds, metrics and PCA were all hand-written; this package re-derives the same numbers with scikit-learn so that every later result rests on a standard implementation"
+  },
+  "reference_files": {
+    "layerwise_metrics": {
+      "filename": "layerwise_eb_probe_metrics.csv",
+      "sha256": "a3b900dda5fd3a871589bc7e0efffe430b1faeeadd0def30871feda6a5508ee6",
+      "state_column": "layer",
+      "note": "the pilot's 'layer' column is this package's 'state'; values 0-48 are identical in meaning"
+    },
+    "fold_assignment_and_out_of_fold_scores": {
+      "filename": "best_layer_oof_scores.csv",
+      "sha256": "49ac26c7ae8cefac4868063053cdc57013c8aa3005518618dcda9c2e4713b539",
+      "row_id_column": "row_id",
+      "fold_column": "fold",
+      "score_column": "oof_score_p_E",
+      "state": 45,
+      "note": "the only serialised record of the pilot's fold assignment, and its out-of-fold scores at the selected state"
+    }
+  },
+  "expected_values": {
+    "n": 267,
+    "n_E": 89,
+    "n_B": 178,
+    "n_states": 49,
+    "n_splits": 5,
+    "selected_state": 45,
+    "state_45": {
+      "roc_auc": 0.952594,
+      "pr_auc": 0.894166,
+      "balanced_accuracy": 0.865169
+    },
+    "degenerate_states": [
+      0
+    ],
+    "degenerate_state_expectation": {
+      "state": 0,
+      "roc_auc": 0.5,
+      "pr_auc": 0.3333333333333333,
+      "balanced_accuracy": 0.5,
+      "reason": "the rendered chat prompt ends with the same token for every prompt, so the embedding output is one identical vector across all rows; a probe there is pinned to chance by construction"
+    }
+  },
+  "reproduction_tolerance": {
+    "metric_absolute_tolerance": 1e-06,
+    "reference_recorded_precision": "six decimal places, so a reference value carries up to 5e-07 of rounding error before any estimator difference is considered; a residual difference below that is the file's own rounding and not a disagreement",
+    "applies_to": [
+      "roc_auc",
+      "pr_auc",
+      "balanced_accuracy",
+      "accuracy"
+    ],
+    "gate": "state 45 must agree within the tolerance using the pilot's own fold assignment",
+    "reported": "the maximum absolute difference over all 49 states and all compared metrics"
+  },
+  "not_reproduced_here": [
+    "control baselines",
+    "label permutations",
+    "centroid separation",
+    "probe-direction similarity",
+    "principal component projections",
+    "publication figures"
+  ],
+  "known_limitations_of_the_reference": [
+    "the selected state was chosen by maximising out-of-fold performance over all 49 states on the same rows the score is reported from, so the reported peak is a selected maximum and is optimistically biased",
+    "the permutation null was computed only at the already-selected state and does not repeat the 49-state search, so it does not price the selection",
+    "an activation-norm control reached ROC-AUC 0.871, so a large part of the separability is magnitude rather than direction, and no unit-normalised probe was run",
+    "folds were built by a bespoke round-robin deal, not by sklearn.model_selection.StratifiedKFold, so an independent stratified split will not reproduce the numbers",
+    "out-of-fold predictions were saved for the selected state only",
+    "no prompt-family grouping was available, so folds are label-stratified only"
+  ],
+  "committed_artifact": {
+    "recorded_utc": "2026-08-19",
+    "note": "Phase 2 step 5: both reference files are now committed artifacts of this repository and are resolved from it, not from configs/paths.local.json. Their SHA256 values are unchanged and are still checked before use.",
+    "repo_relative_directory": "artifacts/pilot_reference",
+    "resolved_by": "routegate.data.pilot_reference_dir()",
+    "origin_workspace": "SteerMoE-main",
+    "origin_relative_directory": "results/rq3_residual_geometry_20260805",
+    "data_root_backup": "frozen/pilot_reference/ under the machine-local data root; a frozen backup, not a runtime input",
+    "files": {
+      "layerwise_eb_probe_metrics.csv": {
+        "sha256": "a3b900dda5fd3a871589bc7e0efffe430b1faeeadd0def30871feda6a5508ee6",
+        "bytes": 5546,
+        "contains_prompt_or_response_text": false
+      },
+      "best_layer_oof_scores.csv": {
+        "sha256": "49ac26c7ae8cefac4868063053cdc57013c8aa3005518618dcda9c2e4713b539",
+        "bytes": 22131,
+        "contains_prompt_or_response_text": false
+      }
+    }
+  }
+}

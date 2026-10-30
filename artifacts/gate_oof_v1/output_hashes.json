@@ -1,0 +1,9 @@
+{
+  "fold_assignments.json": "f654c0bb6c1ccfcdaf924960ee92f67921c645169083fb586681f157972a2cd7",
+  "oof_coefficients.csv": "b242fe9a667c9e4285946469e937a56fbb8fc783249e2d01f10a0591a6a18fc2",
+  "run_manifest.json": "2d1f3b32da0883be3569a79567f1ca389bacaae1f93448bd6699b604ec65101d",
+  "summary.json": "edb035a86a2509ee64d3cf0c99f7bc9487c338e09b56db37bcdf29182d4bb7bf",
+  "training_histories.json": "d3c7b2b910b01f9b048215959561189abf0a0b317aac7b96298f486083005764",
+  "training_specification.json": "d2b638241636b1e90222fc9760ccfb1bd7980202960a90603a720fe2f29d6a8e",
+  "validation.json": "d7aec0dfdadfb9387da00c7d5747abf085ddaf0d2693ab34a414650f47e40355"
+}

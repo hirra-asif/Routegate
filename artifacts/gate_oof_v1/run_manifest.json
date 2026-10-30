@@ -1,0 +1,327 @@
+{
+  "schema": "routegate/single_direction_controller_training/1",
+  "status": "PROVISIONAL_PENDING_ACTUATOR_VALIDATION",
+  "status_reason": "historical blocks 31-32 have not completed behavioural adjudication. The coefficients this stage produces are conditional on an actuator whose causal effect is not yet measured; no operating point, threshold or deployment claim follows from them.",
+  "created_utc": "2026-08-26T23:52:21Z",
+  "package_version": "0.1.0",
+  "specification": "single_direction_controller_training_v1",
+  "controller_parameters": 32801,
+  "read_state": 32,
+  "alpha_R": 0.15,
+  "alpha_S": 0.0,
+  "historical_blocks": [
+    31,
+    32
+  ],
+  "direction_bank_sha256": "d759574b5be630ea5170fb440f8663d8c4bfaa32b479ce5cf641b6dbd73516bb",
+  "probe_artifacts": {
+    "oof_predictions.csv": "6923919c99b17dcd840202e7eda63a83fc5e98bee26b660ea9002e9a5eafd278",
+    "metrics.json": "9557be27b97a65532da6d76a8ed7f28e8bbd141517b60bedf7f51fe9b7e65744",
+    "validation.json": "45eef137f572fb12fb6f3994b2a8776c96ae14ba56c0daef1637a0c3a9ad243e",
+    "fold_assignments.csv": "3692fd99cca4521e88176c5fa3e09253b27e9ae80251d92f4d8af8b65739fc6f"
+  },
+  "fold_assignment_sha256": "3692fd99cca4521e88176c5fa3e09253b27e9ae80251d92f4d8af8b65739fc6f",
+  "forward_passes": 0,
+  "loads_a_model": false,
+  "generates_responses": false,
+  "calls_a_judge": false,
+  "reads_the_sealed_set": false,
+  "final_refit_performed": false,
+  "environment": {
+    "package": "routegate",
+    "package_version": "0.1.0",
+    "python": "3.12.11",
+    "implementation": "CPython",
+    "platform": "Linux-3.10.0-1160.119.1.el7.x86_64-x86_64-with-glibc2.35",
+    "numpy": "2.2.6",
+    "scipy": "1.16.1",
+    "scikit_learn": "1.7.1",
+    "executable": "/home/ucabh21/routegate/.venv/bin/python",
+    "model_loaded": false,
+    "generation_performed": false,
+    "network_calls": 0,
+    "note": "offline analysis only; no language model, no generation, no held-out benchmark material"
+  },
+  "checklist": {
+    "checklist": "single_direction_controller_oof",
+    "checks_run": 55,
+    "all_passed": true,
+    "checks": [
+      {
+        "check": "status",
+        "status": "PASS",
+        "detail": "PROVISIONAL_PENDING_ACTUATOR_VALIDATION: historical blocks 31-32 have not completed behavioural adjud\u2026"
+      },
+      {
+        "check": "no_final_refit",
+        "status": "PASS",
+        "detail": "the all-development refit is not performed at this stage"
+      },
+      {
+        "check": "h_minus_e_is_never_applied",
+        "status": "PASS",
+        "detail": "d_S = H - E is retired; alpha_S is 0 permanently"
+      },
+      {
+        "check": "probe_artifact_fold_assignments.csv",
+        "status": "PASS",
+        "detail": "fold_assignments.csv hashes to 3692fd99cca4521e88176c5fa3e09253b27e9ae80251d92f4d8af8b65739fc6f, pinned 3692fd99cca4521e88176c5fa3e09253b27e9ae80251d92f4d8af8b65739fc6f"
+      },
+      {
+        "check": "probe_artifact_metrics.json",
+        "status": "PASS",
+        "detail": "metrics.json hashes to 9557be27b97a65532da6d76a8ed7f28e8bbd141517b60bedf7f51fe9b7e65744, pinned 9557be27b97a65532da6d76a8ed7f28e8bbd141517b60bedf7f51fe9b7e65744"
+      },
+      {
+        "check": "probe_artifact_oof_predictions.csv",
+        "status": "PASS",
+        "detail": "oof_predictions.csv hashes to 6923919c99b17dcd840202e7eda63a83fc5e98bee26b660ea9002e9a5eafd278, pinned 6923919c99b17dcd840202e7eda63a83fc5e98bee26b660ea9002e9a5eafd278"
+      },
+      {
+        "check": "probe_artifact_validation.json",
+        "status": "PASS",
+        "detail": "validation.json hashes to 45eef137f572fb12fb6f3994b2a8776c96ae14ba56c0daef1637a0c3a9ad243e, pinned 45eef137f572fb12fb6f3994b2a8776c96ae14ba56c0daef1637a0c3a9ad243e"
+      },
+      {
+        "check": "corpus_rows",
+        "status": "PASS",
+        "detail": "480 row(s), expected 480"
+      },
+      {
+        "check": "no_sealed_row",
+        "status": "PASS",
+        "detail": "0 row id(s) read as held-out material"
+      },
+      {
+        "check": "n_splits",
+        "status": "PASS",
+        "detail": "5 folds, expected 5"
+      },
+      {
+        "check": "fold_assignment_sha256",
+        "status": "PASS",
+        "detail": "3692fd99cca4521e88176c5fa3e09253b27e9ae80251d92f4d8af8b65739fc6f"
+      },
+      {
+        "check": "frozen_estimator",
+        "status": "PASS",
+        "detail": "penalty=l2 C=0.1 class_weight=balanced max_iter=5000 solver=lbfgs random_state=20260805 tol=1e-06"
+      },
+      {
+        "check": "repair_fold_0_reproduces",
+        "status": "PASS",
+        "detail": "repair head, fold 0: max |reproduced - saved| = 1.110223e-16 over 97 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "repair_fold_1_reproduces",
+        "status": "PASS",
+        "detail": "repair head, fold 1: max |reproduced - saved| = 1.110223e-16 over 97 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "repair_fold_2_reproduces",
+        "status": "PASS",
+        "detail": "repair head, fold 2: max |reproduced - saved| = 1.110223e-16 over 96 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "repair_fold_3_reproduces",
+        "status": "PASS",
+        "detail": "repair head, fold 3: max |reproduced - saved| = 2.220446e-16 over 95 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "repair_fold_4_reproduces",
+        "status": "PASS",
+        "detail": "repair head, fold 4: max |reproduced - saved| = 6.617445e-24 over 95 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "repair_reproduces",
+        "status": "PASS",
+        "detail": "max |error| 2.220446e-16 over 5 fold(s), tolerance 1e-12"
+      },
+      {
+        "check": "safety_fold_0_reproduces",
+        "status": "PASS",
+        "detail": "safety head, fold 0: max |reproduced - saved| = 1.355253e-20 over 97 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "safety_fold_1_reproduces",
+        "status": "PASS",
+        "detail": "safety head, fold 1: max |reproduced - saved| = 8.470329e-22 over 97 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "safety_fold_2_reproduces",
+        "status": "PASS",
+        "detail": "safety head, fold 2: max |reproduced - saved| = 2.168404e-19 over 96 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "safety_fold_3_reproduces",
+        "status": "PASS",
+        "detail": "safety head, fold 3: max |reproduced - saved| = 9.875434e-13 over 95 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "safety_fold_4_reproduces",
+        "status": "PASS",
+        "detail": "safety head, fold 4: max |reproduced - saved| = 9.928169e-14 over 95 held-out row(s), tolerance 1e-12. The reconstruction is not the probe behind the committed metrics; it is refused, not adopted."
+      },
+      {
+        "check": "safety_reproduces",
+        "status": "PASS",
+        "detail": "max |error| 9.875434e-13 over 5 fold(s), tolerance 1e-12"
+      },
+      {
+        "check": "direction_bank_sha256",
+        "status": "PASS",
+        "detail": "d759574b5be630ea5170fb440f8663d8c4bfaa32b479ce5cf641b6dbd73516bb"
+      },
+      {
+        "check": "direction_bank_unit_norms",
+        "status": "PASS",
+        "detail": "2 array(s), layers [31, 32, 33]"
+      },
+      {
+        "check": "kappa_R_is_negative_in_every_fold",
+        "status": "PASS",
+        "detail": "kappa_R = [-1.102654, -1.465149, -1.340462, -1.187849, -1.357901]; it must be negative in every fold, because the repair loss is minimised by lowering the E-positive logit. A non-negative value means the edit raises it and the objective is inverted."
+      },
+      {
+        "check": "kappa_H_recorded_not_gated",
+        "status": "PASS",
+        "detail": "kappa_H = [-0.827101, -0.793134, -0.697447, -0.80731, -0.638164]; negative in 5 of 5 fold(s). Reported as a diagnostic: a non-negative value passes the safety term rather than failing it, and d_R is never altered either way."
+      },
+      {
+        "check": "budget_reference_state",
+        "status": "PASS",
+        "detail": "state 31 (input of historical block 31), from the unsteered capture"
+      },
+      {
+        "check": "controller_input_is_the_activation_alone",
+        "status": "PASS",
+        "detail": "the controller input is 2048-dimensional and the state-32 activation is 2048. A wider input is carrying something besides the activation, and no covariate is a controller feature."
+      },
+      {
+        "check": "stratification_fields_are_diagnostic_only",
+        "status": "PASS",
+        "detail": "['topic_standardized', 'task_frame'] are recorded per row and enter no network, loss, threshold or selection rule; ['source_family', 'benchmark_designation', 'prompt_category'] are never used at all"
+      },
+      {
+        "check": "optimiser_holds_only_controller_parameters",
+        "status": "PASS",
+        "detail": "0 parameter(s) in the optimiser do not belong to the controller. Only controller parameters may be updated; the language model, both probes, d_R and the activations are frozen."
+      },
+      {
+        "check": "every_controller_parameter_is_optimised",
+        "status": "PASS",
+        "detail": "4 controller parameter tensor(s), 4 in the optimiser"
+      },
+      {
+        "check": "frozen_tensors_require_no_grad",
+        "status": "PASS",
+        "detail": "0 frozen tensor(s) carry requires_grad=True"
+      },
+      {
+        "check": "controller_parameters",
+        "status": "PASS",
+        "detail": "32801 parameter(s)"
+      },
+      {
+        "check": "optimiser_holds_only_controller_parameters",
+        "status": "PASS",
+        "detail": "0 parameter(s) in the optimiser do not belong to the controller. Only controller parameters may be updated; the language model, both probes, d_R and the activations are frozen."
+      },
+      {
+        "check": "every_controller_parameter_is_optimised",
+        "status": "PASS",
+        "detail": "4 controller parameter tensor(s), 4 in the optimiser"
+      },
+      {
+        "check": "frozen_tensors_require_no_grad",
+        "status": "PASS",
+        "detail": "0 frozen tensor(s) carry requires_grad=True"
+      },
+      {
+        "check": "controller_parameters",
+        "status": "PASS",
+        "detail": "32801 parameter(s)"
+      },
+      {
+        "check": "optimiser_holds_only_controller_parameters",
+        "status": "PASS",
+        "detail": "0 parameter(s) in the optimiser do not belong to the controller. Only controller parameters may be updated; the language model, both probes, d_R and the activations are frozen."
+      },
+      {
+        "check": "every_controller_parameter_is_optimised",
+        "status": "PASS",
+        "detail": "4 controller parameter tensor(s), 4 in the optimiser"
+      },
+      {
+        "check": "frozen_tensors_require_no_grad",
+        "status": "PASS",
+        "detail": "0 frozen tensor(s) carry requires_grad=True"
+      },
+      {
+        "check": "controller_parameters",
+        "status": "PASS",
+        "detail": "32801 parameter(s)"
+      },
+      {
+        "check": "optimiser_holds_only_controller_parameters",
+        "status": "PASS",
+        "detail": "0 parameter(s) in the optimiser do not belong to the controller. Only controller parameters may be updated; the language model, both probes, d_R and the activations are frozen."
+      },
+      {
+        "check": "every_controller_parameter_is_optimised",
+        "status": "PASS",
+        "detail": "4 controller parameter tensor(s), 4 in the optimiser"
+      },
+      {
+        "check": "frozen_tensors_require_no_grad",
+        "status": "PASS",
+        "detail": "0 frozen tensor(s) carry requires_grad=True"
+      },
+      {
+        "check": "controller_parameters",
+        "status": "PASS",
+        "detail": "32801 parameter(s)"
+      },
+      {
+        "check": "optimiser_holds_only_controller_parameters",
+        "status": "PASS",
+        "detail": "0 parameter(s) in the optimiser do not belong to the controller. Only controller parameters may be updated; the language model, both probes, d_R and the activations are frozen."
+      },
+      {
+        "check": "every_controller_parameter_is_optimised",
+        "status": "PASS",
+        "detail": "4 controller parameter tensor(s), 4 in the optimiser"
+      },
+      {
+        "check": "frozen_tensors_require_no_grad",
+        "status": "PASS",
+        "detail": "0 frozen tensor(s) carry requires_grad=True"
+      },
+      {
+        "check": "controller_parameters",
+        "status": "PASS",
+        "detail": "32801 parameter(s)"
+      },
+      {
+        "check": "every_row_predicted_once",
+        "status": "PASS",
+        "detail": "0 row(s) have no out-of-fold coefficient"
+      },
+      {
+        "check": "coefficients_in_range",
+        "status": "PASS",
+        "detail": "every g_R lies in [0, 1]"
+      },
+      {
+        "check": "alpha_never_exceeds_the_frozen_strength",
+        "status": "PASS",
+        "detail": "max applied alpha_R 0.149993"
+      },
+      {
+        "check": "the_clamp_never_raises_a_gate",
+        "status": "PASS",
+        "detail": "the counterfactual clamp raised a gate"
+      }
+    ]
+  }
+}

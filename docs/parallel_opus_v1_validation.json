@@ -1,0 +1,36 @@
+{
+  "real_generation_records": 1740,
+  "baseline_review_rows": 187,
+  "planned_opus_assessments": 861,
+  "by_rubric": {
+    "axis2": {
+      "rows": 102,
+      "already_done": 0,
+      "to_call": 102
+    },
+    "pairwise_quality": {
+      "rows": 156,
+      "already_done": 0,
+      "to_call": 156
+    },
+    "safety": {
+      "rows": 603,
+      "already_done": 0,
+      "to_call": 603
+    }
+  },
+  "judge_api_calls": 0,
+  "prepare_while_original_lock_held": "passed",
+  "frozen_source_hashes": "passed",
+  "packet_and_request_identity": "passed",
+  "unit_tests": {
+    "passed": 8,
+    "live_api_calls": 0
+  },
+  "source_sha256": {
+    "experiments/final_evaluation/parallel_opus_workspace.py": "bb72baf7df61f4a5ea72fc1a896cc2ec19f117a00f94f56a0ff2a410e5194efa",
+    "experiments/final_evaluation/run_opus_parallel.sh": "ba47a145b5c0d66df1ce18f083d5579f87f35adf3fd27346e6efdeebca45ac20",
+    "tests/test_parallel_opus_workspace.py": "97aad109972f5a3dd49042c5f65e07f9be15a6eb0aa376eedb56a2851f2ea1dc",
+    "docs/parallel_opus_v1.md": "571dad54b8945f5e1226625015fb81cf297acabc143474cd6325a19f784e25a3"
+  }
+}

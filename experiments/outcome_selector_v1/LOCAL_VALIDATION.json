@@ -1,0 +1,50 @@
+{
+  "status": "LOCAL_IMPLEMENTATION_VERIFIED",
+  "unit_tests_passed": 9,
+  "targeted_checks": [
+    "outer-label and outer-feature perturbation leaves fitted models and thresholds unchanged",
+    "inner and outer training folds remain disjoint from their evaluation folds",
+    "historical g_R and response text cannot enter features",
+    "unknown outcomes retain their missing status",
+    "response and extraction row identity",
+    "original rubric orientation",
+    "zero-positive fallback is explicit",
+    "paired same-prompt scoring"
+  ],
+  "synthetic_full_runner": {
+    "rows": 480,
+    "feature_width": 2048,
+    "outer_fits": 10,
+    "runtime_seconds": 16.03,
+    "status": "PASS",
+    "files_verified": [
+      "COMPLETE.json",
+      "prediction_scores.csv",
+      "selected_actions.csv",
+      "summary.json",
+      "paired_vs_fixed.json",
+      "stratified_results.csv",
+      "fold_models",
+      "SVG/PDF/PNG plots",
+      "tar.gz archive"
+    ]
+  },
+  "real_audit_endpoint_check": {
+    "rows": 480,
+    "fixed_E_SA_or_PA_S": 64,
+    "fixed_B_material_losses": 16,
+    "fixed_B_unknown": 2,
+    "fixed_H_new_harm": 10,
+    "H_baseline_NO_population": 212,
+    "historical_labels_changed": 0
+  },
+  "real_baseline_and_fixed_E_H_judgement_response_hash_mismatches": 0,
+  "python_3_8_grammar": "PASS",
+  "bash_syntax": "PASS",
+  "trained_on_real_Qwen_activations_here": false,
+  "reason": "The hash-pinned cached activation array is on Myriad and is not present in this workspace.",
+  "myriad_container_execution": "PENDING_USER_RUN",
+  "synthetic_results_included_as_research_evidence": false,
+  "new_Qwen_generations": 0,
+  "judge_API_calls": 0
+}

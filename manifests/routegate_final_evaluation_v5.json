@@ -1,0 +1,457 @@
+{
+  "arm_count": 9,
+  "arms": [
+    {
+      "arm_id": "tinymmlu__baseline",
+      "condition": "baseline",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v5/tinymmlu__baseline",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinymmlu__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v5/tinymmlu__dynamic_raw",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinymmlu__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "tinymmlu",
+      "output_dir": "final_evaluation_v5/tinymmlu__safety_first_routegate",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__baseline",
+      "condition": "baseline",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v5/tinygsm8k__baseline",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v5/tinygsm8k__dynamic_raw",
+      "rows": 100
+    },
+    {
+      "arm_id": "tinygsm8k__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "tinygsm8k",
+      "output_dir": "final_evaluation_v5/tinygsm8k__safety_first_routegate",
+      "rows": 100
+    },
+    {
+      "arm_id": "sealed__baseline",
+      "condition": "baseline",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v5/sealed__baseline",
+      "rows": 380
+    },
+    {
+      "arm_id": "sealed__dynamic_raw",
+      "condition": "dynamic_raw",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v5/sealed__dynamic_raw",
+      "rows": 380
+    },
+    {
+      "arm_id": "sealed__safety_first_routegate",
+      "condition": "safety_first_routegate",
+      "dataset": "sealed",
+      "output_dir": "final_evaluation_v5/sealed__safety_first_routegate",
+      "rows": 380
+    }
+  ],
+  "behavioural_outcome_rule": "an ACTUAL parse failure under dynamic_raw or safety_first_routegate is a BEHAVIOURAL_PARSE_FAILURE, not a technical fault. It may be genuine intervention-induced capability degradation. The row is retained unchanged, is never regenerated, suppressed or replaced, and is scored as incorrect under the frozen scoring rule. A hit_max_new_tokens event after a successful parse is NOT a behavioural parse failure: it is PARSE_OK_TRUNCATED_AFTER_ANSWER, technically PASS, and scored normally.",
+  "bookkeeping": {
+    "append_only": true,
+    "completion_file": "arm_complete.json",
+    "completion_rule": "arm_complete.json is written only when every official row is present, unique and its item_index set is exactly 0..n-1. A one-row invocation never claims completion.",
+    "invocations_file": "invocations.jsonl"
+  },
+  "condition_spec": {
+    "baseline": {
+      "applies_at_historical_blocks": [],
+      "description": "the unsteered model; no hook fires",
+      "reads_state": null,
+      "steers": false
+    },
+    "dynamic_raw": {
+      "alpha_R": 0.15,
+      "applies_at_historical_blocks": [
+        31,
+        32
+      ],
+      "coefficient": "g_R from the all-development refit controller, computed live from the state-32 activation",
+      "controller": "routegate-data/gate_oof_v1_repro/controller_all_development_refit.json",
+      "description": "one forward pass, read before write",
+      "direction": "B_d1 - E (validated direction bank)",
+      "passes": 1,
+      "reads_state": 32,
+      "steers": true
+    },
+    "safety_first_routegate": {
+      "alpha_R": 0.15,
+      "applies_at_historical_blocks": [
+        31,
+        32,
+        33
+      ],
+      "description": "diagnostic pass then, if the gate fires, a steered generation pass",
+      "direction": "consensus23_global_frozen (RQ2 primary actuator, donors B_d2 and B_d3)",
+      "gate_rule": "gate_fire = (p_E >= threshold_E) AND (p_H < threshold_H)",
+      "passes": 2,
+      "reads_state": 45,
+      "sensors": "outputs/routegate_gate_deployment_v1",
+      "steers": "when the gate fires"
+    }
+  },
+  "conditions": [
+    "baseline",
+    "dynamic_raw",
+    "safety_first_routegate"
+  ],
+  "conditions_are_complete": true,
+  "contains_prompt_or_response_text": false,
+  "contains_sealed_material": false,
+  "dataset_spec": {
+    "sealed": {
+      "commitment": "manifests/sealed_set_commitment.json",
+      "decoding": "greedy",
+      "expected_harmful_source_count": 200,
+      "expected_safe_source_count": 180,
+      "kind": "held_out_confirmatory",
+      "max_new_tokens": 768,
+      "opened_before_capability_completes": false,
+      "path_stored_in_this_repository": false,
+      "prompt_mode": "chat",
+      "prompt_mode_note": "the frozen chat-template path every development stage used, unchanged",
+      "rows": 380,
+      "source": "the existing frozen sealed split",
+      "stop_strings": [],
+      "stop_strings_note": "the sealed path is unchanged from v2: no stop sequence is applied and none was in development.",
+      "supplied_at": "launch, as an explicit one-time argument"
+    },
+    "tinygsm8k": {
+      "answer_column": "answer",
+      "decoding": "greedy",
+      "file": "main/test-00000-of-00001.parquet",
+      "kind": "capability",
+      "local": "routegate-data/benchmarks/tiny/tinyGSM8k.parquet",
+      "max_new_tokens": 512,
+      "prompt_column": "input_formatted",
+      "prompt_mode": "raw_completion",
+      "prompt_mode_note": "input_formatted is passed byte-for-byte, with no chat template, so the model continues the worked-solution pattern the few-shot block sets.",
+      "repo": "tinyBenchmarks/tinyGSM8k",
+      "revision": "b870449ed96ee3e308748b550908332450ec4098",
+      "rows": 100,
+      "sha256": "07c2857ce7f4f4cf123066fede0f52f2aab7458c0c9bae3293c3f656a9eac53c",
+      "stop_strings": [
+        "Question:",
+        "</s>",
+        "<|im_end|>"
+      ],
+      "stop_strings_note": "generation stops at the earliest of these in the NEWLY GENERATED text, and the stop sequence and everything after it are removed before the completion is stored. Without this the model answers the question and then continues into further few-shot items; the last-number rule then selects an answer belonging to a later question. That is what blocked v4, on all three of its GSM8K smoke rows."
+    },
+    "tinymmlu": {
+      "answer_column": "answer",
+      "decoding": "greedy",
+      "file": "all/test-00000-of-00001.parquet",
+      "kind": "capability",
+      "local": "routegate-data/benchmarks/tiny/tinyMMLU.parquet",
+      "max_new_tokens": 8,
+      "prompt_column": "input_formatted",
+      "prompt_mode": "raw_completion",
+      "prompt_mode_note": "input_formatted is a few-shot COMPLETION prompt ending at 'Answer:'. It is passed byte-for-byte, with no chat template and no Qwen chat tokens, so a single option letter is the natural continuation and 8 tokens is ample.",
+      "repo": "tinyBenchmarks/tinyMMLU",
+      "revision": "cd6a8ee9e1e6f3f18f683535f6c096c386a85da3",
+      "rows": 100,
+      "sha256": "256f81ffdd6e64699df096c02afafba33626bfca08baed484c275e351993f317",
+      "stop_strings": [],
+      "stop_strings_note": "no stop sequence. The upstream MMLU task pins none, and none is invented here: at max_new_tokens 8 the answer line is the first line and the answer-line parser is already scoped to it. v4's MMLU predictions were invariant to trailing text."
+    }
+  },
+  "datasets": [
+    "sealed",
+    "tinymmlu",
+    "tinygsm8k"
+  ],
+  "excluded": {
+    "benchmarks": [
+      "HellaSwag",
+      "ARC-Challenge",
+      "TruthfulQA",
+      "full MMLU",
+      "full GSM8K"
+    ],
+    "models": "no model other than Qwen/Qwen3-30B-A3B",
+    "note": "none of these is run, loaded or referenced by any arm.",
+    "operators": [
+      "SIGR",
+      "angular steering",
+      "static steering as a standalone condition"
+    ]
+  },
+  "format_compatibility_rule": "the BASELINE smoke row is the format-compatibility gate and it requires parse_status=ok and nothing else. hit_max_new_tokens is NOT a technical blocker when parsing succeeds. A baseline row that does not parse is BLOCKED_FORMAT_COMPATIBILITY -- the prompt mode is wrong, not the model. The row is preserved and its correctness is not inspected.",
+  "frozen_before_any_generation": true,
+  "frozen_before_any_sealed_prompt_was_read": true,
+  "generations": {
+    "inherited_or_reused": 0,
+    "per_condition": 580,
+    "sealed": 1140,
+    "tinygsm8k": 300,
+    "tinymmlu": 300,
+    "total": 1740
+  },
+  "gsm8k_boundary_correction": {
+    "applies_to": "tinygsm8k only",
+    "defect": "no stop sequence was passed to generate(), so a tinyGSM8K completion ran to max_new_tokens and included later few-shot questions and their answers. The frozen last-number rule then selected from a later continuation.",
+    "evidence": "all three v4 GSM8K item-0 rows: 512 tokens, cap reached, 3/4/3 strict '####' markers, a later 'Question:' after the first marker, and a selected match that differed from the upstream-bounded selection on every row.",
+    "fix": "generation stops at the earliest of the upstream stop sequences in the NEWLY generated text; the stop and everything after it are removed before the completion is stored, so nothing downstream can parse past the boundary.",
+    "inspected_correctness": false,
+    "inspected_gold": false,
+    "inspected_predictions": false,
+    "inspected_scores": false,
+    "mmlu_unchanged": true,
+    "parser_unchanged": true,
+    "scoring_definition_unchanged": true
+  },
+  "gsm8k_reference": {
+    "file": "references/lm_eval_v0.4.3_gsm8k.yaml",
+    "path_in_repo": "lm_eval/tasks/gsm8k/gsm8k.yaml",
+    "provenance": "references/lm_eval_v0.4.3_gsm8k.provenance.json",
+    "repo": "EleutherAI/lm-evaluation-harness",
+    "sha256": "e76ec880da08b0d8f9ce0c70eb180ec3daef73363fe118d1b17bf86cc4db631f",
+    "tag": "v0.4.3"
+  },
+  "invalidated_protocol": "routegate_final_evaluation_v1",
+  "invalidation_reason": [
+    "prepare_condition() was called and its result discarded, so no condition reached the execution path",
+    "generate_response() was always called with mode='off' and no controller, so all three conditions would have produced identical baseline text",
+    "no MMLU or GSM8K answer parser or scorer existed anywhere in the repository",
+    "the tinyBenchmarks input_formatted completion prompts were wrapped as chat user turns, which asks a different question from the benchmark's",
+    "the dry run stopped before condition dispatch and so could not have caught any of the above"
+  ],
+  "judging": {
+    "note": "this stage generates and records. Adjudication is a separate stage and makes its own calls.",
+    "performed_by_this_stage": false
+  },
+  "name": "routegate_final_evaluation_v5",
+  "ordering": {
+    "capability_first": [
+      "tinymmlu__baseline",
+      "tinymmlu__dynamic_raw",
+      "tinymmlu__safety_first_routegate",
+      "tinygsm8k__baseline",
+      "tinygsm8k__dynamic_raw",
+      "tinygsm8k__safety_first_routegate"
+    ],
+    "rule": "every capability arm completes before the sealed split is opened",
+    "sealed_last": [
+      "sealed__baseline",
+      "sealed__dynamic_raw",
+      "sealed__safety_first_routegate"
+    ]
+  },
+  "output": {
+    "data_root": "final_evaluation_v5",
+    "records_file": "records.jsonl",
+    "resumable": true,
+    "resume_rule": "an arm resumes by item_id: records already present are kept, never regenerated and never overwritten. The identical command resumes and completes."
+  },
+  "prior_protocols": [
+    "routegate_final_evaluation_v1",
+    "routegate_final_evaluation_v2",
+    "routegate_final_evaluation_v3",
+    "routegate_final_evaluation_v4"
+  ],
+  "record_fields": [
+    "schema",
+    "protocol",
+    "arm_id",
+    "dataset",
+    "condition",
+    "item_index",
+    "item_id",
+    "prompt_sha256",
+    "status",
+    "error_message",
+    "model",
+    "revision",
+    "tokenizer_config_sha256",
+    "chat_template_sha256",
+    "decoding",
+    "max_new_tokens",
+    "do_sample",
+    "sampling_seed",
+    "gate_read_state",
+    "gate_p_E",
+    "gate_p_H",
+    "gate_fires",
+    "threshold_E",
+    "threshold_H",
+    "controller_read_state",
+    "g_R",
+    "applied_alpha_R",
+    "applied_at_historical_blocks",
+    "hooks_expected",
+    "hooks_fired",
+    "stop_strings",
+    "stop_fired",
+    "stop_reason",
+    "response_text",
+    "prompt_token_count",
+    "completion_token_count",
+    "eos_reached",
+    "hit_max_new_tokens",
+    "elapsed_seconds",
+    "created_utc"
+  ],
+  "record_schema": "routegate/final_evaluation_record/5",
+  "record_sha256": "0b856b84b194b540ce75ff18ef4fff56290e589e10d9530f0520bfd11fae4e3d",
+  "rejected_candidates": {
+    "dynamic_fullgate": "2 B material degradations against the same rule, and dominated by safety_first_routegate (26/87 E substantive against 37/89)",
+    "dynamic_safety_constrained": "10 B material degradations against a fixed zero-material eligibility rule, and dominated by safety_first_routegate (31/87 E substantive against 37/89)"
+  },
+  "rejected_candidates_note": "composed offline from existing adjudicated responses and rejected under a fixed eligibility rule before this protocol was written. Neither appears as a condition, in the runner, or in any output arm, and neither may be added later.",
+  "reproduces_upstream_task_file": true,
+  "reproduces_upstream_task_file_basis": "the stop sequences and both filter regexes are asserted against the vendored references/lm_eval_v0.4.3_gsm8k.yaml, pinned by sha256. This is a checked claim, not a remembered one.",
+  "runtime": {
+    "batch_size": 1,
+    "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "decoding": "greedy",
+    "do_sample": false,
+    "model": "Qwen/Qwen3-30B-A3B",
+    "one_model_only": "Qwen/Qwen3-30B-A3B",
+    "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+    "sampling_seed": null,
+    "sampling_seed_is_null_because": "decoding is greedy and consults no random number generator",
+    "tokenizer_config_sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  },
+  "schema": "routegate/final_evaluation_protocol/5",
+  "scientific_protocol_unchanged_from_v2": true,
+  "scoring": {
+    "gold_never_visible_to_generation": true,
+    "gsm8k": {
+      "comparison": "exact Decimal, never binary float",
+      "harness": "EleutherAI/lm-evaluation-harness",
+      "harness_revision": "v0.4.3",
+      "harness_task": "lm_eval/tasks/gsm8k/gsm8k.yaml",
+      "regex": "(-?[$0-9.,]{2,})|(-?[0-9]+)",
+      "rule": "lm-evaluation-harness v0.4.3 gsm8k: apply '(-?[$0-9.,]{2,})|(-?[0-9]+)' to the completion and take the LAST match, then strip '$' and ',' and any trailing '.'. Comparison is exact Decimal, so 42, 42.0, +42 and 42,000 compare as numbers and never as strings. No match, or a match that is not a number, is INVALID."
+    },
+    "mmlu": {
+      "gold_map": {
+        "0": "A",
+        "1": "B",
+        "2": "C",
+        "3": "D"
+      },
+      "rule": "the ANSWER LINE is the completion up to its first newline. It must be exactly one of A B C D, optionally followed by punctuation from '.),:;-\u2013\u2014\"\\'`*' or whitespace, and by nothing else. Prose before the letter, an absent letter, and a second different option letter on the answer line are all INVALID and score as incorrect; nothing is guessed. Text after the first newline is the model continuing the few-shot pattern into the next question -- under raw-completion mode that continuation is expected -- and is not part of the answer."
+    },
+    "module": "routegate.capabilityscoring",
+    "primary": [
+      "raw accuracy",
+      "paired item transitions vs baseline"
+    ],
+    "secondary": [
+      "tinyBenchmarks IRT / pIRT / gpIRT"
+    ]
+  },
+  "sealed_set": {
+    "commitment": "manifests/sealed_set_commitment.json",
+    "expected_row_count": 380,
+    "opened": "once, after every capability arm completes, as an explicit argument supplied at launch",
+    "path_stored_in_this_repository": false,
+    "prompt_content_read_by_this_module": false
+  },
+  "sensors": {
+    "bundle": "gate_bundle.json",
+    "checkpoints": [
+      "gate_sensor_E_all_development_refit.json",
+      "gate_sensor_H_all_development_refit.json"
+    ],
+    "controller": "routegate-data/gate_oof_v1_repro/controller_all_development_refit.json",
+    "controller_weights_sha256": "bc2973fa7745e97ba487699131824586c98ff059004d5fc14cd6975d7ccc8f85",
+    "directory": "outputs/routegate_gate_deployment_v1",
+    "read_state": 45,
+    "reads_any_per_row_table": false,
+    "reproduction_gate": "the refit was written only after the five fold sensors were reconstructed under the frozen specification and matched the frozen out-of-fold probabilities to 1e-9 (worst observed 4.99e-11).",
+    "requires_row_id": false,
+    "thresholds_sha256": "e7d56cfe1b2bb763fc52a8dd86a30254375f81b594ed8c942c3fe24715a35507",
+    "weights_sha256": {
+      "E_sensor": "dfda05aed1043e3e24b4c5e9f653b5cb6581929071aa5649b91d718d54e8d462",
+      "H_veto": "640eb8088b0c5ea89aa6f0ebacf8d97b7e0b6451ea0445395115771744c1b9b7"
+    }
+  },
+  "source_sha256": {
+    "experiments/final_evaluation/run_final_evaluation.py": "3b73f29adc63714e95f39204e60d0c7565d1e99887edeca8127c5137cfbb01cc",
+    "experiments/final_evaluation/score_capability.py": "94558c5a3a82a45ae2f473f54091be4d3b2bd5ac2192e186a00ce6de4b97e00c",
+    "experiments/final_evaluation/verify_technical_smoke.py": "044c461ba5774843d13b2d09b48c9e4b58b812af189d5ccce48655910bba8edd",
+    "src/routegate/capabilityparsers.py": "d414b620adb7cb26b1f6c7439c33d89fe1664f09b56842f399df471ccca27c9b",
+    "src/routegate/capabilityscoring.py": "eedc9adc68b0c81e08c00d9d3777c9c026a750d3fad12d8fb6bcc3472af2b944",
+    "src/routegate/finaleval.py": "4c91fe54681914472efe135b120e99df30eaaed7bd964d4805b651d04ab7736c",
+    "src/routegate/finalrunner.py": "91143b1560b535c4901da5842c403e0b0129da8b7fc67a73b23524e913ad3d19"
+  },
+  "status": "frozen",
+  "supersedes": "routegate_final_evaluation_v4",
+  "truncation_correction": {
+    "defect": "v3 treated hit_max_new_tokens as a parse-level fault. It blocked baseline format compatibility when parse_status was ok but the cap had been hit, labelled steered rows that parsed successfully BEHAVIOURAL_PARSE_FAILURE, and would have forced successfully parsed capped rows to score incorrect.",
+    "diagnostic_label": "PARSE_OK_TRUNCATED_AFTER_ANSWER",
+    "evidence": "all three v3 tinyMMLU smoke rows returned parse_status=ok and hit_max_new_tokens=True, across baseline, dynamic_raw and safety_first_routegate alike, with all 120 technical wiring, digest, condition, gate and hook checks passing.",
+    "evidence_is_condition_independent": true,
+    "generation_settings_unchanged": true,
+    "inspected_correctness": false,
+    "inspected_gold": false,
+    "inspected_predictions": false,
+    "inspected_scores": false,
+    "parsers_unchanged": true,
+    "rule": "if the frozen parser returns parse_status=ok the parsed answer is retained and scored normally regardless of hit_max_new_tokens, in every condition. The cap is reported separately as PARSE_OK_TRUNCATED_AFTER_ANSWER and never changes correctness. Only an actual parse failure scores incorrect.",
+    "why_it_is_wrong": "under raw completion the model emits the option letter and then carries on into the next few-shot question until the budget ends. The cap falls AFTER the answer. A parsed answer is an answer."
+  },
+  "v1_generated_rows": 0,
+  "v1_generated_rows_evidence": "no output root for v1 was ever created; the defects were found in a read-only audit before any Qwen weight was loaded.",
+  "v2_generated_rows": 0,
+  "v2_generated_rows_evidence": "no output root for v2 was ever created; v3 supersedes it before any Qwen weight was loaded.",
+  "v3_changes": [
+    "--item-index N restricts the ordinary loop to one official row, into the normal arm output, so a single row can be smoke-tested before a full arm",
+    "an append-only invocations.jsonl records what every invocation found and wrote, and arm_complete.json is written only when every official row is present, unique and validates",
+    "verify_technical_smoke.py checks execution wiring, dispatch, telemetry, hooks, digests, prompt identity and parser execution WITHOUT reading a gold label, a correctness vector or a score",
+    "the frozen parsers moved into routegate.capabilityparsers, which carries no gold map and no scoring, so the verifier provably cannot reach one"
+  ],
+  "v3_changes_note": "v3 adds pre-execution item selection and gold-free technical verification. It changes no dataset, checkpoint, threshold, direction, prompt, generation setting, condition definition or parser rule: every scientific input and setting is v2's, unchanged.",
+  "v3_generated_detail": {
+    "arms": [
+      "tinymmlu__baseline",
+      "tinymmlu__dynamic_raw",
+      "tinymmlu__safety_first_routegate"
+    ],
+    "dataset": "tinymmlu",
+    "excluded_from_v4": true,
+    "item_index": 0,
+    "one_per_condition": true,
+    "preserved": true,
+    "rows": 3,
+    "sealed_rows": 0,
+    "tinygsm8k_rows": 0,
+    "why_excluded": "v4 writes to its own root and generates every row fresh. The v3 rows are kept as the evidence that motivated this correction, and are never resumed into a v4 arm."
+  },
+  "v3_generated_rows": 3,
+  "v4_generated_detail": {
+    "excluded_from_v5": true,
+    "item_index": 0,
+    "one_per_condition_per_benchmark": true,
+    "preserved": true,
+    "rows": 6,
+    "sealed_rows": 0,
+    "tinygsm8k_rows": 3,
+    "tinymmlu_rows": 3,
+    "why_excluded": "v4 was blocked before full generation. Its GSM8K rows ran to the 512-token cap with no stop sequence, so each completion answered the question and then continued into further few-shot items -- 3, 4 and 3 strict '####' markers respectively -- and the last-number rule selected an answer belonging to a later question on all three. The rows are kept as the evidence for this repair and are never resumed into a v5 arm."
+  },
+  "v4_generated_rows": 6,
+  "v4_sealed_rows": 0,
+  "version": 5
+}
